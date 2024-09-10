@@ -1,0 +1,72 @@
+@import './base';
+@import './panel';
+
+$blueprint-border-color: $gray-medium;
+$blueprint-background: lighten($gray-dark, 10%);
+$blueprint-hover-background: $gray-medium;
+$blueprint-hover-border-color: lighten($gray-medium, 10%);
+$icon-color: $gray-light;
+$transition-duration: 0.2s;
+$border-radius: 3px;
+
+.fvc-panel.fvc-blueprints-panel {
+  background-color: $panel-background;
+  color: $panel-text-color;
+  padding: 15px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.fvc-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: $title-color;
+  margin-bottom: 15px;
+}
+
+.fvc-blueprint {
+  cursor: grab;
+  overflow: hidden;
+  border-radius: $border-radius;
+  border: 1px solid $blueprint-border-color;
+  background-color: $blueprint-background;
+  margin-bottom: 10px;
+  position: relative;
+  transition: background-color $transition-duration ease, border-color $transition-duration ease;
+  font-size: 12px;
+  padding: 8px 12px;
+  text-align: left;
+  color: $panel-text-color;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background-color: $blueprint-hover-background;
+    border-color: $blueprint-hover-border-color;
+  }
+}
+
+.svg-inline--fa {
+  display: inline-block;
+  height: 14px;
+  margin-right: 8px;
+  color: $icon-color;
+}
+
+.fvc-label {
+  display: inline-block;
+}
+
+.fvc-close-icon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  color: $icon-color;
+  font-size: 14px;
+  transition: color $transition-duration ease;
+
+  &:hover {
+    color: $panel-text-color;
+  }
+}

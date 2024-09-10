@@ -1,0 +1,44 @@
+@import './base';
+
+.fvc-error-boundary {
+  background-color: darken($background-color, 5%);
+  border: 1px solid $error-color;
+  border-radius: 4px;
+  padding: 20px;
+  margin: 20px 0;
+  color: $text-color;
+  font-family: Arial, sans-serif;
+}
+
+.fvc-error-title {
+  color: $error-color;
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.fvc-error-message {
+  font-size: 14px;
+  margin-bottom: 15px;
+  word-break: break-word;
+}
+
+.fvc-error-button {
+  background-color: $blue;
+  color: $text-color;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: darken($blue, 10%);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba($blue, 0.4);
+  }
+}

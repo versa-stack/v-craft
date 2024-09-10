@@ -1,0 +1,94 @@
+@import "./base";
+
+.fvc-node {
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.fvc-node::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: box-shadow 0.2s ease-in-out, border 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.fvc-node::before {
+  content: "";
+  align-items: center;
+  background-color: $blue;
+  color: $white;
+  display: flex;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  height: 20px;
+  left: -1px;
+  line-height: 1.4em;
+  opacity: 0;
+  padding: 0 5px;
+  pointer-events: none;
+  position: absolute;
+  position: absolute;
+  text-transform: none;
+  top: -20px;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 10;
+}
+
+.fvc-node.fvc-canvas.fvc-other-node-dragged::before,
+.fvc-node:hover:not(:has(.fvc-node:hover))::before,
+.fvc-node-selected::before {
+    opacity: 1;
+}
+
+.fvc-node-selected::before {
+  opacity: 0.5;
+}
+
+.fvc-node:hover:not(:has(.fvc-node:hover))::after {
+  border: 1px solid dargen($blue, 25%);
+  box-shadow: 0 0 0 1px $blue;
+}
+.fvc-node-selected::after {
+  border: 1px solid $blue;
+  box-shadow: 0 0 0 1px $blue;
+}
+
+.fvc-node.fvc-canvas.fvc-other-node-dragged::after {
+  border: 2px dashed $blue;
+}
+
+.fvc-node.fvc-canvas.fvc-empty {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border: 2px dashed #4a4a4a;
+  color: #b8b8b8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.fvc-node.fvc-canvas.fvc-other-node-dragged {
+  background-color: rgba(74, 144, 226, 0.1);
+  padding: 2em;
+  margin: 2em 0;
+}
+
+.fvc-node-selected {
+  z-index: 1;
+}
+
+.fvc-node.fvc-drag-over {
+  box-shadow: 0 0 0 2px $blue;
+}
+
+.fvc-node.fvc-dragging {
+  opacity: 0.7;
+}

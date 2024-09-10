@@ -1,0 +1,89 @@
+@import "./base";
+
+.graphql-editor {
+  height: 12em;
+  position: relative;
+}
+
+.editor-header {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  z-index: 10;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: $background-color;
+  border-radius: 4px;
+  width: 50vw;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid lighten($background-color, 10%);
+
+  h2 {
+    color: $text-color;
+    margin: 0;
+  }
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: $text-color;
+  font-size: 20px;
+  cursor: pointer;
+
+  &:hover {
+    color: $blue;
+  }
+}
+
+.editor-footer,
+.modal-footer {
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.update-button,
+.pop-out-button
+{
+  background-color: $blue;
+  color: white;
+  border: none;
+  padding: 1em 1.125;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: darken($blue, 10%);
+  }
+}
+
+.update-button {
+    background-color: $green;
+}

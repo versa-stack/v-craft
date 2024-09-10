@@ -1,0 +1,29 @@
+@import './base';
+
+$indicator-bg-allowed: $green;
+$indicator-bg-forbidden: $red;
+$indicator-transition-duration: 0.125s;
+$indicator-z-index: 10000;
+
+.fvc-indicator {
+  position: fixed;
+  background-color: $indicator-bg-allowed;
+  transition: 
+    top $indicator-transition-duration ease, 
+    left $indicator-transition-duration ease, 
+    right $indicator-transition-duration ease,
+    bottom $indicator-transition-duration ease, 
+    width $indicator-transition-duration ease, 
+    height $indicator-transition-duration ease,
+    background-color $indicator-transition-duration ease-in-out;
+
+  z-index: $indicator-z-index;
+
+  &:after {
+    content: " ";
+  }
+
+  &.fvc-forbidden {
+    background-color: $indicator-bg-forbidden;
+  }
+}

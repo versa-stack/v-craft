@@ -1,0 +1,102 @@
+@import './base';
+
+$panel-background: $gray-dark;
+$panel-text-color: $text-color;
+$panel-border-color: darken($gray-dark, 10%);
+$border-color: darken($gray-dark, 5%);
+$title-color: $gray-light;
+$scrollbar-track: darken($gray-dark, 5%);
+$scrollbar-thumb: $gray-medium;
+$scrollbar-thumb-hover: lighten($gray-medium, 10%);
+
+.fvc-panel {
+  background-color: $panel-background;
+  color: $text-color;
+  font-family: $font;
+  font-size: 12px;
+  border: 1px solid $border-color;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  padding: 1.125em;
+
+  h3,
+  h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    color: $title-color;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .fvc-title {
+    color: $text-color;
+    font-size: 14px;
+    margin: 0 0 10px 0;
+    user-select: none;
+    display: block;
+    padding-bottom: 5px;
+    border-bottom: 1px solid $input-border;
+  }
+
+  .fvc-close-icon {
+    cursor: pointer;
+    color: $title-color;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 14px;
+    &:hover {
+      color: $text-color;
+    }
+  }
+}
+
+.fvc-scrollable {
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $scrollbar-track;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $scrollbar-thumb;
+    border-radius: 4px;
+    &:hover {
+      background: $scrollbar-thumb-hover;
+    }
+  }
+}
+
+.fvc-panel-left,
+.fvc-panel-right,
+.fvc-panel-top,
+.fvc-panel-bottom,
+.fvc-panel-center {
+  background-color: $panel-background;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.fvc-panel-top,
+.fvc-panel-bottom {
+  height: auto;
+}
+
+.fvc-panel-center {
+  background-color: $background-color;
+}
+
+.fvc-scrollable-content {
+  @extend .fvc-scrollable;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 30vh;
+}
