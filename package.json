@@ -4,7 +4,7 @@
   "description": "Derived from https://github.com/loming/v-craft/tree/vue3",
   "version": "0.0.5",
   "scripts": {
-    "build": "rimraf dist && vite build",
+    "build": "NODE_OPTIONS=--max_old_space_size=4096 rimraf dist && vite build",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:serve": "vitepress serve docs",

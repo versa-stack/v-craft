@@ -2,7 +2,7 @@ import { defineConfig } from "vitepress";
 import path from "path";
 
 export default defineConfig({
-  title: "faasaf/v-craft",
+  title: "versa-stack/v-craft",
   base: process.env.PUBLIC_BASE || "/",
   description: "An attempt to deliver a Vue.js 3 page editor library.",
 
@@ -11,10 +11,11 @@ export default defineConfig({
   },
 
   themeConfig: {
-    repo: "https://gitlab.com/faasaf/v-craft",
+    base: process.env.GITHUB_REF === 'refs/heads/develop' ? '/develop/' : '/',
+    repo: "https://github.com/versa-stack/v-craft",
     docsDir: "docs",
     editLinks: true,
-    editLinkText: "Edit this page on GitLab",
+    editLinkText: "Edit this page on Github",
     lastUpdated: "Last Updated",
 
     nav: [
