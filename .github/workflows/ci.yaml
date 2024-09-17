@@ -1,0 +1,62 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Read .nvmrc
+      run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build package
+      run: npm run build
+
+    - name: Build docs
+      run: npm run docs:build
+
+    - name: Deploy main docs to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/.vitepress/dist
+        destination_dir: ./
+
+    - name: Deploy develop docs to GitHub Pages
+      if: github.ref == 'refs/heads/develop'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/.vitepress/dist
+        destination_dir: ./develop
+
+    - name: Publish to npm (main branch)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    - name: Publish alpha version to npm (develop branch)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+      run: |
+        npm version prerelease --preid=alpha --no-git-tag-version
+        npm publish --tag alpha
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
