@@ -28,11 +28,9 @@
     </div>
   </div>
 </template>
-
-
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
 import MonacoEditor from "monaco-editor-vue3";
+import { onMounted, ref, watch } from "vue";
 import "../config/monaco-config";
 
 const props = defineProps({

@@ -3,7 +3,7 @@ import { CraftNodeResolverMap } from "./CraftNodeResolver";
 import { EditorStoreType } from "../store/editor";
 import { CraftNode, CraftNodeDatasource } from "./craftNode";
 
-export interface CraftBlueprintData {
+export type CraftBlueprintData = {
   label: string;
   icon: Pick<FontAwesomeIconProps, "icon">;
   component: string;
@@ -15,30 +15,30 @@ export type Blueprints = Record<
   Omit<CraftNode, "parent" | "uuid"> & { label?: string }
 >;
 
-export interface CraftEditorConfig {
+export type CraftEditorConfig = {
   blueprints: Blueprints;
   resolverMap: CraftNodeResolverMap;
   actions: CraftEditorAction[];
 }
 
-export interface CraftEditorAction {
+export type CraftEditorAction = {
   label: string;
   key: string;
   icon: Pick<FontAwesomeIconProps, "icon">;
 }
 
-export interface CraftEditorActionPayload {
+export type CraftEditorActionPayload = {
   action: CraftEditorAction;
   editor: EditorStoreType;
 }
 
-export interface CraftGraphqlQueryWrapperPropMap {
+export type CraftGraphqlQueryWrapperPropMap = {
   type: "single" | "list";
   fromPath: string;
   patches: CraftGraphqlQueryWrapperPatch[];
 }
 
-export interface CraftGraphqlQueryWrapperPatch {
+export type CraftGraphqlQueryWrapperPatch = {
   toPath: string;
   fromPath: string;
   type: "single" | "list";

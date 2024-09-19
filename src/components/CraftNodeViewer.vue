@@ -35,23 +35,15 @@
     </component>
   </CraftErrorBoundary>
 </template>
-<script lang="ts">
-export default {
-  name: "CraftNodeViewer",
-};
-</script>
 <script lang="ts" setup>
-import { ComputedRef, inject, watchEffect, computed, toRef } from "vue";
+import { computed, ComputedRef, inject, toRef } from "vue";
 import { CraftNode } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
+import { CombinationWithKeys } from ".";
 
-interface CombinationWithKeys {
-  dataItem: any;
-  dataIndex: number;
-  childNode: CraftNode;
-  childIndex: number;
-  key: string;
-}
+defineOptions({
+  name: "CraftNodeViewer",
+});
 
 const props = defineProps<{
   craftNode: CraftNode;

@@ -62,7 +62,6 @@
     />
   </div>
 </template>
-
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { CraftGraphqlQueryWrapperPatch } from "../lib/model"; // Adjust the import path as needed
@@ -127,8 +126,8 @@ const removePatch = (index: number) => {
 </script>
 
 <style scoped lang="scss">
-@import '../assets/base';
-@import '../assets/panel';
+@import "../assets/base";
+@import "../assets/panel";
 
 .patches-input {
   display: flex;

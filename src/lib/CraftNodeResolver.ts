@@ -1,7 +1,7 @@
 import kebabCase from "lodash/kebabCase";
 import { CraftNode, craftNodeIsCanvas, CraftNodeRules } from "./craftNode";
 
-export interface CraftNodeComponentMap {
+export type CraftNodeComponentMap = {
   component: string;
   propsSchema?: Record<string, any>;
   defaultProps?: Record<string, any>;

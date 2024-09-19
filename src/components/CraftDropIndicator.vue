@@ -6,15 +6,14 @@
     :style="getIndicatorStyle()"
   />
 </template>
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
 import { useIndicator } from "../store/indicator";
-export default defineComponent({
+
+const indicator = useIndicator();
+
+defineOptions({
   name: "CraftDropIndicator",
 });
-</script>
-<script lang="ts" setup>
-const indicator = useIndicator();
 
 const getIndicatorStyle = () => {
   const { top, left } = indicator.position;

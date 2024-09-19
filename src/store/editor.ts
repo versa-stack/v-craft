@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { CraftNode, emancipateCraftNode } from "../lib/craftNode";
 import { v4 as uuidv4 } from "uuid";
 
-export interface EditorState {
+export type EditorState = {
   nodeRecord: Record<string, CraftNode>;
   selectedUuid: uuidv4 | null;
   draggedNode: null | CraftNode;
@@ -45,6 +45,10 @@ export const useEditor = defineStore("editor", {
     setNode(craftNode: CraftNode) {
       this.nodes[craftNode.uuid] = craftNode;
       doMap([craftNode], this.nodeRecord);
+    },
+    toggleNodeVisibility(craftNode: CraftNode) {
+      craftNode.props.visible = !craftNode.props.visible;
+      this.setNode(craftNode);
     },
     updateNodeProps(nodeUuid: string, newProps: Record<string, any>) {
       const node = this.findNodeByUuid(nodeUuid);

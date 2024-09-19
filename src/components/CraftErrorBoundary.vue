@@ -7,34 +7,32 @@
   </div>
 </template>
 
-<script>
-import { ref, provide } from 'vue'
+<script setup lang="ts">
+import { ref, provide, onErrorCaptured } from "vue";
 
-export default {
-  name: 'ErrorBoundary',
-  setup() {
-    const error = ref(null)
+const error = ref<Error | null>(null);
 
-    provide('errorBoundary', {
-      captureError: (err) => {
-        console.error(err)
-        error.value = err
-      }
-    })
-
-    const resetError = () => {
-      error.value = null
-    }
-
-    return { error, resetError }
+provide("errorBoundary", {
+  captureError: (err: Error) => {
+    console.error(err);
+    error.value = err;
   },
-  errorCaptured(err) {
-    this.error = err
-    return false
-  }
-}
+});
+
+const resetError = () => {
+  error.value = null;
+};
+
+onErrorCaptured((err) => {
+  error.value = err;
+  return false;
+});
+
+defineOptions({
+  name: "ErrorBoundary",
+});
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/errorBoundary';
+@import "../assets/errorBoundary";
 </style>

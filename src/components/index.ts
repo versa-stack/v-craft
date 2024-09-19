@@ -19,6 +19,7 @@ import CraftNodeViewer from "./CraftNodeViewer.vue";
 import CraftNodeWrapper from "./CraftNodeWrapper.vue";
 import PatchesInputComponent from "./PatchesInputComponent.vue";
 import GraphqlInputComponent from "./GraphqlInputComponent.vue";
+import { CraftNode } from "../lib/craftNode";
 
 export {
   CraftCanvas,
@@ -43,3 +44,12 @@ export {
   PatchesInputComponent,
   GraphqlInputComponent
 };
+
+
+export type CombinationWithKeys = {
+  dataItem: any;
+  dataIndex: number;
+  childNode: CraftNode;
+  childIndex: number;
+  key: string;
+}

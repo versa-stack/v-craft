@@ -1,30 +1,37 @@
 <template>
-    <div>
-        <slot></slot>
-    </div>
+  <div>
+    <slot></slot>
+  </div>
 </template>
-<script lang="ts">
-export default {
-  name: "CraftGraphqlProvider",
-};
-</script>
+
 <script setup lang="ts">
-import { provideApolloClient } from '@vue/apollo-composable';
-import { createApolloClient } from '../apollo/client';
-import { ref, watch } from 'vue';
+import { ref, watch } from "vue";
+import { provideApolloClient } from "@vue/apollo-composable";
+import { createApolloClient } from "../apollo/client";
 
-const props = defineProps({
-  endpoint: {
-    type: String,
-    required: true,
-  },
+defineOptions({
+  name: "CraftGraphqlProvider",
 });
 
-const apolloClient = ref(createApolloClient(props.endpoint));
+const props = defineProps<{
+  endpoint: string;
+}>();
 
-watch(() => props.endpoint, (newUri) => {
-  apolloClient.value = createApolloClient(newUri);
-});
+const apolloClient = ref<any | null>(null);
 
-provideApolloClient(apolloClient.value as any);
+const initApolloClient = (uri: string) => {
+  apolloClient.value = createApolloClient(uri);
+  if (apolloClient.value) {
+    provideApolloClient(apolloClient.value);
+  }
+};
+
+initApolloClient(props.endpoint);
+
+watch(
+  () => props.endpoint,
+  (newUri) => {
+    initApolloClient(newUri);
+  }
+);
 </script>

@@ -30,20 +30,16 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed } from "vue";
 import {
   Blueprints,
   CraftEditorAction,
   CraftEditorActionPayload,
 } from "../lib/model";
 
-const props = defineProps<{
+defineProps<{
   blueprints: Blueprints;
   actions: CraftEditorAction[];
 }>();
-
-const topRowHeight = computed(() => 0.3);
-const topRowTranslate = computed(() => 90);
 
 const emit = defineEmits<{
   (e: "action-click", payload: CraftEditorActionPayload): void;

@@ -1,4 +1,3 @@
-
 <template>
   <div class="fvc-panel fvc-layers-panel">
     <h3 class="fvc-title">Layers</h3>
@@ -14,16 +13,13 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-export default {
-  name: "CraftEditorPanelLayers",
-};
-</script>
-
 <script lang="ts" setup>
 import { storeToRefs } from "pinia";
 import { useEditor } from "../store/editor";
+
+defineOptions({
+  name: "CraftEditorPanelLayers",
+});
 
 const editor = useEditor();
 const { nodes } = storeToRefs(editor);
@@ -34,6 +30,5 @@ const layerClick = (craftNode) => {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/editorPanelLayers';
+@import "../assets/editorPanelLayers";
 </style>
-

@@ -7,15 +7,13 @@
     <slot></slot>
   </component>
 </template>
-<script lang="ts">
-export default {
-  name: "CraftCanvas",
-};
-</script>
-
 <script setup lang="ts">
 import { ComputedRef, inject, computed } from "vue";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
+
+defineOptions({
+  name: "CraftCanvas",
+})
 
 const props = defineProps<{
   component: string;

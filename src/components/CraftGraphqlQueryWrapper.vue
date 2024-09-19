@@ -7,41 +7,35 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-export default {
-  name: "CraftGraphqlQueryWrapper",
-};
-</script>
-
 <script setup lang="ts">
 import { ApolloError } from "@apollo/client";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import jp from "jsonpath";
-import { ComputedRef, inject, onMounted, ref, useSlots, watch } from "vue";
+import { ComputedRef, inject, ref, useSlots, watch } from "vue";
+import { CraftNode } from "../lib/craftNode";
 import {
   CraftGraphqlQueryWrapperData,
   CraftGraphqlQueryWrapperPatch,
   CraftGraphqlQueryWrapperPropMap,
 } from "../lib/model";
-import { CraftNode } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
 
-const props = defineProps({
-  query: {
-    type: String,
-    required: true,
-  },
-  variables: {
-    type: Object,
-    default: () => ({}),
-  },
-  map: {
-    type: Object,
-    default: () => ({} as CraftGraphqlQueryWrapperPropMap),
-  },
+defineOptions({
+  name: "CraftGraphqlQueryWrapper",
 });
+
+const props = withDefaults(
+  defineProps<{
+    query: string;
+    variables: Record<string, any>;
+    map: CraftGraphqlQueryWrapperPropMap;
+  }>(),
+  {
+    variables: {} as any,
+    map: {} as any,
+  }
+);
 
 const result = ref<null | any>(null);
 const loading = ref(true);

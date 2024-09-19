@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-export interface IndicatorState {
+export type IndicatorState = {
   barSize: number;
   visible: boolean;
   coordinates: {

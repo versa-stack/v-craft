@@ -53,11 +53,6 @@
     </component>
   </CraftErrorBoundary>
 </template>
-<script lang="ts">
-export default {
-  name: "CraftNodeEditor",
-};
-</script>
 <script setup lang="ts">
 import {
   computed,
@@ -67,7 +62,6 @@ import {
   provide,
   ref,
   toRef,
-  watch,
 } from "vue";
 import useConnectCraftNodeToStore from "../hooks/useConnectCraftNodeToStore";
 import useDragCraftNode from "../hooks/useDragCraftNode";
@@ -79,14 +73,11 @@ import {
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { useEditor } from "../store/editor";
 import CraftNodeViewer from "./CraftNodeViewer.vue";
+import { CombinationWithKeys } from ".";
 
-interface CombinationWithKeys {
-  dataItem: any;
-  dataIndex: number;
-  childNode: CraftNode;
-  childIndex: number;
-  key: string;
-}
+defineOptions({
+  name: "CraftNodeEditor",
+});
 
 const props = defineProps<{
   craftNode: CraftNode;

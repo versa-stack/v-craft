@@ -1,20 +1,20 @@
 <template>
   <fieldset
     class="formkit-fieldset fvc-scrollable-content"
-    v-if="localProps && schema && schema.filter"
+    v-if="localProps && schema"
   >
     <legend class="formkit-legend">Properties</legend>
-      <FormKit
-        v-for="field in schema"
-        :key="field.name"
-        :label="field.label"
-        :name="field.name"
-        :options="field.options"
-        :type="field.$formkit"
-        :value="getFieldValue(field.name)"
-        @input="(value) => updateField(field.name, value)"
-        :parse="parseValue"
-      />
+    <FormKit
+      v-for="field in schema"
+      :key="field.name"
+      :label="field.label"
+      :name="field.name"
+      :options="field.options"
+      :type="field.$formkit"
+      :value="getFieldValue(field.name)"
+      @input="(value) => updateField(field.name, value)"
+      :parse="parseValue"
+    />
   </fieldset>
 </template>
 
@@ -27,7 +27,7 @@ import { FormKitSchemaNode } from "@formkit/core";
 
 interface Props {
   craftNode?: CraftNode;
-  schema?: FormKitSchemaNode[];
+  schema?: FormKitSchemaNode[] | any[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -75,6 +75,5 @@ const updateField = (fieldName: string, value: any) => {
 </script>
 
 <style lang="scss">
-@import '../assets/editorPanelNodeSettings';
-
+@import "../assets/editorPanelNodeSettings";
 </style>

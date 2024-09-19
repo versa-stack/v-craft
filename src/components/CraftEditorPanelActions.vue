@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { CraftEditorAction, CraftEditorActionPayload } from "../lib/model";
 import { useEditor } from "../store/editor";
 
-const props = defineProps<{
+defineProps<{
   actions: CraftEditorAction[];
 }>();
 

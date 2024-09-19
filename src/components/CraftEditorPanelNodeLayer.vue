@@ -18,32 +18,24 @@
     </ul>
   </li>
 </template>
-
 <script lang="ts" setup>
-import { computed } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useEditor } from "../store/editor";
-import { CraftNode } from '../lib/craftNode';
+import { CraftNode } from "../lib/craftNode";
 
-const props = defineProps({
-  craftNode: {
-    type: Object,
-    required: true
-  },
-  visible: {
-    type: Boolean,
-    default: true
-  }
-});
-
+const props = defineProps<{
+  craftNode: CraftNode;
+  visible: boolean;
+}>();
 
 const craftNodeIsCanvas = (node: CraftNode) => {
-  return node.componentName === 'CraftCanvas';
+  return node.componentName === "CraftCanvas";
 };
 
-const emit = defineEmits(['layer-click']);
+const emit = defineEmits(["layer-click"]);
 const editor = useEditor();
-const icon = computed(() => props.visible ? 'eye' : 'eye-slash');
+const icon = computed(() => (props.visible ? "eye" : "eye-slash"));
 const iconClick = () => {
   editor.toggleNodeVisibility(props.craftNode);
 };
@@ -51,8 +43,6 @@ const iconClick = () => {
 const componentName = craftNodeIsCanvas(props.craftNode)
   ? `${props.craftNode.componentName} (${props.craftNode.props.component})`
   : props.craftNode.componentName;
-
-
 </script>
 <style lang="scss" scoped>
 @import "../assets/panel";

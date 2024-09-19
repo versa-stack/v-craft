@@ -8,20 +8,20 @@ export type CraftNodeRules = {
   canMoveInto?: (craftNode: CraftNode, targetNode: CraftNode, resolver: CraftNodeResolver) => boolean;
 };
 
-export interface CraftNode {
-  componentName: string;
-  props: any;
+export type CraftNode = {
   children: CraftNode[];
-  parent: CraftNode | null;
-  uuid: uuidv4;
-  rules?: CraftNodeRules;
+  componentName: string;
   data?: CraftNodeDatasource;
+  parent?: CraftNode|null;
+  props: any;
+  rules?: CraftNodeRules;
+  uuid: uuidv4;
 }
 
-export interface CraftNodeDatasource {
-  type: "single" | "list";
+export type CraftNodeDatasource = {
   item?: Record<string, any>;
   list?: Record<string, any>[];
+  type: "single" | "list";
 }
 
 export const setCraftNodeProps = (craftNode: CraftNode, props: any) => {

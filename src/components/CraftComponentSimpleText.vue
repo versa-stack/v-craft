@@ -1,13 +1,13 @@
 <template>
   <component :is="tagName">{{ content }}</component>
 </template>
-<script lang="ts">
-export default {
-  name: "CraftComponentSimpleText",
-};
-</script>
 <script lang="ts" setup>
-const props = withDefaults(
+
+defineOptions({
+  name: "CraftComponentSimpleText",
+})
+
+withDefaults(
   defineProps<{
     tagName: string;
     content: string;

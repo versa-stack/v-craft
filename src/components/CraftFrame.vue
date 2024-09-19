@@ -1,27 +1,23 @@
 <template>
-    <CraftNodeWrapper
-      v-if="resolver"
-      v-for="craftNode in editor.nodes"
-      :key="(craftNode as any).uuid"
-      :craftNode="craftNode"
-    />
-    <Indicator v-if="editor.enabled" />
+  <CraftNodeWrapper
+    v-if="resolver"
+    v-for="craftNode in editor.nodes"
+    :key="(craftNode as any).uuid"
+    :craftNode="craftNode"
+  />
+  <Indicator v-if="editor.enabled" />
 </template>
 
-<script lang="ts">
-export default {
-  name: "CraftFrame",
-};
-</script>
+<script lang="ts"></script>
 
 <script lang="ts" setup>
 import {
   ComputedRef,
   inject,
   onBeforeMount,
+  provide,
   ref,
   useSlots,
-  provide,
 } from "vue";
 import { CraftNode } from "../lib/craftNode";
 import CraftNodeResolver, {
@@ -30,6 +26,10 @@ import CraftNodeResolver, {
 import vNodeToCraftNode from "../lib/vNodeToCraftNode";
 import { useEditor } from "../store/editor";
 import Indicator from "./CraftDropIndicator.vue";
+
+defineOptions({
+  name: "CraftFrame",
+});
 
 const props = defineProps<{
   resolverMap?: CraftNodeResolverMap;

@@ -1,7 +1,6 @@
 const path = require("path");
 const { defineConfig } = require("vite");
 import vue from "@vitejs/plugin-vue";
-import { optimizeDeps } from "vite";
 import dts from "vite-plugin-dts";
 
 const packageName = "v-craft";
@@ -11,7 +10,7 @@ module.exports = defineConfig({
   optimizeDeps: {
     include: ["@apollo/client/core"],
   },
-  
+
   build: {
     sourcemap: true,
     lib: {
@@ -23,15 +22,21 @@ module.exports = defineConfig({
     rollupOptions: {
       external: [
         "@apollo/client",
-        "@vue/apollo-composable",
+        "@formkit/vue",
         "@fortawesome/fontawesome-svg-core",
+        "@fortawesome/free-regular-svg-icons",
         "@fortawesome/free-solid-svg-icons",
         "@fortawesome/vue-fontawesome",
+        "@vue/apollo-composable",
+        "graphql",
+        "graphql-tag",
         "lodash",
+        "monaco-editor",
+        "monaco-editor-vue3",
         "pinia",
+        "react",
         "uuid",
         "vue",
-        "react",
       ],
       output: {
         exports: "named",

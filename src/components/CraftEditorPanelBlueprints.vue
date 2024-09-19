@@ -15,8 +15,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { Blueprints } from "../lib/model";
 import { inject, ComputedRef, computed } from "vue";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
@@ -41,7 +39,7 @@ const blueprintsWithDefaults = computed(() => {
   return returnVal;
 });
 
-const emit = defineEmits<{
+defineEmits<{
   (event: "close", ...args: any[]): void;
 }>();
 </script>
