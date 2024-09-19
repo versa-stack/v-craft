@@ -30,6 +30,6 @@ const getIndicatorStyle = () => {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/dropIndicator";
 </style>

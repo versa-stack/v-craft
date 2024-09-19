@@ -41,7 +41,7 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        "@faasaf/v-craft": path.resolve(__dirname, "../../src"),
+        "@versa-stack/v-craft": path.resolve(__dirname, "../../src"),
       },
       dedupe: ["vue"],
     },

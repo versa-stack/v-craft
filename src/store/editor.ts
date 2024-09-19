@@ -9,7 +9,7 @@ export type EditorState = {
   enabled: boolean;
   nodes: CraftNode[];
   nodeRefsRecord: Record<string, HTMLElement>;
-}
+};
 
 export type EditorStoreType = ReturnType<typeof useEditor>;
 
@@ -33,6 +33,14 @@ export const useEditor = defineStore("editor", {
       nodeRefsRecord: {},
     } as EditorState),
   actions: {
+    clear() {
+      this.nodeRecord = {};
+      this.selectedUuid = null;
+      this.draggedNode = null;
+      this.enabled = false;
+      this.nodes = [];
+      this.nodeRefsRecord = {};
+    },
     enable() {
       this.enabled = true;
     },

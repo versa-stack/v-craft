@@ -1,4 +1,4 @@
-import { Blueprints, CraftNode } from "@faasaf/v-craft";
+import { Blueprints, CraftNode } from "@versa-stack/v-craft";
 
 export const blueprints: Blueprints = {
   CraftComponentSimpleContainer: {

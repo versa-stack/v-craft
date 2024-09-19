@@ -4,14 +4,14 @@
   </CraftEditor>
 </template>
 <script lang="ts" setup>
+import { fas } from "@fortawesome/free-solid-svg-icons";
 import {
   CraftEditorActionPayload,
   CraftEditorConfig,
   useEditor,
-} from "@faasaf/v-craft";
-import { fas } from "@fortawesome/free-solid-svg-icons";
-import { resolverMap } from "./resolvermap";
+} from "@versa-stack/v-craft";
 import { blueprints } from "./blueprints";
+import { resolverMap } from "./resolvermap";
 
 const editor = useEditor();
 editor.enable();

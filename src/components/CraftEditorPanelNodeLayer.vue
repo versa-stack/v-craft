@@ -44,7 +44,7 @@ const componentName = craftNodeIsCanvas(props.craftNode)
   ? `${props.craftNode.componentName} (${props.craftNode.props.component})`
   : props.craftNode.componentName;
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/panel";
 
 .fvc-node-layer {

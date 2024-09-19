@@ -151,7 +151,7 @@ const itemChildCombinations = computed(() => ({
 provide("craftNode", craftNodeRef);
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/craftNodeEditor";
 
 .fvc-node::before {

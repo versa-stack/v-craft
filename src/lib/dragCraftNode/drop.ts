@@ -77,7 +77,11 @@ export default (
     const cp = craftNodeEnsureTree(
       JSON.parse(JSON.stringify(context.editor.draggedNode))
     );
-    cp.uuid = uuidv4();
+
+    if (!cp.uuid) {
+      cp.uuid = uuidv4();
+    }
+
     return cp;
   })();
 

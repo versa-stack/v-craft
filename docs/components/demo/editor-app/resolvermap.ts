@@ -1,4 +1,4 @@
-import { CraftNode, CraftNodeResolver } from "@faasaf/v-craft";
+import { CraftNode, CraftNodeResolver } from "@versa-stack/v-craft";
 
 export const resolverMap = {
   paragraph: {

@@ -45,6 +45,6 @@ const emit = defineEmits<{
   (e: "action-click", payload: CraftEditorActionPayload): void;
 }>();
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/editorPanelLayout";
 </style>

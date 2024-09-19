@@ -25,7 +25,7 @@ const emit = defineEmits<{
 }>();
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/editorPanelActions";
 
 </style>

@@ -69,6 +69,6 @@ const handlePropsUpdate = (newProps: Record<string, any>) => {
   }
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/panel";
 </style>

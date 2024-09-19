@@ -1,4 +1,4 @@
-import VCraft, { formkit as vcFormkit } from "@faasaf/v-craft";
+import VCraft, { formkit as vcFormkit } from "@versa-stack/v-craft";
 import { defaultConfig, plugin } from "@formkit/vue";
 import { createPinia } from "pinia";
 import DefaultTheme from "vitepress/theme";
