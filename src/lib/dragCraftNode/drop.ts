@@ -6,7 +6,7 @@ import {
   CraftNode,
   craftNodeCanBeChildOf,
   craftNodeCanBeSiblingOf,
-  craftNodeEnsureTree,
+  buildCraftNodeTree,
   craftNodeIsCanvas,
   insertCraftNodeAfter,
   insertCraftNodeBefore,
@@ -74,7 +74,7 @@ export default (
     if (context.editor.draggedNode?.uuid) {
       return context.editor.draggedNode;
     }
-    const cp = craftNodeEnsureTree(
+    const cp = buildCraftNodeTree(
       JSON.parse(JSON.stringify(context.editor.draggedNode))
     );
 

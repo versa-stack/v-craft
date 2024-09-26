@@ -8,8 +8,6 @@
   <Indicator v-if="editor.enabled" />
 </template>
 
-<script lang="ts"></script>
-
 <script lang="ts" setup>
 import {
   ComputedRef,
@@ -18,6 +16,7 @@ import {
   provide,
   ref,
   useSlots,
+  watch,
 } from "vue";
 import { CraftNode } from "../lib/craftNode";
 import CraftNodeResolver, {
@@ -73,4 +72,13 @@ onBeforeMount(() => {
     editor.setNodes(createNodesFromSlots());
   }
 });
+
+watch(
+  () => editor.hasNodes,
+  () => {
+    if (!editor.hasNodes) {
+      editor.setNodes(createNodesFromSlots());
+    }
+  }
+);
 </script>

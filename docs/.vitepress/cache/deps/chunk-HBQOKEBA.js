@@ -1,0 +1,14 @@
+// node_modules/lodash-es/_isIndex.js
+var MAX_SAFE_INTEGER = 9007199254740991;
+var reIsUint = /^(?:0|[1-9]\d*)$/;
+function isIndex(value, length) {
+  var type = typeof value;
+  length = length == null ? MAX_SAFE_INTEGER : length;
+  return !!length && (type == "number" || type != "symbol" && reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length);
+}
+var isIndex_default = isIndex;
+
+export {
+  isIndex_default
+};
+//# sourceMappingURL=chunk-HBQOKEBA.js.map

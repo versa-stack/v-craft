@@ -6,6 +6,7 @@
       </button>
     </div>
     <MonacoEditor
+      v-if="MonacoEditor"
       :value="editorValue"
       language="graphql"
       :options="editorOptions"
@@ -20,6 +21,7 @@
         </button>
       </div>
       <MonacoEditor
+        v-if="MonacoEditor"
         :value="editorValue"
         language="graphql"
         :options="modalEditorOptions"
@@ -29,9 +31,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import MonacoEditor from "monaco-editor-vue3";
-import { onMounted, ref, watch } from "vue";
-import "../config/monaco-config";
+import { onMounted, ref, watch, shallowRef, defineAsyncComponent } from "vue";
+import { useModal } from "./composable/useModal";
 
 const props = defineProps({
   context: {
@@ -40,11 +41,17 @@ const props = defineProps({
   },
 });
 
+const MonacoEditor = shallowRef();
+
+onMounted(async () => {
+  await import("../config/monaco-config");
+  const module = await import("monaco-editor-vue3");
+  MonacoEditor.value = defineAsyncComponent(() => import("monaco-editor-vue3"));
+});
+
 const editorValue = ref(
   props.context?.node?.value ?? "# Enter your GraphQL query here\n"
 );
-
-const isModalOpen = ref(false);
 
 const editorOptions = {
   minimap: { enabled: false },
@@ -76,13 +83,7 @@ const updateValue = (value: string) => {
 
 const debouncedUpdateValue = debounce(updateValue, 300);
 
-const openModal = () => {
-  isModalOpen.value = true;
-};
-
-const closeModal = () => {
-  isModalOpen.value = false;
-};
+const { closeModal, isModalOpen, openModal } = useModal();
 
 watch(
   () => props.context?.node?.value,
@@ -100,6 +101,6 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss">
-@import '../assets/graphqlInput';
+<style lang="scss" scoped>
+@import "../assets/graphqlInput";
 </style>

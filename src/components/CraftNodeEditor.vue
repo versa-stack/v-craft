@@ -1,5 +1,5 @@
 <template>
-  <CraftErrorBoundary>
+  <!-- <CraftErrorBoundary> -->
     <component
       ref="nodeRef"
       v-if="resolver"
@@ -47,11 +47,11 @@
         }"
       />
 
-      <div v-if="craftNodeIsCanvas(craftNode) && !craftNode.children?.length">
+      <div class="fvc-drop-text" v-if="craftNodeIsCanvas(craftNode) && !craftNode.children?.length">
         Drop a component here.
       </div>
     </component>
-  </CraftErrorBoundary>
+  <!-- </CraftErrorBoundary> -->
 </template>
 <script setup lang="ts">
 import {
@@ -149,9 +149,10 @@ const itemChildCombinations = computed(() => ({
 }));
 
 provide("craftNode", craftNodeRef);
+
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../assets/craftNodeEditor";
 
 .fvc-node::before {

@@ -1,6 +1,6 @@
 <template>
   <CraftEditor :config="config" @action-click="onAction">
-    <CraftCanvas component="CraftComponentSimpleContainer"> </CraftCanvas>
+    <CraftCanvas component="CraftComponentSimpleContainer" />
   </CraftEditor>
 </template>
 <script lang="ts" setup>
@@ -12,6 +12,7 @@ import {
 } from "@versa-stack/v-craft";
 import { blueprints } from "./blueprints";
 import { resolverMap } from "./resolvermap";
+import { BlueprintsLibrary } from "../../../../src/lib/model";
 
 const editor = useEditor();
 editor.enable();
@@ -39,7 +40,17 @@ const onAction = (payload: CraftEditorActionPayload) => {
 };
 
 const config: CraftEditorConfig = {
-  blueprints,
+  blueprintsLibrary: {
+    groups: [
+      {
+        label: "Default",
+        metadata: {
+          name: "default",
+        },
+        blueprints,
+      },
+    ],
+  } as BlueprintsLibrary,
   resolverMap,
   actions: [
     {

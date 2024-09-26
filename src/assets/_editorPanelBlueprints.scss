@@ -1,10 +1,11 @@
+@use 'sass:color';
 @import './base';
 @import './panel';
 
 $blueprint-border-color: $gray-medium;
-$blueprint-background: lighten($gray-dark, 10%);
+$blueprint-background: color.adjust($gray-dark, $lightness: 10%);
 $blueprint-hover-background: $gray-medium;
-$blueprint-hover-border-color: lighten($gray-medium, 10%);
+$blueprint-hover-border-color: color.adjust($gray-medium, $lightness: 10%);
 $icon-color: $gray-light;
 $transition-duration: 0.2s;
 $border-radius: 3px;

@@ -1,7 +1,8 @@
-@import './base';
-@import './panel';
+@use "sass:color";
+@import "./base";
+@import "./panel";
 
-$action-hover-background: lighten($gray-dark, 10%);
+$action-hover-background: color.adjust($gray-dark, $lightness: 10%);
 $icon-color: $gray-light;
 $text-color: $gray-light;
 $hover-text-color: $white;

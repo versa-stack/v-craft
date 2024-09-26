@@ -1,20 +1,23 @@
+@use 'sass:color';
 @import './base';
 
 $panel-background: $gray-dark;
 $panel-text-color: $text-color;
-$panel-border-color: darken($gray-dark, 10%);
-$border-color: darken($gray-dark, 5%);
+$panel-border-color: color.adjust($gray-dark, $lightness: -10%);
+$border-color: color.adjust($gray-dark, $lightness: -5%);
 $title-color: $gray-light;
-$scrollbar-track: darken($gray-dark, 5%);
+$scrollbar-track: color.adjust($gray-dark, $lightness: -5%);
 $scrollbar-thumb: $gray-medium;
-$scrollbar-thumb-hover: lighten($gray-medium, 10%);
+$scrollbar-thumb-hover: color.adjust($gray-medium, $lightness: -10%);
 
 .fvc-panel {
   background-color: $panel-background;
   color: $text-color;
   font-family: $font;
   font-size: 12px;
-  border: 1px solid $border-color;
+  border-style: solid;
+  border-color: $border-color;
+  border-width: 0;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
@@ -39,18 +42,6 @@ $scrollbar-thumb-hover: lighten($gray-medium, 10%);
     display: block;
     padding-bottom: 5px;
     border-bottom: 1px solid $input-border;
-  }
-
-  .fvc-close-icon {
-    cursor: pointer;
-    color: $title-color;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    font-size: 14px;
-    &:hover {
-      color: $text-color;
-    }
   }
 }
 

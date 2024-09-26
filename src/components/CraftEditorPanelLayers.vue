@@ -29,6 +29,6 @@ const layerClick = (craftNode) => {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../assets/editorPanelLayers";
 </style>

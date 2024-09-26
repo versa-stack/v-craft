@@ -17,8 +17,8 @@ import CraftGraphqlQueryWrapper from "./CraftGraphqlQueryWrapper.vue";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
 import CraftNodeViewer from "./CraftNodeViewer.vue";
 import CraftNodeWrapper from "./CraftNodeWrapper.vue";
-import PatchesInputComponent from "./PatchesInputComponent.vue";
 import GraphqlInputComponent from "./GraphqlInputComponent.vue";
+import PatchesInputComponent from "./PatchesInputComponent.vue";
 import { CraftNode } from "../lib/craftNode";
 
 export {
@@ -42,9 +42,8 @@ export {
   CraftNodeViewer,
   CraftNodeWrapper,
   PatchesInputComponent,
-  GraphqlInputComponent
+  GraphqlInputComponent,
 };
-
 
 export type CombinationWithKeys = {
   dataItem: any;
@@ -52,4 +51,4 @@ export type CombinationWithKeys = {
   childNode: CraftNode;
   childIndex: number;
   key: string;
-}
+};

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import "./base";
 
 .graphql-editor {
@@ -39,7 +40,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  border-bottom: 1px solid lighten($background-color, 10%);
+  border-bottom: 1px solid color.adjust($background-color, $lightness: 10%);
 
   h2 {
     color: $text-color;
@@ -80,7 +81,7 @@
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: darken($blue, 10%);
+    background-color: color.adjust($blue, $lightness: -10%);
   }
 }
 

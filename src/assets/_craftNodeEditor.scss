@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import "./base";
 
 .fvc-node {
@@ -52,7 +53,7 @@
 }
 
 .fvc-node:hover:not(:has(.fvc-node:hover))::after {
-  border: 1px solid dargen($blue, 25%);
+  border: 1px solid color.adjust($blue, $lightness: -25%);
   box-shadow: 0 0 0 1px $blue;
 }
 .fvc-node-selected::after {

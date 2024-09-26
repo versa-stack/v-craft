@@ -1,5 +1,5 @@
 <template>
-  <CraftErrorBoundary>
+  <!-- <CraftErrorBoundary> -->
     <component
       ref="nodeRef"
       v-if="resolver"
@@ -33,7 +33,7 @@
         }"
       />
     </component>
-  </CraftErrorBoundary>
+  <!-- </CraftErrorBoundary> -->
 </template>
 <script lang="ts" setup>
 import { computed, ComputedRef, inject, toRef } from "vue";

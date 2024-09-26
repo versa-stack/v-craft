@@ -27,4 +27,4 @@ export type { EditorState, EditorStoreType } from "./store/editor";
 
 export { useIndicator } from "./store/indicator";
 export type { IndicatorState, IndicatorStoreType } from "./store/indicator";
-export * from "./lib/craftNode"
+export * from "./lib/craftNode";

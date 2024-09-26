@@ -125,7 +125,7 @@ const removePatch = (index: number) => {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../assets/base";
 @import "../assets/panel";
 

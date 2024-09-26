@@ -24,10 +24,15 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useEditor } from "../store/editor";
 import { CraftNode } from "../lib/craftNode";
 
-const props = defineProps<{
-  craftNode: CraftNode;
-  visible: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    craftNode: CraftNode;
+    visible?: boolean;
+  }>(),
+  {
+    visible: true,
+  }
+);
 
 const craftNodeIsCanvas = (node: CraftNode) => {
   return node.componentName === "CraftCanvas";
@@ -44,14 +49,14 @@ const componentName = craftNodeIsCanvas(props.craftNode)
   ? `${props.craftNode.componentName} (${props.craftNode.props.component})`
   : props.craftNode.componentName;
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../assets/panel";
 
 .fvc-node-layer {
   padding: 5px 0;
   border-bottom: 1px solid #3a3a3a;
 
-  .fvc-component-layer-face {
+  :deep(.fvc-component-layer-face) {
     display: flex;
     align-items: center;
     padding: 2px 5px;
@@ -64,19 +69,19 @@ const componentName = craftNodeIsCanvas(props.craftNode)
     }
   }
 
-  .fvc-component-name {
+  :deep(.fvc-component-name) {
     flex-grow: 1;
     font-size: 12px;
   }
 
-  .nested-layers {
+  :deep(.nested-layers) {
     margin-left: 15px;
     border-left: 1px solid #4a4a4a;
     padding-left: 5px;
   }
 }
 
-.fvc-delete.formkit-input {
+:global(.fvc-delete.formkit-input) {
   background-color: #d64937;
   color: #ffffff;
   border: none;

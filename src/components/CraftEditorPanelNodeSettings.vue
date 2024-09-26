@@ -1,6 +1,6 @@
 <template>
   <fieldset
-    class="formkit-fieldset fvc-scrollable-content"
+    class="fvc-panel-settings formkit-fieldset fvc-scrollable-content"
     v-if="localProps && schema"
   >
     <legend class="formkit-legend">Properties</legend>
@@ -21,7 +21,11 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue";
 import { FormKit } from "@formkit/vue";
-import _ from "lodash";
+import cloneDeep from "lodash-es/cloneDeep";
+import isEqual from "lodash-es/isEqual";
+import get from "lodash-es/get";
+import set from "lodash-es/set";
+import kebabCase from "lodash-es/kebabCase";
 import { CraftNode } from "../lib/craftNode";
 import { FormKitSchemaNode } from "@formkit/core";
 
@@ -38,13 +42,13 @@ const emit = defineEmits<{
   (e: "update:props", value: Record<string, any>): void;
 }>();
 
-const localProps = ref(_.cloneDeep(props.craftNode?.props || {}));
+const localProps = ref(cloneDeep(props.craftNode?.props || {}));
 
 watch(
   () => props.craftNode?.props,
   (newValue) => {
-    if (newValue && !_.isEqual(newValue, localProps.value)) {
-      localProps.value = _.cloneDeep(newValue);
+    if (newValue && !isEqual(newValue, localProps.value)) {
+      localProps.value = cloneDeep(newValue);
     }
   },
   { deep: true }
@@ -59,7 +63,7 @@ watch(
 );
 
 const getFieldValue = (fieldName: string) => {
-  return _.get(localProps.value, fieldName);
+  return get(localProps.value, fieldName);
 };
 
 const parseValue = (value: any) => {
@@ -70,10 +74,8 @@ const parseValue = (value: any) => {
 };
 
 const updateField = (fieldName: string, value: any) => {
-  localProps.value = _.set({ ...localProps.value }, fieldName, value);
+  localProps.value = set({ ...localProps.value }, fieldName, value);
 };
 </script>
 
-<style lang="scss">
-@import "../assets/editorPanelNodeSettings";
-</style>
+<style lang="scss" scoped></style>

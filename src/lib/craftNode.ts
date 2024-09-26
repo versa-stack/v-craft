@@ -2,27 +2,39 @@ import { v4 as uuidv4 } from "uuid";
 import CraftNodeResolver from "./CraftNodeResolver";
 
 export type CraftNodeRules = {
-  canMoveIn?: (craftNode: CraftNode, targetNode: CraftNode, resolver: CraftNodeResolver) => boolean;
-  canMoveOut?: (craftNode: CraftNode, targetNode: CraftNode, resolver: CraftNodeResolver) => boolean;
+  canMoveIn?: (
+    craftNode: CraftNode,
+    targetNode: CraftNode,
+    resolver: CraftNodeResolver
+  ) => boolean;
+  canMoveOut?: (
+    craftNode: CraftNode,
+    targetNode: CraftNode,
+    resolver: CraftNodeResolver
+  ) => boolean;
   canDrag?: (craftNode: CraftNode) => boolean;
-  canMoveInto?: (craftNode: CraftNode, targetNode: CraftNode, resolver: CraftNodeResolver) => boolean;
+  canMoveInto?: (
+    craftNode: CraftNode,
+    targetNode: CraftNode,
+    resolver: CraftNodeResolver
+  ) => boolean;
 };
 
 export type CraftNode = {
   children: CraftNode[];
   componentName: string;
   data?: CraftNodeDatasource;
-  parent?: CraftNode|null;
+  parent?: CraftNode | null;
   props: any;
   rules?: CraftNodeRules;
   uuid: uuidv4;
-}
+};
 
 export type CraftNodeDatasource = {
   item?: Record<string, any>;
   list?: Record<string, any>[];
   type: "single" | "list";
-}
+};
 
 export const setCraftNodeProps = (craftNode: CraftNode, props: any) => {
   craftNode.props = { ...craftNode.props, ...props };
@@ -123,15 +135,22 @@ export const craftNodeCanBeChildOf = (
 
   const targetNodeRules = resolvedTargetNode.rules || {};
   const sourceNodeRules = resolvedSource.rules || {};
-  
+
   if (craftNode.parent) {
-    const rules = resolver.resolve(resolveNodeName(craftNode.parent))?.rules || {};
-    if (rules.canMoveOut && !rules.canMoveOut(craftNode, targetNode, resolver)) {
+    const rules =
+      resolver.resolve(resolveNodeName(craftNode.parent))?.rules || {};
+    if (
+      rules.canMoveOut &&
+      !rules.canMoveOut(craftNode, targetNode, resolver)
+    ) {
       return;
     }
   }
 
-  if (sourceNodeRules.canMoveInto && !sourceNodeRules.canMoveInto(craftNode, targetNode, resolver)) {
+  if (
+    sourceNodeRules.canMoveInto &&
+    !sourceNodeRules.canMoveInto(craftNode, targetNode, resolver)
+  ) {
     return false;
   }
 
@@ -139,7 +158,10 @@ export const craftNodeCanBeChildOf = (
     return false;
   }
 
-  if (targetNodeRules.canMoveIn && !targetNodeRules.canMoveIn(craftNode, targetNode, resolver)) {
+  if (
+    targetNodeRules.canMoveIn &&
+    !targetNodeRules.canMoveIn(craftNode, targetNode, resolver)
+  ) {
     return false;
   }
 
@@ -164,6 +186,10 @@ export const appendCraftNodeTo = (
   emancipateCraftNode(craftNode);
 
   craftNode.parent = targetNode;
+  if (!targetNode.children) {
+    targetNode.children = [] as CraftNode[];
+  }
+
   targetNode.children.push(craftNode);
 
   return targetNode;
@@ -181,6 +207,10 @@ export const prependCraftNodeTo = (
   }
 
   emancipateCraftNode(craftNode);
+
+  if (!targetNode.children) {
+    targetNode.children = [] as CraftNode[];
+  }
 
   targetNode.children.splice(0, 0, craftNode);
   craftNode.parent = targetNode;
@@ -251,7 +281,11 @@ export const insertCraftNodeAfter = (
   return parentOfTargetNode;
 };
 
-export const craftNodeEnsureTree = (craftNode: CraftNode): CraftNode => {
+export const buildCraftNodeTree = (craftNode: CraftNode): CraftNode => {
+  if (!craftNode.uuid) {
+    craftNode.uuid = uuidv4();
+  }
+
   if (!craftNode.children) {
     return craftNode;
   }
@@ -265,7 +299,7 @@ export const craftNodeEnsureTree = (craftNode: CraftNode): CraftNode => {
     }
 
     if (cn.children) {
-      cn.children.map((cnc) => craftNodeEnsureTree(cnc));
+      cn.children.map((cnc) => buildCraftNodeTree(cnc));
     }
 
     return cn;

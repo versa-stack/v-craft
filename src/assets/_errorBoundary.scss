@@ -1,7 +1,8 @@
+@use 'sass:color';
 @import './base';
 
 .fvc-error-boundary {
-  background-color: darken($background-color, 5%);
+  background-color: color.adjust($background-color, $lightness: 5%);
   border: 1px solid $error-color;
   border-radius: 4px;
   padding: 20px;
@@ -34,7 +35,7 @@
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: darken($blue, 10%);
+    background-color: color.adjust($blue, $lightness: -10%);
   }
 
   &:focus {

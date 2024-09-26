@@ -1,10 +1,6 @@
 <template>
   <div>
-    <p v-if="loading">Loading...</p>
-    <p v-else-if="error">Error: {{ (error as any).message }}</p>
-    <div v-else>
-      <slot></slot>
-    </div>
+    <slot></slot>
   </div>
 </template>
 <script setup lang="ts">
@@ -28,134 +24,13 @@ defineOptions({
 const props = withDefaults(
   defineProps<{
     query: string;
-    variables: Record<string, any>;
-    map: CraftGraphqlQueryWrapperPropMap;
+    variables?: string;
+    map?: CraftGraphqlQueryWrapperPropMap;
   }>(),
   {
-    variables: {} as any,
     map: {} as any,
   }
 );
-
-const result = ref<null | any>(null);
-const loading = ref(true);
-const error = ref<null | unknown | ApolloError>(null);
-const craftNode = inject<ComputedRef<CraftNode>>("craftNode");
-
-const editor = useEditor();
-const output = ref<CraftGraphqlQueryWrapperData>({
-  type: "single",
-  item: {},
-  list: [],
-});
-
-const setupQuery = (query: string) => {
-  const { onResult, onError } = useQuery(gql(query), props.variables);
-
-  onResult((queryResult) => {
-    result.value = queryResult.data;
-    loading.value = false;
-  });
-
-  onError((queryError) => {
-    error.value = queryError;
-    loading.value = false;
-    console.error("GraphQL Query Error:", queryError);
-  });
-};
-
-try {
-  setupQuery(props.query);
-} catch (e) {
-  console.error("Error setting up GraphQL query:", e);
-  error.value = e;
-  loading.value = false;
-}
-
-watch(
-  () => props.query,
-  () => {
-    try {
-      setupQuery(props.query);
-    } catch (e) {
-      console.error("Error setting up GraphQL query:", e);
-      error.value = e;
-      loading.value = false;
-    }
-  }
-);
-
-watch(
-  () => [output.value],
-  () => {
-    if (!craftNode?.value) {
-      return;
-    }
-
-    craftNode.value.data = output.value;
-    editor.setNode(craftNode.value);
-  }
-);
-
-watch(
-  () => [props.map, result.value],
-  ([map, resultValue]) => {
-    if (!resultValue) {
-      resultValue = result.value;
-    }
-
-    if (!(map.path || map?.patches) || !resultValue) {
-      output.value = {
-        type: "single",
-        item: resultValue,
-        list: [],
-      };
-      return;
-    }
-
-    const rootNode = queryItemOrList(map, resultValue);
-
-    output.value = {
-      type: map.type,
-      item: map.type === "single" ? {} : undefined,
-      list: map.type === "list" ? [] : undefined,
-    };
-
-    if (!map.patches) {
-      if (map.type === "single") {
-        output.value.item = rootNode;
-      } else {
-        output.value.list = rootNode;
-      }
-      return;
-    }
-
-    map.patches.forEach((patch: CraftGraphqlQueryWrapperPatch) => {
-      if (map.type === "single" && output.value.item) {
-        setValueAtPath(
-          output.value.item,
-          patch.toPath,
-          queryItemOrList(patch, rootNode)
-        );
-      }
-
-      if (map.type === "list" && output.value.list && rootNode.length > 0) {
-        rootNode.forEach((item: any, key: number) => {
-          if (!output.value.list![key]) {
-            output.value.list![key] = {};
-          }
-          setValueAtPath(
-            output.value.list![key],
-            patch.toPath,
-            queryItemOrList(patch, item)
-          );
-        });
-      }
-    });
-  }
-);
-
-const slots = useSlots();
 
 const fetchFirstChildInSlot = () => {
   const defaultSlot = slots.default?.();
@@ -167,15 +42,6 @@ const fetchFirstChildInSlot = () => {
 
   return firstGrandChild?.props?.craftNode ?? {};
 };
-
-const childRef = ref(fetchFirstChildInSlot());
-
-watch(
-  () => craftNode?.value,
-  () => {
-    childRef.value = fetchFirstChildInSlot();
-  }
-);
 
 const getPatchSource = (
   source: "mapPathResult" | "value" | "child",
@@ -265,4 +131,144 @@ const setValueAtPath = (obj: Record<string, any>, path: string, value: any) => {
     current[index] = value;
   }
 };
+
+const result = ref<null | any>(null);
+const loading = ref(true);
+const error = ref<null | unknown | ApolloError>(null);
+const craftNode = inject<ComputedRef<CraftNode>>("craftNode");
+const slots = useSlots();
+const childRef = ref(fetchFirstChildInSlot());
+
+const editor = useEditor();
+const output = ref<CraftGraphqlQueryWrapperData>({
+  type: "single",
+  item: {},
+  list: [],
+});
+
+const setupQuery = (query: string, variables?: string) => {
+  let parsedVariables: Record<string, any> = {};
+
+  if (variables) {
+    try {
+      parsedVariables = JSON.parse(variables);
+    } catch (jsonError) {
+      console.warn(
+        "Invalid JSON in variables, using empty object instead:",
+        jsonError
+      );
+    }
+  }
+
+  const { onResult, onError } = useQuery(gql(query), parsedVariables);
+
+  onResult((queryResult) => {
+    result.value = queryResult.data;
+    loading.value = false;
+  });
+
+  onError((queryError) => {
+    error.value = queryError;
+    loading.value = false;
+    console.error("GraphQL Query Error:", queryError);
+  });
+};
+
+try {
+  setupQuery(props.query, props.variables);
+} catch (e) {
+  console.error("Error setting up GraphQL query:", e);
+  error.value = e;
+  loading.value = false;
+}
+
+watch(
+  () => props.query,
+  () => {
+    try {
+      setupQuery(props.query, props.variables);
+    } catch (e) {
+      console.error("Error setting up GraphQL query:", e);
+      error.value = e;
+      loading.value = false;
+    }
+  }
+);
+
+watch(
+  () => [output.value],
+  () => {
+    if (!craftNode?.value) {
+      return;
+    }
+
+    craftNode.value.data = output.value;
+    editor.setNode(craftNode.value);
+  }
+);
+
+watch(
+  () => [props.map, result.value],
+  ([map, resultValue]) => {
+    if (!resultValue) {
+      resultValue = result.value;
+    }
+
+    if (!(map.path || map?.patches) || !resultValue) {
+      output.value = {
+        type: "single",
+        item: resultValue,
+        list: [],
+      };
+      return;
+    }
+
+    const rootNode = queryItemOrList(map, resultValue);
+
+    output.value = {
+      type: map.type,
+      item: map.type === "single" ? {} : undefined,
+      list: map.type === "list" ? [] : undefined,
+    };
+
+    if (!map.patches) {
+      if (map.type === "single") {
+        output.value.item = rootNode;
+      } else {
+        output.value.list = rootNode;
+      }
+      return;
+    }
+
+    map.patches.forEach((patch: CraftGraphqlQueryWrapperPatch) => {
+      if (map.type === "single" && output.value.item) {
+        setValueAtPath(
+          output.value.item,
+          patch.toPath,
+          queryItemOrList(patch, rootNode)
+        );
+      }
+
+      if (map.type === "list" && output.value.list && rootNode.length > 0) {
+        rootNode.forEach((item: any, key: number) => {
+          if (!output.value.list![key]) {
+            output.value.list![key] = {};
+          }
+          setValueAtPath(
+            output.value.list![key],
+            patch.toPath,
+            queryItemOrList(patch, item)
+          );
+        });
+      }
+    });
+  }
+);
+
+watch(
+  () => craftNode?.value,
+  () => {
+    childRef.value = fetchFirstChildInSlot();
+  }
+);
 </script>
