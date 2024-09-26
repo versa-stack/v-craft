@@ -1,1 +1,0 @@
-import{y as o}from"./inputs.b5f920bd.js";import{r}from"./resolvermap.7d64ab69.js";import{d as t,D as s,o as a,f as n,y as c,u as m}from"./plugin-vue_export-helper.a872f449.js";const p={class:"content"},C=t({__name:"viewer",setup(_){return o().disable(),(l,d)=>{const e=s("CraftFrame");return a(),n("div",p,[c(e,{resolverMap:m(r)},null,8,["resolverMap"])])}}});export{C as _};
