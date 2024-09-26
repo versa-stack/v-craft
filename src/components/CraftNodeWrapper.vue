@@ -4,6 +4,7 @@
 </template>
 <script lang="ts"></script>
 <script setup lang="ts">
+import { provide, toRef } from "vue";
 import { CraftNode } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
@@ -13,9 +14,13 @@ defineOptions({
   name: "CraftNodeWrapper",
 });
 
-defineProps<{
+const props = defineProps<{
   craftNode: CraftNode;
 }>();
 
 const editor = useEditor();
+const craftNodeRef = toRef(props, "craftNode");
+
+provide("craftNode", craftNodeRef);
+
 </script>

@@ -1,38 +1,38 @@
 <template>
   <!-- <CraftErrorBoundary> -->
-    <component
-      ref="nodeRef"
-      v-if="resolver"
-      :is="resolver.resolve(craftNode.componentName).component"
-      v-bind="{ ...defaultProps, ...craftNode.props }"
-    >
-      <CraftNodeViewer
-        v-if="!craftNode.data"
-        v-for="childNode in craftNode.children"
-        :key="childNode.uuid"
-        :craftNode="childNode"
-      />
+  <component
+    ref="nodeRef"
+    v-if="resolver && resolvedNode"
+    :is="resolvedNode.componentName"
+    v-bind="{ ...defaultProps, ...craftNode.props }"
+  >
+    <CraftNodeViewer
+      v-if="!craftNode.data"
+      v-for="childNode in craftNode.children"
+      :key="childNode.uuid"
+      :craftNode="childNode"
+    />
 
-      <CraftNodeViewer
-        v-if="craftNode.data?.type === 'single'"
-        v-for="childNode in craftNode.children"
-        :key="childNode.uuid + '-single'"
-        :craftNode="{
-          ...childNode,
-          props: { ...childNode.props, ...(craftNode.data.item || {}) },
-        }"
-      />
+    <CraftNodeViewer
+      v-if="craftNode.data?.type === 'single'"
+      v-for="childNode in craftNode.children"
+      :key="childNode.uuid + '-single'"
+      :craftNode="{
+        ...childNode,
+        props: { ...childNode.props, ...(craftNode.data.item || {}) },
+      }"
+    />
 
-      <CraftNodeViewer
-        v-if="craftNode.data?.type === 'list'"
-        v-for="comb in itemChildCombinations"
-        :key="comb.childNode.uuid + '-' + comb.dataIndex"
-        :craftNode="{
-          ...comb.childNode,
-          props: { ...comb.childNode.props, ...comb.dataItem },
-        }"
-      />
-    </component>
+    <CraftNodeViewer
+      v-if="craftNode.data?.type === 'list'"
+      v-for="comb in itemChildCombinations"
+      :key="comb.childNode.uuid + '-' + comb.dataIndex"
+      :craftNode="{
+        ...comb.childNode,
+        props: { ...comb.childNode.props, ...comb.dataItem },
+      }"
+    />
+  </component>
   <!-- </CraftErrorBoundary> -->
 </template>
 <script lang="ts" setup>
@@ -50,6 +50,11 @@ const props = defineProps<{
 }>();
 
 const resolver = inject<ComputedRef<CraftNodeResolver>>("resolver");
+
+const resolvedNode = computed(() => {
+  if (!resolver) return null;
+  return resolver.value.resolve(props.craftNode.componentName);
+});
 
 const defaultProps = computed(() => {
   if (!resolver) return {};

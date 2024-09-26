@@ -6,6 +6,7 @@
   transition: all 0.2s ease;
   cursor: pointer;
   box-sizing: border-box;
+  border: 1px solid transparent;
 }
 
 .fvc-node::after {
@@ -32,7 +33,7 @@
   left: -1px;
   line-height: 1.4em;
   opacity: 0;
-  padding: 0 5px;
+  padding: 0 5px !important;
   pointer-events: none;
   position: absolute;
   position: absolute;
@@ -48,6 +49,10 @@
     opacity: 1;
 }
 
+.fvc-node.fvc-canvas:hover {
+  border: 1px solid color.adjust($blue, $lightness: -30%);
+}
+
 .fvc-node-selected::before {
   opacity: 0.5;
 }
@@ -60,24 +65,27 @@
   border: 1px solid $blue;
   box-shadow: 0 0 0 1px $blue;
 }
+.fvc-node-selected.fvc-canvas {
+  padding: 2px!important;
+}
 
 .fvc-node.fvc-canvas.fvc-other-node-dragged::after {
   border: 2px dashed $blue;
 }
 
 .fvc-node.fvc-canvas.fvc-empty {
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border: 2px dashed #4a4a4a;
-  color: #b8b8b8;
+  background-color: $gray-dark;
+  padding: 2em;
+  border: 2px dashed $gray-medium;
+  color: $text-color;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100px;
+  min-height: 3em;
 }
 
 .fvc-node.fvc-canvas.fvc-other-node-dragged {
-  background-color: rgba(74, 144, 226, 0.1);
+  background-color: $gray-dark!important;
   padding: 2em;
   margin: 2em 0;
 }

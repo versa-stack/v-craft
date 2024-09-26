@@ -1,5 +1,7 @@
 import { defineConfig } from "vitepress";
 import path from "path";
+import tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
 
 export default defineConfig({
   title: "versa-stack/v-craft",
@@ -7,12 +9,6 @@ export default defineConfig({
   description: "An attempt to deliver a Vue.js 3 page editor library.",
 
   themeConfig: {
-    base: process.env.GITHUB_REF === "refs/heads/develop" ? "/develop/" : "/",
-    repo: "https://github.com/versa-stack/v-craft",
-    docsDir: "docs",
-    editLinks: true,
-    editLinkText: "Edit this page on Github",
-    lastUpdated: "Last Updated",
     aside: false,
     nav: [],
     outline: false,
@@ -31,47 +27,16 @@ export default defineConfig({
         "@versa-stack/v-craft": path.resolve(__dirname, "../../src"),
       },
     },
-    // optimizeDeps: {
-    //   include: [
-    //     "lodash-es",
-    //     "@apollo/client",
-    //     "@formkit/vue",
-    //     "@fortawesome/fontawesome-svg-core",
-    //     "@fortawesome/free-regular-svg-icons",
-    //     "@fortawesome/free-solid-svg-icons",
-    //     "@fortawesome/vue-fontawesome",
-    //     "@vue/apollo-composable",
-    //     "graphql",
-    //     "graphql-tag",
-    //     "monaco-editor",
-    //     "monaco-editor-vue3",
-    //     "pinia",
-    //     "uuid",
-    //     "jsonpath",
-    //   ],
-    // },
-    // ssr: {
-    //   noExternal: [
-    //     "lodash-es",
-    //     "@apollo/client",
-    //     "@formkit/vue",
-    //     "@fortawesome/fontawesome-svg-core",
-    //     "@fortawesome/free-regular-svg-icons",
-    //     "@fortawesome/free-solid-svg-icons",
-    //     "@fortawesome/vue-fontawesome",
-    //     "@vue/apollo-composable",
-    //     "graphql",
-    //     "graphql-tag",
-    //     "monaco-editor-vue3",
-    //     "pinia",
-    //     "uuid",
-    //     "jsonpath",
-    //   ],
-    // },
-    // build: {
-    //   commonjsOptions: {
-    //     include: [/node_modules/],
-    //   },
-    // },
+    css: {
+      postcss: {
+        plugins: [tailwindcss, autoprefixer],
+      },
+    },
+    optimizeDeps: {
+      include: ["@formkit/vue"],
+    },
+    ssr: {
+      noExternal: ["@formkit/vue"],
+    },
   },
 });

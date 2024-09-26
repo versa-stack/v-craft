@@ -1,4 +1,7 @@
+import { CraftNode } from "../lib/craftNode";
 import CraftCanvas from "./CraftCanvas.vue";
+import CraftComponentBoxModelContainer from "./CraftComponentBoxModelContainer.vue";
+import CraftComponentFlexContainer from "./CraftComponentFlexContainer.vue";
 import CraftComponentSimpleContainer from "./CraftComponentSimpleContainer.vue";
 import CraftComponentSimpleText from "./CraftComponentSimpleText.vue";
 import CraftEditor from "./CraftEditor.vue";
@@ -19,10 +22,11 @@ import CraftNodeViewer from "./CraftNodeViewer.vue";
 import CraftNodeWrapper from "./CraftNodeWrapper.vue";
 import GraphqlInputComponent from "./GraphqlInputComponent.vue";
 import PatchesInputComponent from "./PatchesInputComponent.vue";
-import { CraftNode } from "../lib/craftNode";
 
 export {
   CraftCanvas,
+  CraftComponentBoxModelContainer,
+  CraftComponentFlexContainer,
   CraftComponentSimpleContainer,
   CraftComponentSimpleText,
   CraftEditor,
@@ -41,8 +45,8 @@ export {
   CraftNodeEditor,
   CraftNodeViewer,
   CraftNodeWrapper,
-  PatchesInputComponent,
   GraphqlInputComponent,
+  PatchesInputComponent,
 };
 
 export type CombinationWithKeys = {

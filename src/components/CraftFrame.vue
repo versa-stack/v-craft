@@ -18,7 +18,7 @@ import {
   useSlots,
   watch,
 } from "vue";
-import { CraftNode } from "../lib/craftNode";
+import { buildCraftNodeTree, CraftNode } from "../lib/craftNode";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
 } from "../lib/CraftNodeResolver";
@@ -64,7 +64,7 @@ const createNodesFromSlots = () => {
     createdNodes.push(vNodeToCraftNode(resolver.value, slot));
   });
 
-  return createdNodes;
+  return createdNodes.map(buildCraftNodeTree)
 };
 
 onBeforeMount(() => {

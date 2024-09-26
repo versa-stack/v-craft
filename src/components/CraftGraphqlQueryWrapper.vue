@@ -37,7 +37,7 @@ const fetchFirstChildInSlot = () => {
   if (!defaultSlot || defaultSlot.length === 0) return {};
 
   const firstChild = defaultSlot[0]?.children;
-  if (!firstChild || firstChild.length === 0) return {};
+  if (!firstChild || firstChild.length === 0 || !firstChild[0]?.children[0]) return {};
   const firstGrandChild = firstChild[0]?.children[0];
 
   return firstGrandChild?.props?.craftNode ?? {};
@@ -198,7 +198,7 @@ watch(
 watch(
   () => [output.value],
   () => {
-    if (!craftNode?.value) {
+    if (!craftNode?.value || !output.value) {
       return;
     }
 

@@ -8,11 +8,10 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import {
   CraftEditorActionPayload,
   CraftEditorConfig,
-  useEditor,
+  useEditor
 } from "@versa-stack/v-craft";
-import { blueprints } from "./blueprints";
+import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
-import { BlueprintsLibrary } from "../../../../src/lib/model";
 
 const editor = useEditor();
 editor.enable();
@@ -33,30 +32,20 @@ const removeParentField = (obj) => {
 };
 
 const onAction = (payload: CraftEditorActionPayload) => {
-  if (payload.action.key === "export") {
+  if (payload.action.key === "save") {
     const cleanedNodes = removeParentField(payload.editor.nodes);
     alert(JSON.stringify(cleanedNodes));
   }
 };
 
 const config: CraftEditorConfig = {
-  blueprintsLibrary: {
-    groups: [
-      {
-        label: "Default",
-        metadata: {
-          name: "default",
-        },
-        blueprints,
-      },
-    ],
-  } as BlueprintsLibrary,
+  blueprintsLibrary,
   resolverMap,
   actions: [
     {
-      label: "Export",
+      label: "Save",
       icon: fas.faDownload,
-      key: "export",
+      key: "save",
     },
   ],
 };

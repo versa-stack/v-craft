@@ -4,17 +4,19 @@
     v-if="localProps && schema"
   >
     <legend class="formkit-legend">Properties</legend>
-    <FormKit
-      v-for="field in schema"
-      :key="field.name"
-      :label="field.label"
-      :name="field.name"
-      :options="field.options"
-      :type="field.$formkit"
-      :value="getFieldValue(field.name)"
-      @input="(value) => updateField(field.name, value)"
-      :parse="parseValue"
-    />
+    <ClientOnly>
+      <FormKit
+        v-for="field in schema"
+        :key="field.name"
+        :label="field.label"
+        :name="field.name"
+        :options="field.options"
+        :type="field.$formkit"
+        :value="getFieldValue(field.name)"
+        @input="(value) => updateField(field.name, value)"
+        :parse="parseValue"
+      />
+    </ClientOnly>
   </fieldset>
 </template>
 

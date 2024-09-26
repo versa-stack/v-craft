@@ -1,0 +1,66 @@
+export default [
+  {
+    $formkit: "select",
+    name: "flexDirection",
+    label: "Flex Direction",
+    options: [
+      { label: "Row", value: "row" },
+      { label: "Row Reverse", value: "row-reverse" },
+      { label: "Column", value: "column" },
+      { label: "Column Reverse", value: "column-reverse" },
+    ],
+    value: "row",
+  },
+  {
+    $formkit: "select",
+    name: "justifyContent",
+    label: "Justify Content",
+    options: [
+      { label: "Flex Start", value: "flex-start" },
+      { label: "Flex End", value: "flex-end" },
+      { label: "Center", value: "center" },
+      { label: "Space Between", value: "space-between" },
+      { label: "Space Around", value: "space-around" },
+      { label: "Space Evenly", value: "space-evenly" },
+    ],
+    value: "flex-start",
+  },
+  {
+    $formkit: "select",
+    name: "alignItems",
+    label: "Align Items",
+    options: [
+      { label: "Flex Start", value: "flex-start" },
+      { label: "Flex End", value: "flex-end" },
+      { label: "Center", value: "center" },
+      { label: "Stretch", value: "stretch" },
+      { label: "Baseline", value: "baseline" },
+    ],
+    value: "stretch",
+  },
+  {
+    $formkit: "select",
+    name: "flexWrap",
+    label: "Flex Wrap",
+    options: [
+      { label: "Nowrap", value: "nowrap" },
+      { label: "Wrap", value: "wrap" },
+      { label: "Wrap Reverse", value: "wrap-reverse" },
+    ],
+    value: "nowrap",
+  },
+  {
+    $formkit: "select",
+    name: "alignContent",
+    label: "Align Content",
+    options: [
+      { label: "Flex Start", value: "flex-start" },
+      { label: "Flex End", value: "flex-end" },
+      { label: "Center", value: "center" },
+      { label: "Space Between", value: "space-between" },
+      { label: "Space Around", value: "space-around" },
+      { label: "Stretch", value: "stretch" },
+    ],
+    value: "stretch",
+  },
+];

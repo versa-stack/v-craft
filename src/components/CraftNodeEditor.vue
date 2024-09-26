@@ -2,8 +2,8 @@
   <!-- <CraftErrorBoundary> -->
     <component
       ref="nodeRef"
-      v-if="resolver"
-      :is="resolver.resolve(craftNode.componentName).component"
+      v-if="resolvedNode"
+      :is="resolvedNode.componentName"
       v-bind="{ ...defaultProps, ...craftNode.props }"
       :class="{
         'fvc-node-selected': isSelected,
@@ -100,6 +100,11 @@ const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
 
 const craftNodeRef = toRef(props, "craftNode");
 
+const resolvedNode = computed(() => {
+  if (!resolver) return null;
+  return resolver.value.resolveNode(craftNodeRef.value);
+})
+
 const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
   useDragCraftNode(
     craftNodeRef.value,
@@ -115,7 +120,7 @@ const defaultProps = computed(() => {
 const nodeName = computed(
   () =>
     `"${
-      resolver?.value?.resolveNode(craftNodeRef.value)?.component || "Unknown"
+      resolver?.value?.resolveNode(craftNodeRef.value)?.componentName || "Unknown"
     }"`
 );
 
@@ -148,7 +153,6 @@ const itemChildCombinations = computed(() => ({
   [Symbol.iterator]: combinationGenerator,
 }));
 
-provide("craftNode", craftNodeRef);
 
 </script>
 

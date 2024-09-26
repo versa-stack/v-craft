@@ -1,16 +1,15 @@
-import kebabCase from "lodash-es/kebabCase";
 import { CraftNode, craftNodeIsCanvas, CraftNodeRules } from "./craftNode";
 
 export type CraftNodeComponentMap = {
-  component: string;
+  componentName: string;
   propsSchema?: Record<string, any>;
   defaultProps?: Record<string, any>;
-  rules: CraftNodeRules;
+  rules?: CraftNodeRules;
 };
 
 export type CraftNodeResolverMap = Record<string, CraftNodeComponentMap>;
 
-class CraftNodeResolver {
+export class CraftNodeResolver {
   resolverMap: CraftNodeResolverMap = {};
 
   constructor(resolverMap: Record<string, CraftNodeComponentMap> = {}) {
@@ -20,12 +19,12 @@ class CraftNodeResolver {
   setResolverMap(resolverMap: Record<string, CraftNodeComponentMap>) {
     this.resolverMap = {};
     Object.entries(resolverMap).forEach(([key, value]) => {
-      this.resolverMap[kebabCase(value.component)] = value;
+      this.resolverMap[value.componentName] = value;
     });
   }
 
   resolve(name: string): CraftNodeComponentMap {
-    return this.resolverMap[kebabCase(name)];
+    return this.resolverMap[name];
   }
 
   getDefaultProps(craftNode: CraftNode): Record<string, any> {

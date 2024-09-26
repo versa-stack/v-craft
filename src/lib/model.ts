@@ -27,12 +27,12 @@ export type BlueprintsMetadata = {
   help?: string;
 };
 
-export type Blueprints = Record<
-  string,
-  Omit<CraftNode, "parent" | "uuid"> & { label?: string }
->;
+export type Blueprints = Record<string, Blueprint>;
 
-export type Blueprint = Omit<CraftNode, "parent" | "uuid"> & { label?: string };
+export type Blueprint = Omit<CraftNode, "parent" | "uuid" | "children"> & {
+  label?: string;
+  children: Blueprint[];
+};
 
 export type CraftEditorConfig = {
   blueprintsLibrary: BlueprintsLibrary;

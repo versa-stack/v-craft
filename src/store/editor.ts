@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import { buildCraftNodeTree, CraftNode, emancipateCraftNode } from "../lib/craftNode";
+import {
+  buildCraftNodeTree,
+  CraftNode,
+  emancipateCraftNode,
+} from "../lib/craftNode";
 import { v4 as uuidv4 } from "uuid";
 
 export type EditorState = {
@@ -83,7 +87,7 @@ export const useEditor = defineStore("editor", {
       return findNode(this.nodes);
     },
     setNodes(nodes: CraftNode[]) {
-      this.nodes = nodes.map(buildCraftNodeTree);
+      this.nodes = nodes.map(buildCraftNodeTree)
       doMap(nodes, this.nodeRecord);
     },
     selectNode(craftNode: CraftNode | null) {

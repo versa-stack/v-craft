@@ -33,6 +33,7 @@
 import { computed, inject, type ComputedRef } from "vue";
 import CoreResolver from "../lib/CraftNodeResolver";
 import { useEditor } from "../store/editor";
+import "../index.css"
 
 const editor = useEditor();
 const resolver = inject<ComputedRef<CoreResolver>>("resolver");
@@ -57,7 +58,7 @@ const removeNode = computed(() => () => {
 const nodeName = computed(() =>
   editor.selectedNode
     ? `${
-        resolver?.value?.resolveNode(editor.selectedNode)?.component ||
+        resolver?.value?.resolveNode(editor.selectedNode)?.componentName ||
         "Unknown"
       }`
     : ""

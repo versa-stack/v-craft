@@ -45,9 +45,6 @@ const emit = defineEmits<{
   (e: "action-click", payload: CraftEditorActionPayload): void;
 }>();
 </script>
-<style lang="scss">
-@import "../assets/formkit-theme.scss";
-</style>
 <style lang="scss" scoped>
 @use 'sass:color';
 @import "../assets/editorPanelLayout";

@@ -1,7 +1,7 @@
 <template>
   <component
-    v-if="resolved && resolved.component"
-    :is="resolved.component"
+    v-if="resolved && resolved.componentName"
+    :is="resolved.componentName"
     v-bind="filteredAttrs"
   >
     <template v-for="(_, name) in slots" :key="name" #[name]="slotData">
