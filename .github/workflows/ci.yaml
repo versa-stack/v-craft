@@ -72,6 +72,11 @@ jobs:
         git config --global user.name "GitHub Actions"
         npm config set git-tag-version false
         npm version prerelease --preid=alpha
+        NEW_VERSION=$(node -p "require('./package.json').version")
         npm publish --tag alpha --access public
+        git add package.json
+        git commit -m "Bump version to ${NEW_VERSION} [skip ci]"
+        git push
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
