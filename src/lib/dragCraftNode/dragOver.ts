@@ -15,7 +15,7 @@ const handleElementDragOver = (
     return;
   }
 
-  indicator.setIsForbidden(!craftNodeCanBeSiblingOf(editor.draggedNode, craftNode, resolver));
+  indicator.setIsForbidden(!craftNodeCanBeSiblingOf(editor.draggedNode, craftNode.value, resolver));
 
   if (mouseOnLeftHalf(e, el)) {
     indicator.pointBefore(el);
@@ -37,7 +37,7 @@ const handleCanvasDragOver = (
     return;
   }
 
-  const cannotBeChild = !craftNodeCanBeChildOf(editor.draggedNode, craftNode, resolver);
+  const cannotBeChild = !craftNodeCanBeChildOf(editor.draggedNode, craftNode.value, resolver);
   indicator.setIsForbidden(cannotBeChild);
   if (mouseOnTopHalf(e, el)) {
     indicator.pointInsideTop(el);
@@ -52,7 +52,7 @@ export default (
   el: HTMLElement,
   context: DragCraftNodeContext
 ) => {
-  if (craftNodeIsCanvas(context.craftNode)) {
+  if (craftNodeIsCanvas(context.craftNode.value)) {
     handleCanvasDragOver(e, el, context);
     return;
   }

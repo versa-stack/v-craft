@@ -109,7 +109,7 @@ export const craftNodeIsAncestorOf = (
   return false;
 };
 
-const resolveNodeName = (craftNode: CraftNode) => {
+export const resolveNodeName = (craftNode: CraftNode) => {
   if (craftNode.componentName === "CraftCanvas") {
     return craftNode.props.component;
   }
@@ -207,14 +207,14 @@ export const prependCraftNodeTo = (
   }
 
   emancipateCraftNode(craftNode);
+  craftNode.parent = targetNode;
 
-  if (!targetNode.children) {
-    targetNode.children = [] as CraftNode[];
+  if (!targetNode.children?.length) {
+    targetNode.children = [craftNode];
+    return targetNode;
   }
 
   targetNode.children.splice(0, 0, craftNode);
-  craftNode.parent = targetNode;
-
   return targetNode;
 };
 

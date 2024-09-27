@@ -5,14 +5,14 @@
     @click.prevent.stop="() => false"
   >
     <h3 class="fvc-title">component inspector</h3>
-    <div v-if="!editor.selectedNode">
+    <div v-if="!selectedNode">
       <p>select a component to inspect</p>
     </div>
-    <div class="fvc-properties" :class="{ 'fvc-visible': editor.selectedNode }">
+    <div class="fvc-properties" :class="{ 'fvc-visible': selectedNode }">
       <h4>{{ nodeName }}</h4>
       <div v-if="schema?.length" class="fvc-settings">
         <CraftEditorPanelNodeSettings
-          :craftNode="editor.selectedNode"
+          :craftNode="selectedNode"
           :schema="schema"
           @update:props="handlePropsUpdate"
         />
@@ -29,47 +29,51 @@
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
+import { storeToRefs } from "pinia";
 import { computed, inject, type ComputedRef } from "vue";
+import "../index.css";
 import CoreResolver from "../lib/CraftNodeResolver";
 import { useEditor } from "../store/editor";
-import "../index.css"
 
 const editor = useEditor();
+const { selectedNode } = storeToRefs(editor);
 const resolver = inject<ComputedRef<CoreResolver>>("resolver");
 
 const schema = computed(() => {
-  if (!editor.selectedNode || !resolver?.value) {
+  if (!selectedNode.value || !resolver?.value) {
     return [];
   }
-  return resolver.value.getSchema(editor.selectedNode);
+  return resolver.value.getSchema(selectedNode.value);
 });
 
 const deleteable = computed(
-  () => editor.selectedNode && editor.selectedNode.parent
+  () => selectedNode.value && selectedNode.value.parent
 );
-const removeNode = computed(() => () => {
-  if (!editor.selectedNode) {
-    return;
+
+const removeNode = () => {
+  if (selectedNode.value) {
+    editor.removeNode(selectedNode.value);
   }
-  editor.removeNode(editor.selectedNode);
-});
+};
 
 const nodeName = computed(() =>
-  editor.selectedNode
+  selectedNode.value
     ? `${
-        resolver?.value?.resolveNode(editor.selectedNode)?.componentName ||
+        resolver?.value?.resolveNode(selectedNode.value)?.componentName ||
         "Unknown"
       }`
     : ""
 );
 
 const handlePropsUpdate = (newProps: Record<string, any>) => {
-  if (editor.selectedNode && newProps) {
-    editor.updateNodeProps(editor.selectedNode.uuid, newProps);
+  if (selectedNode.value && newProps) {
+    editor.updateNodeProps(selectedNode.value.uuid, newProps);
   }
 };
 </script>
+
 <style lang="scss" scoped>
 @import "../assets/panel";
 </style>

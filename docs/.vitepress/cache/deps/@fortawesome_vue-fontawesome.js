@@ -1,15 +1,15 @@
 import {
-  config$1,
-  icon,
-  parse$1,
-  text
-} from "./chunk-ORIXCKA4.js";
-import {
   computed,
   defineComponent,
   h,
   watch
 } from "./chunk-ONFHZ5OS.js";
+import {
+  config$1,
+  icon,
+  parse$1,
+  text
+} from "./chunk-ORIXCKA4.js";
 import "./chunk-7UVSMXVG.js";
 
 // node_modules/@fortawesome/vue-fontawesome/index.es.js

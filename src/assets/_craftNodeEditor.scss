@@ -1,9 +1,11 @@
 @use 'sass:color';
 @import "./base";
 
+$transition-duration: 0.3s;
+
 .fvc-node {
   position: relative;
-  transition: all 0.2s ease;
+  transition: all $transition-duration ease;
   cursor: pointer;
   box-sizing: border-box;
   border: 1px solid transparent;
@@ -16,7 +18,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  transition: box-shadow 0.2s ease-in-out, border 0.2s ease-in-out;
+  border: 1px solid transparent;
+  transition: border-color $transition-duration ease-in-out, box-shadow $transition-duration ease-in-out;
   pointer-events: none;
 }
 
@@ -39,10 +42,11 @@
   position: absolute;
   text-transform: none;
   top: -20px;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity $transition-duration ease-in-out;
   z-index: 10;
 }
 
+// Rest of the code remains unchanged
 .fvc-node.fvc-canvas.fvc-other-node-dragged::before,
 .fvc-node:hover:not(:has(.fvc-node:hover))::before,
 .fvc-node-selected::before {
@@ -58,15 +62,24 @@
 }
 
 .fvc-node:hover:not(:has(.fvc-node:hover))::after {
-  border: 1px solid color.adjust($blue, $lightness: -25%);
+  border-color: color.adjust($blue, $lightness: -25%);
   box-shadow: 0 0 0 1px $blue;
+}
+
+.fvc-node.fvc-canvas:hover:not(:has(.fvc-node:hover)):not(.fvc-node-selected)::after {
+  box-shadow: 0 0 0.5em 0.1em rgba($blue, 0.2);
 }
 .fvc-node-selected::after {
   border: 1px solid $blue;
   box-shadow: 0 0 0 1px $blue;
 }
-.fvc-node-selected.fvc-canvas {
-  padding: 2px!important;
+.fvc-node-selected:not(:hover)::after {
+  border: 1px solid $blue;
+  box-shadow: 0 0 0.5em 0.1em rgba($blue, 0.2);
+}
+.fvc-node-selected::after {
+  border: 1px solid $blue;
+  box-shadow: 0 0 0 1px $blue;
 }
 
 .fvc-node.fvc-canvas.fvc-other-node-dragged::after {

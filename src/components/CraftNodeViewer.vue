@@ -6,14 +6,16 @@
     :is="resolvedNode.componentName"
     v-bind="{ ...defaultProps, ...craftNode.props }"
   >
-    <CraftNodeViewer
+    <CraftNodeWrapper
+      :viewer="true"
       v-if="!craftNode.data"
       v-for="childNode in craftNode.children"
       :key="childNode.uuid"
       :craftNode="childNode"
     />
 
-    <CraftNodeViewer
+    <CraftNodeWrapper
+      :viewer="true"
       v-if="craftNode.data?.type === 'single'"
       v-for="childNode in craftNode.children"
       :key="childNode.uuid + '-single'"
@@ -23,9 +25,10 @@
       }"
     />
 
-    <CraftNodeViewer
+    <CraftNodeWrapper
+      :viewer="true"
       v-if="craftNode.data?.type === 'list'"
-      v-for="comb in itemChildCombinations"
+      v-for="comb in dataList"
       :key="comb.childNode.uuid + '-' + comb.dataIndex"
       :craftNode="{
         ...comb.childNode,
@@ -36,55 +39,13 @@
   <!-- </CraftErrorBoundary> -->
 </template>
 <script lang="ts" setup>
-import { computed, ComputedRef, inject, toRef } from "vue";
-import { CraftNode } from "../lib/craftNode";
-import CraftNodeResolver from "../lib/CraftNodeResolver";
-import { CombinationWithKeys } from ".";
+import { useCraftNode } from "./composable/useCraftNode";
+import CraftNodeWrapper from "./CraftNodeWrapper.vue";
 
 defineOptions({
   name: "CraftNodeViewer",
 });
 
-const props = defineProps<{
-  craftNode: CraftNode;
-}>();
-
-const resolver = inject<ComputedRef<CraftNodeResolver>>("resolver");
-
-const resolvedNode = computed(() => {
-  if (!resolver) return null;
-  return resolver.value.resolve(props.craftNode.componentName);
-});
-
-const defaultProps = computed(() => {
-  if (!resolver) return {};
-  return resolver.value.resolve(props.craftNode.componentName).defaultProps;
-});
-
-const craftNodeRef = toRef(props, "craftNode");
-
-function* combinationGenerator(): Generator<
-  CombinationWithKeys,
-  void,
-  unknown
-> {
-  const dataItems = craftNodeRef.value.data?.list || [];
-  const childNodes = craftNodeRef.value.children || [];
-
-  for (let dataIndex = 0; dataIndex < dataItems.length; dataIndex++) {
-    for (let childIndex = 0; childIndex < childNodes.length; childIndex++) {
-      yield {
-        dataItem: dataItems[dataIndex],
-        dataIndex,
-        childNode: childNodes[childIndex],
-        childIndex,
-        key: `${dataIndex}-${childIndex}`,
-      };
-    }
-  }
-}
-
-const itemChildCombinations = computed(() => ({
-  [Symbol.iterator]: combinationGenerator,
-}));
+const { craftNode, resolvedNode, defaultProps, resolver, dataList } =
+  useCraftNode();
 </script>

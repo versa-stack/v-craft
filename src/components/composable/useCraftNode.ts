@@ -20,9 +20,7 @@ export const useCraftNode = () => {
     ) as CraftNodeComponentMap;
   });
 
-  const defaultProps = computed(() => {
-    return resolvedNode.value?.defaultProps || {};
-  });
+  const defaultProps = computed(() => resolvedNode.value?.defaultProps || {});
 
   const combinationGenerator = function* (): Generator<
     CombinationWithKeys,

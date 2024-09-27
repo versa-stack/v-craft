@@ -1,7 +1,7 @@
 import {
   eq_default,
   getNative_default
-} from "./chunk-QYSR3RLP.js";
+} from "./chunk-RJ7XBQTS.js";
 
 // node_modules/lodash-es/_defineProperty.js
 var defineProperty = function() {
@@ -41,7 +41,8 @@ function assignValue(object, key, value) {
 var assignValue_default = assignValue;
 
 export {
+  defineProperty_default,
   baseAssignValue_default,
   assignValue_default
 };
-//# sourceMappingURL=chunk-K45FH3V5.js.map
+//# sourceMappingURL=chunk-SVFX7B3H.js.map

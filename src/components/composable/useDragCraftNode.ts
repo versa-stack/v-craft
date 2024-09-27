@@ -1,12 +1,13 @@
 import { Ref } from "vue";
-import { CraftNode } from "../lib/craftNode";
-import drag from "../lib/dragCraftNode";
-import { useEditor } from "../store/editor";
-import { useIndicator } from "../store/indicator";
-import CraftNodeResolver from "../lib/CraftNodeResolver";
+import { CraftNode } from "../../lib/craftNode";
+import CraftNodeResolver from "../../lib/CraftNodeResolver";
+import drag from "../../lib/dragCraftNode";
+import { useEditor } from "../../store/editor";
+import { useIndicator } from "../../store/indicator";
+import { debounce } from "lodash-es";
 
 export default (
-  craftNode: CraftNode,
+  craftNode: Ref<CraftNode>,
   nodeRef: Ref<any>,
   resolver: CraftNodeResolver
 ): {
@@ -23,10 +24,10 @@ export default (
       e.preventDefault();
       return;
     }
-    editor.dragNode(craftNode);
+    editor.dragNode(craftNode.value);
   };
 
-  const handleDragOver = (event: MouseEvent) => {
+  const handleDragOver = debounce((event: MouseEvent) => {
     if (!nodeRef.value?.$el) {
       return;
     }
@@ -34,9 +35,9 @@ export default (
       editor,
       indicator,
       craftNode,
-      resolver
+      resolver,
     });
-  };
+  }, 8);
 
   const handleDrop = (event: MouseEvent) => {
     if (!nodeRef.value?.$el) {
@@ -47,7 +48,7 @@ export default (
       editor,
       indicator,
       craftNode,
-      resolver
+      resolver,
     });
 
     editor.setNode(outerNode);

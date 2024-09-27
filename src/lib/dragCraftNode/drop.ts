@@ -1,64 +1,87 @@
-import { v4 as uuidv4 } from "uuid";
+import { Ref } from "vue";
 import { EditorStoreType } from "../../store/editor";
 import { IndicatorStoreType } from "../../store/indicator";
 import {
-  appendCraftNodeTo,
   CraftNode,
   craftNodeCanBeChildOf,
   craftNodeCanBeSiblingOf,
-  buildCraftNodeTree,
   craftNodeIsCanvas,
-  insertCraftNodeAfter,
-  insertCraftNodeBefore,
-  prependCraftNodeTo,
+  buildCraftNodeTree,
 } from "../craftNode";
-import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
 import CraftNodeResolver from "../CraftNodeResolver";
+import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
 
 export type DragCraftNodeContext = {
   editor: EditorStoreType;
   indicator: IndicatorStoreType;
-  craftNode: CraftNode;
-  resolver: CraftNodeResolver
+  craftNode: Ref<CraftNode>;
+  resolver: CraftNodeResolver;
 };
 
 const handleElementDrop = (
   e: MouseEvent,
   el: HTMLElement,
   draggedNode: CraftNode,
-  dropTarget: CraftNode,
-  resolver: CraftNodeResolver
+  context: DragCraftNodeContext
 ) => {
-  if (!craftNodeCanBeSiblingOf(draggedNode, dropTarget, resolver)) {
-    return dropTarget;
+  if (
+    !craftNodeCanBeSiblingOf(
+      draggedNode,
+      context.craftNode.value,
+      context.resolver
+    )
+  ) {
+    return context.craftNode.value;
+  }
+
+  const parent = context.craftNode.value.parent;
+  if (!parent) {
+    return context.craftNode.value;
+  }
+
+  const sibling = parent.children.find(
+    (c) => c.uuid === context.craftNode.value.uuid
+  );
+  if (!sibling) {
+    return context.craftNode.value;
   }
 
   if (mouseOnLeftHalf(e, el)) {
-    return insertCraftNodeBefore(draggedNode, dropTarget, resolver);
+    context.editor.insertNodeBefore(draggedNode, sibling);
+  } else {
+    context.editor.insertNodeAfter(draggedNode, sibling);
   }
 
-  return insertCraftNodeAfter(draggedNode, dropTarget, resolver);
+  return context.craftNode.value;
 };
 
 const handleCanvasDrop = (
   e: MouseEvent,
   el: HTMLElement,
   draggedNode: CraftNode,
-  dropTarget: CraftNode,
-  resolver: CraftNodeResolver
+  context: DragCraftNodeContext
 ) => {
   if (mouseOnEdge(e, el)) {
-    return handleElementDrop(e, el, draggedNode, dropTarget, resolver);
+    return handleElementDrop(e, el, draggedNode, context);
   }
 
-  if (!craftNodeCanBeChildOf(draggedNode, dropTarget, resolver)) {
-    return dropTarget;
+  if (
+    !craftNodeCanBeChildOf(
+      draggedNode,
+      context.craftNode.value,
+      context.resolver
+    )
+  ) {
+    return context.craftNode.value;
   }
 
   if (mouseOnTopHalf(e, el)) {
-    return prependCraftNodeTo(draggedNode, dropTarget, resolver);
+    context.editor.prependNodeTo(draggedNode, context.craftNode.value);
+  } else {
+    context.editor.appendNodeTo(draggedNode, context.craftNode.value);
   }
-  return appendCraftNodeTo(draggedNode, dropTarget, resolver);
+
+  return context.craftNode.value;
 };
 
 export default (
@@ -67,25 +90,21 @@ export default (
   context: DragCraftNodeContext
 ) => {
   if (!context.editor.draggedNode) {
-    return context.craftNode;
+    return context.craftNode.value;
   }
 
   const nodeCopy = (() => {
     if (context.editor.draggedNode?.uuid) {
       return context.editor.draggedNode;
     }
-    const cp = buildCraftNodeTree(
+    return buildCraftNodeTree(
       JSON.parse(JSON.stringify(context.editor.draggedNode))
     );
-
-    if (!cp.uuid) {
-      cp.uuid = uuidv4();
-    }
-
-    return cp;
   })();
 
-  return craftNodeIsCanvas(context.craftNode)
-    ? handleCanvasDrop(e, el, nodeCopy, context.craftNode, context.resolver)
-    : handleElementDrop(e, el, nodeCopy, context.craftNode, context.resolver);
+  const updatedNode = craftNodeIsCanvas(context.craftNode.value)
+    ? handleCanvasDrop(e, el, nodeCopy, context)
+    : handleElementDrop(e, el, nodeCopy, context);
+
+  return updatedNode;
 };

@@ -1,8 +1,8 @@
 <template>
   <CraftNodeWrapper
     v-if="resolver"
-    v-for="craftNode in editor.nodes"
-    :key="(craftNode as any).uuid"
+    v-for="craftNode in nodes"
+    :key="craftNode.uuid"
     :craftNode="craftNode"
   />
   <Indicator v-if="editor.enabled" />
@@ -10,9 +10,12 @@
 
 <script lang="ts" setup>
 import {
+  computed,
   ComputedRef,
   inject,
   onBeforeMount,
+  onBeforeUnmount,
+  onMounted,
   provide,
   ref,
   useSlots,
@@ -39,9 +42,24 @@ const resolver = props.resolverMap
   ? ref(new CraftNodeResolver(props.resolverMap))
   : inject<ComputedRef<CraftNodeResolver>>("resolver");
 
+if (resolver?.value) {
+  editor.setResolver(resolver?.value);
+}
+
+watch(
+  () => resolver?.value,
+  (r) => {
+    if (r) {
+      editor.setResolver(r);
+    }
+  }
+);
+
 if (props.resolverMap) {
   provide("resolver", resolver);
 }
+
+const nodes = computed(() => editor.nodes);
 
 const createNodesFromSlots = () => {
   if (!resolver?.value) {
@@ -64,21 +82,38 @@ const createNodesFromSlots = () => {
     createdNodes.push(vNodeToCraftNode(resolver.value, slot));
   });
 
-  return createdNodes.map(buildCraftNodeTree)
+  return createdNodes.map(buildCraftNodeTree);
 };
 
+const slotNodes = ref([] as CraftNode[]);
+
 onBeforeMount(() => {
-  if (!editor.hasNodes) {
-    editor.setNodes(createNodesFromSlots());
+  slotNodes.value = createNodesFromSlots();
+  if (!editor.hasNodes && slotNodes.value) {
+    editor.setNodes(slotNodes.value);
   }
 });
 
 watch(
   () => editor.hasNodes,
   () => {
-    if (!editor.hasNodes) {
-      editor.setNodes(createNodesFromSlots());
+    if (!editor.hasNodes && slotNodes.value) {
+      editor.setNodes(slotNodes.value);
     }
   }
 );
+
+const applyUpdates = () => {
+  editor.applyPendingUpdates();
+};
+
+let updateInterval: number;
+
+onMounted(() => {
+  updateInterval = setInterval(applyUpdates, 100) as unknown as number;
+});
+
+onBeforeUnmount(() => {
+  clearInterval(updateInterval);
+});
 </script>
