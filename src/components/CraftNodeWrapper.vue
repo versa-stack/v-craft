@@ -1,6 +1,6 @@
 <template>
-  <CraftNodeEditor v-if="visible && (viewer === false || editor.enabled)" />
-  <CraftNodeViewer v-if="visible && (viewer === true || !editor.enabled)" />
+  <CraftNodeEditor v-if="!viewer && visible && editor.enabled" />
+  <CraftNodeViewer v-if="viewer && visible || (visible && !editor.enabled)" />
 </template>
 <script lang="ts"></script>
 <script setup lang="ts">
@@ -19,7 +19,7 @@ const props = withDefaults(
     craftNode: CraftNode;
     viewer?: boolean;
   }>(),
-  { viewer: undefined }
+  { viewer: false }
 );
 
 const editor = useEditor();

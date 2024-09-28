@@ -75,18 +75,19 @@ jobs:
         # Get the current version
         CURRENT_VERSION=$(node -p "require('./package.json').version")
 
-        # Increment the version
-        npm version prerelease --preid=alpha
+        # Extract the base version (without prerelease identifier)
+        BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/-alpha\.[0-9]+$//')
 
-        # Get the new version
-        NEW_VERSION=$(node -p "require('./package.json').version")
+        # Increment the patch version
+        NEW_BASE_VERSION=$(npm version --no-git-tag-version patch)
 
-        # If the version didn't change, force an increment
-        if [ "$CURRENT_VERSION" == "$NEW_VERSION" ]; then
-          npm version prerelease --preid=alpha --force
-          NEW_VERSION=$(node -p "require('./package.json').version")
-        fi
+        # Add alpha prerelease identifier
+        NEW_VERSION="${NEW_BASE_VERSION}-alpha.0"
 
+        # Update package.json with the new version
+        npm version $NEW_VERSION --no-git-tag-version
+
+        # Publish to npm
         npm publish --tag alpha --access public
 
         git add package.json

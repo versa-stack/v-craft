@@ -49,7 +49,7 @@ export {
   PatchesInputComponent,
 };
 
-export type CombinationWithKeys = {
+export type CraftDataListItem = {
   dataItem: any;
   dataIndex: number;
   childNode: CraftNode;

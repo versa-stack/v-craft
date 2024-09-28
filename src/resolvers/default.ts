@@ -1,6 +1,6 @@
 import { CraftNode, CraftNodeResolver, CraftNodeResolverMap } from "../index";
 import flexContainerSchema from "./property-schema/CraftComponentFlexContainer";
-import boxModelContainerSchema from "./property-schema/CraftComponentBoxModelContainer"
+import boxModelContainerSchema from "./property-schema/CraftComponentBoxModelContainer";
 
 export const defaultResolvers = {
   CraftComponentSimpleText: {
@@ -32,7 +32,7 @@ export const defaultResolvers = {
   },
   CraftComponentBoxModelContainer: {
     componentName: "CraftComponentBoxModelContainer",
-    propsSchema: boxModelContainerSchema
+    propsSchema: boxModelContainerSchema,
   },
   CraftComponentSimpleContainer: {
     componentName: "CraftComponentSimpleContainer",
@@ -85,27 +85,34 @@ export const defaultResolvers = {
         $formkit: "graphql",
         name: "variables",
         label: "Variables",
-        validation: "required",
       },
       {
-        $formkit: "text",
-        name: "map.fromPath",
-        label: "From Path",
-      },
-      {
-        $formkit: "select",
-        name: "map.type",
-        label: "Map Type",
-        options: [
-          { label: "Single", value: "single" },
-          { label: "List", value: "list" },
+        $formkit: "group",
+        name: "map",
+        label: "Map",
+        children: [
+          {
+            $formkit: "text",
+            name: "fromPath",
+            label: "From Path",
+            validation: "required",
+          },
+          {
+            $formkit: "select",
+            name: "type",
+            label: "Map Type",
+            options: [
+              { label: "Single", value: "single" },
+              { label: "List", value: "list" },
+            ],
+            validation: "required",
+          },
+          {
+            $formkit: "patches",
+            name: "patches",
+            label: "Patches",
+          },
         ],
-        validation: "required",
-      },
-      {
-        $formkit: "patches",
-        name: "map.patches",
-        label: "Patches",
       },
     ],
     rules: {

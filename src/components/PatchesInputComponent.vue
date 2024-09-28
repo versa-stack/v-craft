@@ -64,7 +64,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { CraftGraphqlQueryWrapperPatch } from "../lib/model"; // Adjust the import path as needed
+import { CraftGraphqlQueryWrapperPatch } from "../lib/model";
 
 const props = defineProps<{
   context: any;

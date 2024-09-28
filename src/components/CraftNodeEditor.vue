@@ -1,5 +1,4 @@
 <template>
-  <!-- <CraftErrorBoundary> -->
   <component
     ref="nodeRef"
     v-if="craftNode && resolvedNode"
@@ -22,33 +21,21 @@
     @dragend.prevent.stop="handleDragEnd"
     @click.stop="craftNodeClick"
   >
-    <CraftNodeWrapper
-      v-for="childNode in craftNode.children"
-      :key="childNode.uuid"
-      :craftNode="childNode"
-    />
+    <template v-if="craftNode.children.length">
+      <CraftNodeWrapper
+        v-for="childNode in craftNode.children"
+        :key="childNode.uuid"
+        :craftNode="childNode"
+      />
+    </template>
 
-    <CraftNodeWrapper
-      v-if="craftNode.data?.type === 'single'"
-      v-for="child in craftNode.children"
-      :viewer="true"
-      :key="child.uuid + '-single'"
-      :craftNode="{
-        ...child,
-        props: { ...(child.props || {}), ...(craftNode.data.item || {}) },
-      }"
-    />
-
-    <CraftNodeWrapper
-      v-if="craftNode.data?.type === 'list'"
-      v-for="comb in dataList"
-      :viewer="true"
-      :key="comb.childNode.uuid + '-' + comb.dataIndex"
-      :craftNode="{
-        ...comb.childNode,
-        props: { ...comb.childNode.props, ...comb.dataItem },
-      }"
-    />
+    <template v-if="craftNode.data?.type">
+      <CraftNodeWrapper
+        :viewer="true"
+        :key="`${craftNode.uuid}-data`"
+        :craftNode="craftNode"
+      />
+    </template>
 
     <div
       class="fvc-drop-text"
@@ -57,8 +44,8 @@
       Drop a component here.
     </div>
   </component>
-  <!-- </CraftErrorBoundary> -->
 </template>
+
 <script setup lang="ts">
 import { computed, ComputedRef, ref } from "vue";
 import { craftNodeIsAncestorOf, craftNodeIsCanvas } from "../lib/craftNode";
@@ -74,8 +61,7 @@ defineOptions({
 
 const editor = useEditor();
 const nodeRef = ref<any>(null);
-const { craftNode, resolvedNode, defaultProps, resolver, dataList } =
-  useCraftNode();
+const { craftNode, resolvedNode, defaultProps, resolver } = useCraftNode();
 
 const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
   craftNode.value,
@@ -87,6 +73,7 @@ const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
     nodeRef,
     (resolver as ComputedRef<CraftNodeResolver>).value
   );
+
 const nodeName = computed(() =>
   craftNode.value
     ? `${

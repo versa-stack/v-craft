@@ -3,12 +3,14 @@
     <slot></slot>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ApolloError } from "@apollo/client";
-import { useQuery } from "@vue/apollo-composable";
+import { useQuery, useApolloClient } from "@vue/apollo-composable";
+import { ApolloClient } from "@apollo/client/core";
 import gql from "graphql-tag";
 import jp from "jsonpath";
-import { ComputedRef, inject, ref, useSlots, watch } from "vue";
+import { ComputedRef, inject, ref, useSlots, watch, onMounted } from "vue";
 import { CraftNode } from "../lib/craftNode";
 import {
   CraftGraphqlQueryWrapperData,
@@ -32,12 +34,14 @@ const props = withDefaults(
   }
 );
 
+const slots = useSlots();
 const fetchFirstChildInSlot = () => {
   const defaultSlot = slots.default?.();
   if (!defaultSlot || defaultSlot.length === 0) return {};
 
   const firstChild = defaultSlot[0]?.children;
-  if (!firstChild || firstChild.length === 0 || !firstChild[0]?.children[0]) return {};
+  if (!firstChild || firstChild.length === 0 || !firstChild[0]?.children[0])
+    return {};
   const firstGrandChild = firstChild[0]?.children[0];
 
   return firstGrandChild?.props?.craftNode ?? {};
@@ -136,7 +140,6 @@ const result = ref<null | any>(null);
 const loading = ref(true);
 const error = ref<null | unknown | ApolloError>(null);
 const craftNode = inject<ComputedRef<CraftNode>>("craftNode");
-const slots = useSlots();
 const childRef = ref(fetchFirstChildInSlot());
 
 const editor = useEditor();
@@ -146,7 +149,22 @@ const output = ref<CraftGraphqlQueryWrapperData>({
   list: [],
 });
 
-const setupQuery = (query: string, variables?: string) => {
+const getCachedOrFetchData = async (
+  query: string,
+  variables: Record<string, any>
+) => {
+  const apolloClient = useApolloClient().client as ApolloClient<any>;
+  const cachedData = apolloClient.readQuery({ query: gql(query), variables });
+
+  if (cachedData) {
+    return cachedData;
+  }
+
+  const { data } = await apolloClient.query({ query: gql(query), variables });
+  return data;
+};
+
+const setupQuery = async (query: string, variables?: string) => {
   let parsedVariables: Record<string, any> = {};
 
   if (variables) {
@@ -160,33 +178,32 @@ const setupQuery = (query: string, variables?: string) => {
     }
   }
 
-  const { onResult, onError } = useQuery(gql(query), parsedVariables);
-
-  onResult((queryResult) => {
-    result.value = queryResult.data;
+  try {
+    const data = await getCachedOrFetchData(query, parsedVariables);
+    result.value = data;
     loading.value = false;
-  });
-
-  onError((queryError) => {
+  } catch (queryError) {
     error.value = queryError;
     loading.value = false;
     console.error("GraphQL Query Error:", queryError);
-  });
+  }
 };
 
-try {
-  setupQuery(props.query, props.variables);
-} catch (e) {
-  console.error("Error setting up GraphQL query:", e);
-  error.value = e;
-  loading.value = false;
-}
+onMounted(async () => {
+  try {
+    await setupQuery(props.query, props.variables);
+  } catch (e) {
+    console.error("Error setting up GraphQL query:", e);
+    error.value = e;
+    loading.value = false;
+  }
+});
 
 watch(
   () => props.query,
-  () => {
+  async () => {
     try {
-      setupQuery(props.query, props.variables);
+      await setupQuery(props.query, props.variables);
     } catch (e) {
       console.error("Error setting up GraphQL query:", e);
       error.value = e;
@@ -271,4 +288,16 @@ watch(
     childRef.value = fetchFirstChildInSlot();
   }
 );
+
+const refreshData = async () => {
+  try {
+    await setupQuery(props.query, props.variables);
+  } catch (e) {
+    console.error("Error refreshing GraphQL query:", e);
+    error.value = e;
+    loading.value = false;
+  }
+};
+
+defineExpose({ refreshData });
 </script>

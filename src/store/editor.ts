@@ -66,7 +66,7 @@ export const useEditor = defineStore("editor", {
     },
 
     setNode(craftNode: CraftNode) {
-      this.pendingUpdates.add(craftNode);
+      this.pendingUpdates.add({ ...craftNode });
     },
 
     applyPendingUpdates() {
@@ -90,8 +90,11 @@ export const useEditor = defineStore("editor", {
     updateNodeProps(nodeUuid: string, newProps: Record<string, any>) {
       const node = this.nodeRecord[nodeUuid];
       if (node) {
-        node.props = { ...node.props, ...newProps };
-        this.setNode(node);
+        const updatedNode = {
+          ...node,
+          props: { ...node.props, ...newProps },
+        };
+        this.setNode(updatedNode);
       }
     },
 

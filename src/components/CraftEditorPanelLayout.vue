@@ -48,7 +48,6 @@ const emit = defineEmits<{
 
 const editor = useEditor();
 const deselectNodes = () => {
-  console.log("deselectNodes");
   editor.selectNode(null)
 };
 
@@ -93,7 +92,9 @@ const deselectNodes = () => {
   .fvc-panel-center {
     grid-area: center;
     margin: 1.75em;
-    max-width: 60vw;
+    overflow: auto;
+    position: relative;
+    z-index: 10;
   }
 
   .fvc-panel-right {

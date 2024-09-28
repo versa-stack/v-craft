@@ -4,7 +4,6 @@
     v-if="formSchema"
   >
     <legend class="formkit-legend">Properties</legend>
-    <ClientOnly>
       <FormKit
         :key="craftNode?.uuid"
         type="form"
@@ -14,7 +13,6 @@
       >
         <FormKitSchema :schema="formSchema" />
       </FormKit>
-    </ClientOnly>
   </fieldset>
 </template>
 
@@ -47,10 +45,6 @@ const emit = defineEmits<{
 }>();
 
 const computedProps = computed(() => cloneDeep(craftNode.value?.props || {}));
-
-watch(() => computedProps.value, (newValue) => {
-  console.log(computedProps.value)
-}, { deep: true })
 
 const formSchema = computed(() => {
   const staticSchema = {

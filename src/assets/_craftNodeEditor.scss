@@ -27,6 +27,7 @@ $transition-duration: 0.3s;
   content: "";
   align-items: center;
   background-color: $blue;
+  bottom: 0px;
   color: $white;
   display: flex;
   font-family: Arial, sans-serif;
@@ -39,18 +40,17 @@ $transition-duration: 0.3s;
   padding: 0 5px !important;
   pointer-events: none;
   position: absolute;
-  position: absolute;
+  text-align: center;
   text-transform: none;
-  top: -20px;
   transition: opacity $transition-duration ease-in-out;
-  z-index: 10;
+  z-index: 100;
 }
 
 // Rest of the code remains unchanged
 .fvc-node.fvc-canvas.fvc-other-node-dragged::before,
 .fvc-node:hover:not(:has(.fvc-node:hover))::before,
 .fvc-node-selected::before {
-    opacity: 1;
+    opacity: 0.5;
 }
 
 .fvc-node.fvc-canvas:hover {
@@ -103,7 +103,7 @@ $transition-duration: 0.3s;
 
 .fvc-node.fvc-canvas.fvc-other-node-dragged {
   background-color: $gray-dark!important;
-  padding: 2em!important;
+  padding: 2em;
   margin: 2em 0!important;
 }
 

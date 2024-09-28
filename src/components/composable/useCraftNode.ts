@@ -3,7 +3,7 @@ import { CraftNode } from "../../lib/craftNode";
 import CraftNodeResolver, {
   CraftNodeComponentMap,
 } from "../../lib/CraftNodeResolver";
-import { CombinationWithKeys } from "..";
+import { CraftDataListItem } from "..";
 
 export const useCraftNode = () => {
   const craftNode = inject<Ref<CraftNode, CraftNode>>("craftNode")!;
@@ -23,7 +23,7 @@ export const useCraftNode = () => {
   const defaultProps = computed(() => resolvedNode.value?.defaultProps || {});
 
   const combinationGenerator = function* (): Generator<
-    CombinationWithKeys,
+    CraftDataListItem,
     void,
     unknown
   > {

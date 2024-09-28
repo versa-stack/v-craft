@@ -45,7 +45,6 @@ const MonacoEditor = shallowRef();
 
 onMounted(async () => {
   await import("../config/monaco-config");
-  const module = await import("monaco-editor-vue3");
   MonacoEditor.value = defineAsyncComponent(() => import("monaco-editor-vue3"));
 });
 
