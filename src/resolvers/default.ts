@@ -9,7 +9,7 @@ export const defaultResolvers = {
       {
         $formkit: "select",
         label: "Type",
-        name: "tagName",
+        name: "componentName",
         options: [
           "h1",
           "h2",

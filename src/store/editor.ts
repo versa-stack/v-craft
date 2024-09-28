@@ -83,7 +83,7 @@ export const useEditor = defineStore("editor", {
     },
 
     toggleNodeVisibility(craftNode: CraftNode) {
-      craftNode.props.visible = !craftNode.props.visible;
+      craftNode.visible = !craftNode.visible;
       this.setNode(craftNode);
     },
 

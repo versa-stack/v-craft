@@ -1,81 +1,85 @@
 <template>
   <fieldset
     class="fvc-panel-settings formkit-fieldset fvc-scrollable-content"
-    v-if="localProps && schema"
+    v-if="formSchema"
   >
     <legend class="formkit-legend">Properties</legend>
     <ClientOnly>
       <FormKit
-        v-for="field in schema"
-        :key="field.name"
-        :label="field.label"
-        :name="field.name"
-        :options="field.options"
-        :type="field.$formkit"
-        :value="getFieldValue(field.name)"
-        @input="(value) => updateField(field.name, value)"
-        :parse="parseValue"
-      />
+        :key="craftNode?.uuid"
+        type="form"
+        :value="computedProps"
+        @input="handleFormInput"
+        :actions="false"
+      >
+        <FormKitSchema :schema="formSchema" />
+      </FormKit>
     </ClientOnly>
   </fieldset>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
-import { FormKit } from "@formkit/vue";
+import { toRefs, computed, watch } from "vue";
+import { FormKit, FormKitSchema } from "@formkit/vue";
+import {
+  FormKitSchemaNode,
+  FormKitGroupValue,
+  FormKitNode,
+} from "@formkit/core";
 import cloneDeep from "lodash-es/cloneDeep";
-import isEqual from "lodash-es/isEqual";
-import get from "lodash-es/get";
-import set from "lodash-es/set";
+import debounce from "lodash-es/debounce";
 import { CraftNode } from "../lib/craftNode";
-import { FormKitSchemaNode } from "@formkit/core";
 
 interface Props {
   craftNode?: CraftNode;
-  schema?: FormKitSchemaNode[] | any[];
+  schema?: FormKitSchemaNode[];
 }
 
+const debounceTime = 32;
 const props = withDefaults(defineProps<Props>(), {
   schema: () => [],
 });
+
+const { craftNode, schema } = toRefs(props);
 
 const emit = defineEmits<{
   (e: "update:props", value: Record<string, any>): void;
 }>();
 
-const localProps = ref(cloneDeep(props.craftNode?.props || {}));
+const computedProps = computed(() => cloneDeep(craftNode.value?.props || {}));
 
-watch(
-  () => props.craftNode?.props,
-  (newValue) => {
-    if (newValue && !isEqual(newValue, localProps.value)) {
-      localProps.value = cloneDeep(newValue);
-    }
-  },
-  { deep: true }
-);
+watch(() => computedProps.value, (newValue) => {
+  console.log(computedProps.value)
+}, { deep: true })
 
-watch(
-  localProps,
-  (newValue) => {
-    emit("update:props", newValue);
-  },
-  { deep: true }
-);
+const formSchema = computed(() => {
+  const staticSchema = {
+    $el: "div",
+    attrs: {
+      class: "form-wrapper",
+    },
+    children: [],
+  };
 
-const getFieldValue = (fieldName: string) => {
-  return get(localProps.value, fieldName);
-};
-
-const parseValue = (value: any) => {
-  if (typeof value === "string") {
-    return value.trim();
+  if (schema.value && schema.value.length > 0) {
+    staticSchema.children = [...staticSchema.children, ...schema.value] as any;
   }
-  return value;
-};
 
-const updateField = (fieldName: string, value: any) => {
-  localProps.value = set({ ...localProps.value }, fieldName, value);
+  return staticSchema;
+});
+
+
+const debouncedEmit = debounce((newValue: FormKitGroupValue) => {
+  emit("update:props", newValue as Record<string, any>);
+}, debounceTime);
+
+const handleFormInput = (
+  value: FormKitGroupValue | undefined,
+  node: FormKitNode
+) => {
+  if (value !== undefined) {
+    debouncedEmit(value);
+  }
 };
 </script>
 

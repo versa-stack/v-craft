@@ -33,7 +33,7 @@ export const defaultBlueprints = {
       componentName: "CraftComponentSimpleText",
       props: {
         content: "Change me.",
-        tagName: "p",
+        componentName: "p",
       },
       children: [],
     },
@@ -48,7 +48,7 @@ export const defaultBlueprints = {
           componentName: "CraftComponentSimpleText",
           props: {
             content: "Some prefilled text.",
-            tagName: "h1",
+            componentName: "h1",
           },
         },
       ],
@@ -77,8 +77,8 @@ export const defaultBlueprints = {
               type: "single",
             },
             {
-              fromPath: "$.props.tagName",
-              toPath: "$.tagName",
+              fromPath: "$.props.componentName",
+              toPath: "$.componentName",
               patchSource: "child",
               default: "span",
               type: "single",

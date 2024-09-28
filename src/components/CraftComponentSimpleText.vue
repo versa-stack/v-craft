@@ -1,5 +1,5 @@
 <template>
-  <component :is="tagName">{{ content }}</component>
+  <component :is="componentName">{{ content }}</component>
 </template>
 <script lang="ts" setup>
 
@@ -9,11 +9,11 @@ defineOptions({
 
 withDefaults(
   defineProps<{
-    tagName: string;
-    content: string;
+    componentName?: string;
+    content?: string;
   }>(),
   {
-    tagName: "p",
+    componentName: "p",
     content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   }
 );

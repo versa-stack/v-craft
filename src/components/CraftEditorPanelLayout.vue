@@ -13,17 +13,17 @@
         />
       <!-- </CraftErrorBoundary> -->
     </div>
-    <div class="fvc-panel-center">
+    <div class="fvc-panel-center" @click.stop="deselectNodes">
       <!-- <CraftErrorBoundary> -->
         <slot></slot>
       <!-- </CraftErrorBoundary> -->
     </div>
     <div class="fvc-grid-panel fvc-panel-right">
       <!-- <CraftErrorBoundary> -->
-        <CraftEditorPanelSettings />
+        <CraftEditorPanelLayers />
       <!-- </CraftErrorBoundary> -->
       <!-- <CraftErrorBoundary> -->
-        <CraftEditorPanelLayers />
+        <CraftEditorPanelSettings />
       <!-- </CraftErrorBoundary> -->
     </div>
     <div class="fvc-grid-panel fvc-panel-bottom"></div>
@@ -35,6 +35,7 @@ import {
   CraftEditorAction,
   CraftEditorActionPayload
 } from "../lib/model";
+import { useEditor } from "../store/editor";
 
 defineProps<{
   blueprints: BlueprintsLibrary;
@@ -44,6 +45,13 @@ defineProps<{
 const emit = defineEmits<{
   (e: "action-click", payload: CraftEditorActionPayload): void;
 }>();
+
+const editor = useEditor();
+const deselectNodes = () => {
+  console.log("deselectNodes");
+  editor.selectNode(null)
+};
+
 </script>
 <style lang="scss" scoped>
 @use 'sass:color';

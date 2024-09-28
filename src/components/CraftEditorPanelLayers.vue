@@ -8,6 +8,7 @@
           :key="key"
           :craftNode="craftNode"
           @layer-click="layerClick"
+          
         />
       </ul>
     </div>
@@ -16,6 +17,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from "pinia";
 import { useEditor } from "../store/editor";
+import { CraftNode } from "../lib/craftNode";
 
 defineOptions({
   name: "CraftEditorPanelLayers",
@@ -24,8 +26,9 @@ defineOptions({
 const editor = useEditor();
 const { nodes } = storeToRefs(editor);
 
-const layerClick = (craftNode) => {
+const layerClick = (craftNode: CraftNode) => {
   editor.selectNode(craftNode);
+  
 };
 </script>
 

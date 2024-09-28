@@ -28,6 +28,7 @@ export type CraftNode = {
   props: any;
   rules?: CraftNodeRules;
   uuid: uuidv4;
+  visible?: boolean;
 };
 
 export type CraftNodeDatasource = {

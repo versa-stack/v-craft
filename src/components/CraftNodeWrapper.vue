@@ -1,10 +1,10 @@
 <template>
-  <CraftNodeEditor v-if="viewer === false || editor.enabled" />
-  <CraftNodeViewer v-if="viewer === true || !editor.enabled" />
+  <CraftNodeEditor v-if="visible && (viewer === false || editor.enabled)" />
+  <CraftNodeViewer v-if="visible && (viewer === true || !editor.enabled)" />
 </template>
 <script lang="ts"></script>
 <script setup lang="ts">
-import { provide, readonly, toRef } from "vue";
+import { computed, provide, readonly, toRef } from "vue";
 import { CraftNode } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
@@ -24,6 +24,9 @@ const props = withDefaults(
 
 const editor = useEditor();
 const craftNodeRef = toRef(props, "craftNode");
+const visible = computed(
+  () => craftNodeRef.value.visible === undefined || craftNodeRef.value.visible
+);
 
 provide("craftNode", readonly(craftNodeRef));
 </script>
