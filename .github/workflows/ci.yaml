@@ -71,9 +71,24 @@ jobs:
         git config --global user.email "github-actions@github.com"
         git config --global user.name "GitHub Actions"
         npm config set git-tag-version false
+
+        # Get the current version
+        CURRENT_VERSION=$(node -p "require('./package.json').version")
+
+        # Increment the version
         npm version prerelease --preid=alpha
+
+        # Get the new version
         NEW_VERSION=$(node -p "require('./package.json').version")
+
+        # If the version didn't change, force an increment
+        if [ "$CURRENT_VERSION" == "$NEW_VERSION" ]; then
+          npm version prerelease --preid=alpha --force
+          NEW_VERSION=$(node -p "require('./package.json').version")
+        fi
+
         npm publish --tag alpha --access public
+
         git add package.json
         git commit -m "Bump version to ${NEW_VERSION} [skip ci]"
         git push

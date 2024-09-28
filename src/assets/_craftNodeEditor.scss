@@ -87,20 +87,24 @@ $transition-duration: 0.3s;
 }
 
 .fvc-node.fvc-canvas.fvc-empty {
-  background-color: $gray-dark;
-  padding: 2em;
-  border: 2px dashed $gray-medium;
-  color: $text-color;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 3em;
+  justify-content: center;
+  display: flex;
+}
+
+.fvc-node.fvc-canvas .fvc-drop-text {
+  border: 2px dashed $gray-medium;
+  background-color: rgba($gray-dark, 0.5);
+  color: $text-color;
+  padding: 2em;
+  width: 100%;
+  text-align: center;
 }
 
 .fvc-node.fvc-canvas.fvc-other-node-dragged {
   background-color: $gray-dark!important;
-  padding: 2em;
-  margin: 2em 0;
+  padding: 2em!important;
+  margin: 2em 0!important;
 }
 
 .fvc-node-selected {

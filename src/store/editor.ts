@@ -19,6 +19,7 @@ export type EditorState = {
   nodeRefsRecord: Record<string, HTMLElement>;
   pendingUpdates: Set<CraftNode>;
   resolver: CraftNodeResolver | null;
+  nodesToDelete: Set<string>;
 };
 
 export type EditorStoreType = ReturnType<typeof useEditor>;
@@ -28,12 +29,13 @@ export const useEditor = defineStore("editor", {
     ({
       nodeRecord: {} as Record<string, CraftNode>,
       selectedUuid: null as uuidv4 | null,
-      draggedNode: ref<CraftNode | null>(null),
+      draggedNode: ref(null),
       enabled: false,
       nodes: shallowRef<CraftNode[]>([]),
       nodeRefsRecord: {} as Record<string, HTMLElement>,
       pendingUpdates: new Set<CraftNode>(),
       resolver: null as CraftNodeResolver | null,
+      nodesToDelete: new Set<string>(),
     } as EditorState),
 
   actions: {
@@ -68,13 +70,15 @@ export const useEditor = defineStore("editor", {
     },
 
     applyPendingUpdates() {
-      if (this.pendingUpdates.size > 0) {
+      if (this.pendingUpdates.size > 0 || this.nodesToDelete.size > 0) {
         this.nodes = updateNodesInTree(
           this.nodes,
-          Array.from(this.pendingUpdates)
+          Array.from(this.pendingUpdates),
+          this.nodesToDelete
         );
         this.updateNodeRecord();
         this.pendingUpdates.clear();
+        this.nodesToDelete.clear();
       }
     },
 
@@ -124,22 +128,21 @@ export const useEditor = defineStore("editor", {
       if (craftNode.uuid === this.selectedUuid) {
         this.selectedUuid = null;
       }
-      this.pendingUpdates.add(craftNode);
+      this.nodesToDelete.add(craftNode.uuid);
+      this.applyPendingUpdates();
     },
 
     emancipateNode(craftNode: CraftNode) {
       const { parent } = craftNode;
-
       if (!parent) {
         return craftNode;
       }
-
       const parentRef = this.nodeRecord[parent.uuid];
-
-      const index = parentRef.children.findIndex((c) => c.uuid === craftNode.uuid);
+      const index = parentRef.children.findIndex(
+        (c) => c.uuid === craftNode.uuid
+      );
       parentRef.children.splice(index, 1);
       craftNode.parent = null;
-
       this.setNode(parentRef);
       this.setNode(craftNode);
       return craftNode;
@@ -258,26 +261,31 @@ export const useEditor = defineStore("editor", {
 
 const updateNodesInTree = (
   nodes: CraftNode[],
-  updatedNodes: CraftNode[]
+  updatedNodes: CraftNode[],
+  nodesToDelete: Set<string>
 ): CraftNode[] => {
-  return nodes.map((node) => {
-    const source = updatedNodes.find((u) => u.uuid === node.uuid);
-    if (source) {
-      return {
-        ...source,
-        children: source.children
-          ? updateNodesInTree(source.children, updatedNodes)
-          : [],
-      };
-    }
-
-    if (node.children) {
-      const updatedChildren = updateNodesInTree(node.children, updatedNodes);
-      return updatedChildren === node.children
-        ? node
-        : { ...node, children: updatedChildren };
-    }
-
-    return node;
-  });
+  return nodes
+    .filter((node) => !nodesToDelete.has(node.uuid))
+    .map((node) => {
+      const source = updatedNodes.find((u) => u.uuid === node.uuid);
+      if (source) {
+        return {
+          ...source,
+          children: source.children
+            ? updateNodesInTree(source.children, updatedNodes, nodesToDelete)
+            : [],
+        };
+      }
+      if (node.children) {
+        const updatedChildren = updateNodesInTree(
+          node.children,
+          updatedNodes,
+          nodesToDelete
+        );
+        return updatedChildren === node.children
+          ? node
+          : { ...node, children: updatedChildren };
+      }
+      return node;
+    });
 };
