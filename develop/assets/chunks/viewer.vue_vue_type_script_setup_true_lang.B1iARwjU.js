@@ -1,1 +1,0 @@
-import{u as o}from"./theme.BFUWWTII.js";import{r}from"./resolvermap.aCu3KMg-.js";import{d as s,s as t,x as a,D as n,V as c,B as m}from"./framework.DVloFCaL.js";const p={class:"content"},C=s({__name:"viewer",setup(_){return o().disable(),(l,d)=>{const e=t("CraftFrame");return a(),n("div",p,[c(e,{resolverMap:m(r)},null,8,["resolverMap"])])}}});export{C as _};
