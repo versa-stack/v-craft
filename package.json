@@ -2,7 +2,7 @@
   "name": "@versa-stack/v-craft",
   "license": "MIT",
   "description": "Derived from https://github.com/loming/v-craft/tree/vue3",
-  "version": "0.0.6",
+  "version": "0.0.7-alpha.0",
   "scripts": {
     "build-raw": "vite build",
     "build": "rimraf dist && vite build",
