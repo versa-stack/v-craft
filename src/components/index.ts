@@ -45,8 +45,6 @@ export {
   CraftNodeEditor,
   CraftNodeViewer,
   CraftNodeWrapper,
-  GraphqlInputComponent,
-  PatchesInputComponent,
 };
 
 export type CraftDataListItem = {

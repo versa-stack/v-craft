@@ -12,7 +12,6 @@ import * as components from "./components";
 export { rootClasses } from "../formkit.theme";
 export * from "./blueprints/default";
 export * from "./components";
-export * as formkit from "./formkit";
 export * from "./lib/craftNode";
 export * from "./lib/CraftNodeResolver";
 export * from "./lib/model";

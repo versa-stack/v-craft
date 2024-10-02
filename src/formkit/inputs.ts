@@ -1,7 +1,22 @@
 import { createInput } from "@formkit/vue";
-import { GraphqlInputComponent, PatchesInputComponent } from "../components";
 
 export const inputs = {
-  patches: createInput(PatchesInputComponent, { props: ["context"] }),
-  graphql: createInput(GraphqlInputComponent, { props: ["context"] }),
+  patches: createInput(
+    () => {
+      if (typeof window === "undefined") {
+        return { render: () => null };
+      }
+      return import("../components/PatchesInputComponent.vue");
+    },
+    { props: ["context"] }
+  ),
+  graphql: createInput(
+    () => {
+      if (typeof window === "undefined") {
+        return { render: () => null };
+      }
+      return import("../components/GraphqlInputComponent.vue");
+    },
+    { props: ["context"] }
+  ),
 };

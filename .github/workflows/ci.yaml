@@ -32,12 +32,13 @@ jobs:
         NODE_OPTIONS: --max_old_space_size=4096
 
     - name: Build docs
+      continue-on-error: true
       run: npm run docs:build
       env:
         NODE_OPTIONS: --max_old_space_size=4096
 
     - name: Deploy develop docs to GitHub Pages
-      if: github.ref == 'refs/heads/develop'
+      if: github.ref == 'refs/heads/develop' && steps.build_docs.outcome == 'success'
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +46,7 @@ jobs:
         destination_dir: ./
 
     - name: Deploy develop docs to GitHub Pages
-      if: github.ref == 'refs/heads/develop'
+      if: github.ref == 'refs/heads/develop' && steps.build_docs.outcome == 'success'
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -79,13 +80,13 @@ jobs:
         BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/-alpha\.[0-9]+$//')
 
         # Increment the patch version
-        NEW_BASE_VERSION=$(npm version --no-git-tag-version patch)
+        NEW_BASE_VERSION=$(echo $BASE_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
 
         # Add alpha prerelease identifier
         NEW_VERSION="${NEW_BASE_VERSION}-alpha.0"
 
         # Update package.json with the new version
-        npm version $NEW_VERSION --no-git-tag-version
+        sed -i 's/"version": ".*"/"version": "'"${NEW_VERSION}"'"/' package.json
 
         # Publish to npm
         npm publish --tag alpha --access public

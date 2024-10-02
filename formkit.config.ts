@@ -1,10 +1,12 @@
-import { defaultConfig } from "@formkit/vue";
+import { defaultConfig, DefaultConfigOptions } from "@formkit/vue";
 import { rootClasses } from "./formkit.theme";
-import { inputs } from "./src/formkit";
+import { inputs } from "./src/formkit/inputs";
 
-export default defaultConfig({
+const config: DefaultConfigOptions = {
   config: {
     rootClasses,
   },
   inputs,
-});
+};
+
+export default defaultConfig(config);

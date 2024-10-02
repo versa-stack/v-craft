@@ -1,34 +1,36 @@
 <template>
-  <div class="graphql-editor">
-    <div class="editor-header">
-      <button @click="openModal" class="pop-out-button">
-        <i class="fas fa-expand"></i> Expand Editor
-      </button>
-    </div>
-    <MonacoEditor
-      v-if="MonacoEditor"
-      :value="editorValue"
-      language="graphql"
-      :options="editorOptions"
-      @change="debouncedUpdateValue"
-    />
-  </div>
-  <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
-    <div class="modal-content" @click.stop>
-      <div class="modal-header">
-        <button @click="closeModal" class="close-button">
-          <i class="fas fa-times"></i>
+  <ClientOnly>
+    <div class="graphql-editor">
+      <div class="editor-header">
+        <button @click="openModal" class="pop-out-button">
+          <i class="fas fa-expand"></i> Expand Editor
         </button>
       </div>
       <MonacoEditor
         v-if="MonacoEditor"
         :value="editorValue"
         language="graphql"
-        :options="modalEditorOptions"
+        :options="editorOptions"
         @change="debouncedUpdateValue"
       />
     </div>
-  </div>
+    <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <button @click="closeModal" class="close-button">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <MonacoEditor
+          v-if="MonacoEditor"
+          :value="editorValue"
+          language="graphql"
+          :options="modalEditorOptions"
+          @change="debouncedUpdateValue"
+        />
+      </div>
+    </div>
+  </ClientOnly>
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch, shallowRef, defineAsyncComponent } from "vue";
