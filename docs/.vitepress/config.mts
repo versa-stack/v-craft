@@ -33,10 +33,10 @@ export default defineConfig({
       },
     },
     optimizeDeps: {
-      include: ["@formkit/vue", "monaco-editor"],
+      include: ["@formkit/vue"],
     },
     ssr: {
-      noExternal: ["@formkit/vue", "monaco-editor"],
+      noExternal: ["@formkit/vue"],
     },
   },
 });

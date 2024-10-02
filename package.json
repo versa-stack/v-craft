@@ -24,8 +24,6 @@
     "graphql-tag": "^2.12.6",
     "jsonpath": "^1.1.1",
     "lodash-es": "^4.17.21",
-    "monaco-editor": "^0.51.0",
-    "monaco-editor-vue3": "^0.1.10",
     "pinia": "^2.0.23",
     "uuid": "^9.0.0",
     "vue": "^3.5.37"
@@ -47,8 +45,6 @@
     "graphql-tag": "^2.12.6",
     "jsonpath": "^1.1.1",
     "lodash-es": "^4.17.21",
-    "monaco-editor": "^0.52.0",
-    "monaco-editor-vue3": "^0.1.10",
     "nodemon": "^3.1.7",
     "pinia": "^2.2.2",
     "postcss": "^8.4.47",

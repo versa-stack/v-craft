@@ -30,20 +30,10 @@ module.exports = defineConfig({
         "graphql",
         "graphql-tag",
         "lodash-es",
-        "monaco-editor",
-        "monaco-editor-vue3",
-        /^monaco-editor\/.*/,
         "pinia",
         "uuid",
         "jsonpath",
       ],
-      output: {
-        globals: {
-          vue: "Vue",
-          "monaco-editor": "monaco"
-        },
-        manualChunks: undefined,
-      },
     },
     commonjsOptions: {
       include: [],
@@ -64,8 +54,6 @@ module.exports = defineConfig({
       "graphql",
       "graphql-tag",
       "lodash-es",
-      "monaco-editor",
-      "monaco-editor-vue3",
       "pinia",
       "uuid",
       "jsonpath",
