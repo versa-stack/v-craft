@@ -76,14 +76,19 @@ jobs:
         # Get the current version
         CURRENT_VERSION=$(node -p "require('./package.json').version")
 
-        # Extract the base version (without prerelease identifier)
+        # Extract the base version and alpha number
         BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/-alpha\.[0-9]+$//')
+        ALPHA_NUMBER=$(echo $CURRENT_VERSION | sed -nE 's/.*-alpha\.([0-9]+)$/\1/p')
 
-        # Increment the patch version
-        NEW_BASE_VERSION=$(echo $BASE_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+        # Increment the alpha number
+        if [ -z "$ALPHA_NUMBER" ]; then
+          NEW_ALPHA_NUMBER=0
+        else
+          NEW_ALPHA_NUMBER=$((ALPHA_NUMBER + 1))
+        fi
 
-        # Add alpha prerelease identifier
-        NEW_VERSION="${NEW_BASE_VERSION}-alpha.0"
+        # Construct the new version
+        NEW_VERSION="${BASE_VERSION}-alpha.${NEW_ALPHA_NUMBER}"
 
         # Update package.json with the new version
         sed -i 's/"version": ".*"/"version": "'"${NEW_VERSION}"'"/' package.json
