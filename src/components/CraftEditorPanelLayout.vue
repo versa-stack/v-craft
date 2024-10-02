@@ -2,28 +2,28 @@
   <div class="fvc-panel-manager">
     <div class="fvc-grid-panel fvc-panel-left">
       <!-- <CraftErrorBoundary> -->
-        <CraftEditorPanelBlueprints :blueprints="blueprints" @closeClick="" />
+      <CraftEditorPanelBlueprints :blueprints="blueprints" @closeClick="" />
       <!-- </CraftErrorBoundary> -->
     </div>
-    <div class="fvc-grid-panel fvc-panel-top">
+    <div v-if="actions.length > 0" class="fvc-grid-panel fvc-panel-top">
       <!-- <CraftErrorBoundary> -->
-        <CraftEditorPanelActions
-          :actions="actions"
-          @action-click="(e) => emit('action-click', e)"
-        />
+      <CraftEditorPanelActions
+        :actions="actions"
+        @action-click="(e) => emit('action-click', e)"
+      />
       <!-- </CraftErrorBoundary> -->
     </div>
     <div class="fvc-panel-center" @click.stop="deselectNodes">
       <!-- <CraftErrorBoundary> -->
-        <slot></slot>
+      <slot></slot>
       <!-- </CraftErrorBoundary> -->
     </div>
     <div class="fvc-grid-panel fvc-panel-right">
       <!-- <CraftErrorBoundary> -->
-        <CraftEditorPanelLayers />
+      <CraftEditorPanelLayers />
       <!-- </CraftErrorBoundary> -->
       <!-- <CraftErrorBoundary> -->
-        <CraftEditorPanelSettings />
+      <CraftEditorPanelSettings />
       <!-- </CraftErrorBoundary> -->
     </div>
     <div class="fvc-grid-panel fvc-panel-bottom"></div>
@@ -33,14 +33,19 @@
 import {
   BlueprintsLibrary,
   CraftEditorAction,
-  CraftEditorActionPayload
+  CraftEditorActionPayload,
 } from "../lib/model";
 import { useEditor } from "../store/editor";
 
-defineProps<{
-  blueprints: BlueprintsLibrary;
-  actions: CraftEditorAction[];
-}>();
+withDefaults(
+  defineProps<{
+    blueprints: BlueprintsLibrary;
+    actions?: CraftEditorAction[];
+  }>(),
+  {
+    actions: () => [],
+  }
+);
 
 const emit = defineEmits<{
   (e: "action-click", payload: CraftEditorActionPayload): void;
@@ -48,12 +53,11 @@ const emit = defineEmits<{
 
 const editor = useEditor();
 const deselectNodes = () => {
-  editor.selectNode(null)
+  editor.selectNode(null);
 };
-
 </script>
 <style lang="scss" scoped>
-@use 'sass:color';
+@use "sass:color";
 @import "../assets/editorPanelLayout";
 
 .fvc-panel-manager {
