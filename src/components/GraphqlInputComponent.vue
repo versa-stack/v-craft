@@ -44,7 +44,6 @@ const props = defineProps({
 const MonacoEditor = shallowRef();
 
 onMounted(async () => {
-  await import("../config/monaco-config");
   MonacoEditor.value = defineAsyncComponent(() => import("monaco-editor-vue3"));
 });
 

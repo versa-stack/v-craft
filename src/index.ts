@@ -22,6 +22,7 @@ export type { EditorState, EditorStoreType } from "./store/editor";
 export { useIndicator } from "./store/indicator";
 export type { IndicatorState, IndicatorStoreType } from "./store/indicator";
 export { formkitConfig };
+export * from "./config/monaco-config"
 
 import './index.css';
 

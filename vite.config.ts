@@ -14,7 +14,7 @@ module.exports = defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
       fileName: (format) => `${packageName}.${format}.js`,
-      formats: ["es"],
+      formats: ["es", "umd"],
       name: packageName,
     },
     rollupOptions: {
@@ -40,6 +40,7 @@ module.exports = defineConfig({
       output: {
         globals: {
           vue: "Vue",
+          "monaco-editor": "monaco"
         },
         manualChunks: undefined,
       },

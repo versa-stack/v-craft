@@ -8,13 +8,17 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import {
   CraftEditorActionPayload,
   CraftEditorConfig,
-  useEditor
+  setupMonaco,
+  useEditor,
 } from "@versa-stack/v-craft";
 import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
+import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 
 const editor = useEditor();
 editor.enable();
+
+setupMonaco(new editorWorker());
 
 const removeParentField = (obj) => {
   if (Array.isArray(obj)) {
