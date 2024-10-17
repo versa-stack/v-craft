@@ -126,9 +126,6 @@ const removePatch = (index: number) => {
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/base";
-@import "../assets/panel";
-
 .patches-input {
   display: flex;
   flex-direction: column;
@@ -140,7 +137,7 @@ const removePatch = (index: number) => {
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   padding: 1rem;
-  border: 1px solid $border-color;
+  border: 1px solid var(--v-craft-border-color);
   border-radius: 4px;
 }
 </style>

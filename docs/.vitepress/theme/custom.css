@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 #VPContent.VPContent.has-sidebar {
   padding-right: 0;
 }

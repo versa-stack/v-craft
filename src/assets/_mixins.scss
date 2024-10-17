@@ -1,0 +1,19 @@
+@mixin v-craft-scrollable {
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--v-craft-scrollbar-track);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--v-craft-scrollbar-thumb);
+    border-radius: 4px;
+    &:hover {
+      background: var(--v-craft-scrollbar-thumb-hover);
+    }
+  }
+}

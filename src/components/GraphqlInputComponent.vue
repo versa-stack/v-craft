@@ -81,5 +81,5 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/graphqlInput";
+@use "../assets/graphqlInput";
 </style>

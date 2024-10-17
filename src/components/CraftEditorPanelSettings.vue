@@ -1,25 +1,25 @@
 <template>
   <div
     ref="panel"
-    class="fvc-panel fvc-settings-panel"
+    class="v-craft-panel v-craft-settings-panel"
     @click.prevent.stop="() => false"
   >
-    <h3 class="fvc-title">component inspector</h3>
+    <h3 class="v-craft-title">component inspector</h3>
     <div v-if="!selectedNode">
       <p>select a component to inspect</p>
     </div>
-    <div class="fvc-properties" :class="{ 'fvc-visible': selectedNode }">
+    <div class="v-craft-properties" :class="{ 'v-craft-visible': selectedNode }">
       <h4>{{ nodeName }}</h4>
-      <div v-if="schema?.length" class="fvc-settings">
+      <div v-if="schema?.length" class="v-craft-settings">
         <CraftEditorPanelNodeSettings
           :craftNode="selectedNode"
           :schema="schema"
           @update:props="handlePropsUpdate"
         />
       </div>
-      <div class="fvc-actions" data-type="button">
+      <div class="v-craft-actions" data-type="button">
         <button
-          class="formkit-input fvc-delete"
+          class="formkit-input v-craft-delete"
           v-if="deleteable"
           @click.prevent="removeNode"
         >
@@ -33,7 +33,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from "pinia";
 import { computed, inject, type ComputedRef } from "vue";
-import "../index.css";
 import CoreResolver from "../lib/CraftNodeResolver";
 import { useEditor } from "../store/editor";
 
@@ -75,5 +74,4 @@ const handlePropsUpdate = (newProps: Record<string, any>) => {
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/panel";
 </style>

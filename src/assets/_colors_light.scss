@@ -1,0 +1,35 @@
+@use "sass:color";
+@use "colors_dark" as *;
+
+$colors-light: (
+  'blue': $blue,
+  'red': $red,
+  'green': $green,
+  'gray-dark': color.adjust($gray-dark, $lightness: 80%),
+  'gray-medium': color.adjust($gray-medium, $lightness: 50%),
+  'gray-light': color.adjust($gray-light, $lightness: 10%),
+  'gray-darkest': color.adjust($gray-darkest, $lightness: 90%),
+  'white': $white,
+  'background-color': color.adjust($gray-darkest, $lightness: 95%),
+  'background-color-lighter-10': $white,
+  'background-color-darker-10': color.adjust($gray-darkest, $lightness: 90%),
+  'input-background': color.adjust($gray-darkest, $lightness: 98%),
+  'input-border': color.adjust($gray-darkest, $lightness: 80%),
+  'text-color': color.adjust($gray-darkest, $lightness: 10%),
+  'text-color-blue': $text-color,
+  'error-color': $red,
+  'blue-darker-25': color.adjust($blue, $lightness: -25%),
+  'blue-darker-30': color.adjust($blue, $lightness: -30%),
+  'blue-lighter-5': color.adjust($blue, $lightness: 5%),
+  'blue-lighter-10': color.adjust($blue, $lightness: 10%),
+  'blue-lighter-15': color.adjust($blue, $lightness: 15%),
+  'blue-lighter-20': color.adjust($blue, $lightness: 20%),
+  'blue-transparent-70': rgba($blue, 0.7),
+  'blue-transparent-20': rgba($blue, 0.2),
+  'gray-dark-darker-10': color.adjust($gray-dark, $lightness: 70%),
+  'gray-dark-darker-5': color.adjust($gray-dark, $lightness: 75%),
+  'gray-dark-lighter-10': color.adjust($gray-dark, $lightness: 90%),
+  'gray-dark-transparent-50': rgba(color.adjust($gray-dark, $lightness: 80%), 0.5),
+  'gray-medium-darker-10': color.adjust($gray-medium, $lightness: 40%),
+  'gray-medium-lighter-15': color.adjust($gray-medium, $lightness: 65%)
+);

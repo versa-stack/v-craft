@@ -1,19 +1,23 @@
 <template>
-  <div class="fvc-panel fvc-blueprints-panel">
-    <h3 class="fvc-title">blueprints</h3>
-    <div v-for="group in blueprints.groups">
-      <h3>{{ group.label }}</h3>
-      <CraftEditorBlueprint
-        v-for="(craftNode, key) in blueprintsWithDefaults(group)"
-        :craftNode="craftNode"
-        :key="key"
-      >
-        <div class="fvc-blueprint">
-          <div class="fvc-label">
-            {{ craftNode.label }}
-          </div>
+  <div class="v-craft-panel v-craft-blueprints-panel">
+    <h3 class="v-craft-title">blueprints</h3>
+    <div class="v-craft-panel-content">
+      <div v-for="group in blueprints.groups">
+        <h4>{{ group.label }}</h4>
+        <div class="flex flex-wrap gap-2 p-1">
+          <CraftEditorBlueprint
+            v-for="(craftNode, key) in blueprintsWithDefaults(group)"
+            :craftNode="craftNode"
+            :key="key"
+          >
+            <div class="v-craft-blueprint">
+              <div class="v-craft-blueprint-label">
+                {{ craftNode.label }}
+              </div>
+            </div>
+          </CraftEditorBlueprint>
         </div>
-      </CraftEditorBlueprint>
+      </div>
     </div>
   </div>
 </template>
@@ -48,5 +52,37 @@ defineEmits<{
 }>();
 </script>
 <style lang="scss" scoped>
-@import "../assets/editorPanelBlueprints";
+.v-craft-blueprints-panel {
+  min-width: 15em;
+  max-width: 15em;
+  width: 15em;
+
+  .v-craft-blueprint {
+    text-align: center;
+    padding: 0.25em;
+    position: relative;
+    border: 1px solid var(--v-craft-gray-medium);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: var(--v-craft-background-color-lighter-10)
+  }
+
+  .v-craft-blueprint-label {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: var(--v-craft-gray-darker);
+  }
+
+  h4 {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: var(--v-craft-gray-medium);
+    margin-bottom: 0.75em;
+    margin-top: 2em;
+  }
+}
 </style>

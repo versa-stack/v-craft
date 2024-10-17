@@ -1,17 +1,12 @@
-@use 'sass:color';
-@import "./base";
-
-$transition-duration: 0.3s;
-
-.fvc-node {
+.v-craft-node {
   position: relative;
-  transition: all $transition-duration ease;
+  transition: all var(--v-craft-transition-duration) ease;
   cursor: pointer;
   box-sizing: border-box;
   border: 1px solid transparent;
 }
 
-.fvc-node::after {
+.v-craft-node::after {
   content: "";
   position: absolute;
   top: 0;
@@ -19,16 +14,17 @@ $transition-duration: 0.3s;
   right: 0;
   bottom: 0;
   border: 1px solid transparent;
-  transition: border-color $transition-duration ease-in-out, box-shadow $transition-duration ease-in-out;
+  transition: border-color var(--v-craft-transition-duration) ease-in-out,
+    box-shadow var(--v-craft-transition-duration) ease-in-out;
   pointer-events: none;
 }
 
-.fvc-node::before {
+.v-craft-node::before {
   content: "";
   align-items: center;
-  background-color: $blue;
+  background-color: var(--v-craft-blue);
   bottom: 0px;
-  color: $white;
+  color: var(--v-craft-white);
   display: flex;
   font-family: Arial, sans-serif;
   font-size: 12px;
@@ -42,79 +38,89 @@ $transition-duration: 0.3s;
   position: absolute;
   text-align: center;
   text-transform: none;
-  transition: opacity $transition-duration ease-in-out;
+  transition: opacity var(--v-craft-transition-duration) ease-in-out;
   z-index: 100;
 }
 
-// Rest of the code remains unchanged
-.fvc-node.fvc-canvas.fvc-other-node-dragged::before,
-.fvc-node:hover:not(:has(.fvc-node:hover))::before,
-.fvc-node-selected::before {
-    opacity: 0.5;
-}
-
-.fvc-node.fvc-canvas:hover {
-  border: 1px solid color.adjust($blue, $lightness: -30%);
-}
-
-.fvc-node-selected::before {
+.v-craft-node.v-craft-canvas.v-craft-other-node-dragged::before,
+.v-craft-node:hover:not(:has(.v-craft-node:hover))::before,
+.v-craft-node-selected::before {
   opacity: 0.5;
 }
 
-.fvc-node:hover:not(:has(.fvc-node:hover))::after {
-  border-color: color.adjust($blue, $lightness: -25%);
-  box-shadow: 0 0 0 1px $blue;
+.v-craft-node.v-craft-canvas:hover {
+  border: 1px solid var(--v-craft-blue-lighter-10);
 }
 
-.fvc-node.fvc-canvas:hover:not(:has(.fvc-node:hover)):not(.fvc-node-selected)::after {
-  box-shadow: 0 0 0.5em 0.1em rgba($blue, 0.2);
-}
-.fvc-node-selected::after {
-  border: 1px solid $blue;
-  box-shadow: 0 0 0 1px $blue;
-}
-.fvc-node-selected:not(:hover)::after {
-  border: 1px solid $blue;
-  box-shadow: 0 0 0.5em 0.1em rgba($blue, 0.2);
-}
-.fvc-node-selected::after {
-  border: 1px solid $blue;
-  box-shadow: 0 0 0 1px $blue;
+.dark .v-craft-node.v-craft-canvas:hover {
+  border: 1px solid var(--v-craft-blue-darker-30);
 }
 
-.fvc-node.fvc-canvas.fvc-other-node-dragged::after {
-  border: 2px dashed $blue;
+
+.v-craft-node-selected::before {
+  opacity: 0.5;
 }
 
-.fvc-node.fvc-canvas.fvc-empty {
-  align-items: center;
-  justify-content: center;
-  display: flex;
+.v-craft-node:hover:not(:has(.v-craft-node:hover))::after {
+  border-color: var(--v-craft-blue-lighter-20);
+  box-shadow: 0 0 0 1px var(--v-craft-blue);
 }
 
-.fvc-node.fvc-canvas .fvc-drop-text {
-  border: 2px dashed $gray-medium;
-  background-color: rgba($gray-dark, 0.5);
-  color: $text-color;
-  padding: 2em;
+.dark .v-craft-node:hover:not(:has(.v-craft-node:hover))::after {
+  border-color: var(--v-craft-blue-darker-25);
+  box-shadow: 0 0 0 1px var(--v-craft-blue);
+}
+
+.v-craft-node.v-craft-canvas:hover:not(:has(.v-craft-node:hover)):not(
+    .v-craft-node-selected
+  )::after {
+  box-shadow: 0 0 0.5em 0.1em var(--v-craft-blue-transparent-20);
+}
+
+.v-craft-node-selected::after {
+  border: 1px solid var(--v-craft-blue);
+  box-shadow: 0 0 0 1px var(--v-craft-blue);
+}
+
+.v-craft-node-selected:not(:hover)::after {
+  border: 1px solid var(--v-craft-blue);
+  box-shadow: 0 0 0.5em 0.1em var(--v-craft-blue-transparent-20);
+}
+
+.v-craft-node-selected::after {
+  border: 1px solid var(--v-craft-blue);
+  box-shadow: 0 0 0 1px var(--v-craft-blue);
+}
+
+.v-craft-node.v-craft-canvas.v-craft-other-node-dragged::after {
+  border: 2px dashed var(--v-craft-blue);
+}
+
+.v-craft-node.v-craft-canvas:first-child {
+  border: none !important;
+}
+
+.v-craft-node.v-craft-canvas .v-craft-drop-text {
+  border: 2px dashed var(--v-craft-gray-medium);
+  color: var(--v-craft-text-color);
+  padding: 1.25em;
   width: 100%;
   text-align: center;
 }
 
-.fvc-node.fvc-canvas.fvc-other-node-dragged {
-  background-color: $gray-dark!important;
-  padding: 2em;
-  margin: 2em 0!important;
+.v-craft-node.v-craft-canvas.v-craft-other-node-dragged {
+  padding: 1.25em;
+  margin: 1.25em 0 !important;
 }
 
-.fvc-node-selected {
+.v-craft-node-selected {
   z-index: 1;
 }
 
-.fvc-node.fvc-drag-over {
-  box-shadow: 0 0 0 2px $blue;
+.v-craft-node.v-craft-drag-over {
+  box-shadow: 0 0 0 2px var(--v-craft-blue);
 }
 
-.fvc-node.fvc-dragging {
+.v-craft-node.v-craft-dragging {
   opacity: 0.7;
 }
