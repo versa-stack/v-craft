@@ -6,11 +6,11 @@
     :is="resolvedNode.componentName"
     v-bind="{ ...defaultProps, ...craftNode.props }"
     :class="{
-      'fvc-node-selected': isSelected,
-      'fvc-node': editor.enabled,
-      'fvc-canvas': craftNodeIsCanvas(craftNode),
-      'fvc-empty': craftNode.children?.length == 0,
-      'fvc-other-node-dragged':
+      'v-craft-node-selected': isSelected,
+      'v-craft-node': editor.enabled,
+      'v-craft-canvas': craftNodeIsCanvas(craftNode),
+      'v-craft-empty': craftNode.children?.length == 0,
+      'v-craft-other-node-dragged':
         editor.draggedNode &&
         !craftNodeIsAncestorOf(editor.draggedNode, craftNode),
     }"
@@ -38,7 +38,7 @@
     </template>
 
     <div
-      class="fvc-drop-text"
+      class="v-craft-drop-text"
       v-if="craftNodeIsCanvas(craftNode) && !craftNode.children?.length"
     >
       Drop a component here.
@@ -88,9 +88,9 @@ const craftNodeClick = () => {
 };
 </script>
 <style lang="scss" scoped>
-@import "../assets/craftNodeEditor";
+@use "../assets/craftNodeEditor";
 
-.fvc-node::before {
+.v-craft-node::before {
   content: attr(data-node-name);
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <fieldset
-    class="fvc-panel-settings formkit-fieldset fvc-scrollable-content"
+    class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
     v-if="formSchema"
   >
     <legend class="formkit-legend">Properties</legend>

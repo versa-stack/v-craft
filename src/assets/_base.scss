@@ -1,14 +1,27 @@
-$blue: #1473e6;
-$red: #ff3366;
-$green: rgb(15, 177, 88);
-$gray-dark: #2c2c2c;
-$gray-medium: #4b4b4b;
-$gray-light: #8e8e8e;
-$white: #ffffff;
-$font: "Arial", sans-serif;
+@use "sass:meta";
+@use "sass:map";
 
-$background-color: #1e1e1e;
-$input-background: #2d2d2d;
-$input-border: #3a3a3a;
-$text-color: #e0e0e0;
-$error-color: $red;
+@use "variables" as variables;
+@use "colors_dark" as colors_dark;
+@use "colors_light" as colors_light;
+
+:root {
+  @each $key, $value in colors_light.$colors-light {
+    --v-craft-#{$key}: #{$value};
+  }
+
+  @each $variable, $value in meta.module-variables(variables) {
+    @if meta.type-of($value) == "color" or
+        meta.type-of($value) == "number" or
+        meta.type-of($value) == "string"
+    {
+      --v-craft-#{$variable}: #{$value};
+    }
+  }
+}
+
+html.dark {
+  @each $key, $value in colors_dark.$colors-dark {
+    --v-craft-#{$key}: #{$value};
+  }
+}

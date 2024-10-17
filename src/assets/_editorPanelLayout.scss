@@ -1,8 +1,0 @@
-@use 'sass:color';
-@import './base';
-@import './panel';
-
-
-$panel-manager-background: color.adjust($background-color, $lightness: -2%);
-$border-color: $input-border;
-$title-color: $gray-light;
