@@ -62,6 +62,13 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     globals: true,
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/**/*.{test,spec}.{js,ts}',
+      ],
+    },
   },
   optimizeDeps: {
     exclude: [

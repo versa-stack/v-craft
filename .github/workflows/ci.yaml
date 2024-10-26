@@ -3,11 +3,13 @@ name: CI/CD
 on:
   push:
     branches: [main, develop]
+    tags:
+    - 'v*'
   pull_request:
     branches: [main, develop]
 
 jobs:
-  build-and-deploy:
+  build-test-and-deploy:
     runs-on: ubuntu-latest
     permissions: write-all
 
@@ -25,6 +27,14 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
+
+    - name: Run tests with coverage
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+      run: npm run test:coverage
+
+    - name: Run tests without coverage
+      if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop'
+      run: npm run test
 
     - name: Build package
       run: npm run build
@@ -45,26 +55,12 @@ jobs:
         publish_dir: ./docs/.vitepress/dist
         destination_dir: ./
 
-    - name: Deploy develop docs to GitHub Pages
-      if: github.ref == 'refs/heads/develop' && steps.build_docs.outcome == 'success'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/.vitepress/dist
-        destination_dir: ./develop
-
     - name: Authenticate with npm
       run: |
         echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
         npm whoami
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-    # - name: Publish to npm (main branch)
-    #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    #   run: npm publish
-    #   env:
-    #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     - name: Publish alpha version to npm (develop branch)
       if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
@@ -98,6 +94,35 @@ jobs:
 
         git add package.json
         git commit -m "Bump version to ${NEW_VERSION} [skip ci]"
+        git push
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish stable version to npm (on tag)
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        npm config set git-tag-version false
+
+        # Get version from tag
+        VERSION=${GITHUB_REF#refs/tags/v}
+
+        # Check if this version is already published
+        if npm view $(node -p "require('./package.json').name")@$VERSION version &> /dev/null; then
+          echo "Version $VERSION is already published. Skipping."
+          exit 0
+        fi
+
+        # Update package.json with the stable version
+        sed -i 's/"version": ".*"/"version": "'"${VERSION}"'"/' package.json
+
+        # Publish to npm
+        npm publish --access public
+
+        git add package.json
+        git commit -m "Release version ${VERSION} [skip ci]"
         git push
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
