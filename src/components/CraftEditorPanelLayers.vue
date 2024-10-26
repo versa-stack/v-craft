@@ -4,17 +4,16 @@
     <div class="v-craft-layers">
       <ul class="v-craft-node-layers">
         <CraftEditorPanelNodeLayer
-          v-for="(craftNode, key) in nodes"
+          v-for="(craftNode, key) in nodeTree"
           :key="key"
           :craftNode="craftNode"
           @layer-click="layerClick"
-          
         />
       </ul>
     </div>
   </div>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends object">
 import { storeToRefs } from "pinia";
 import { useEditor } from "../store/editor";
 import { CraftNode } from "../lib/craftNode";
@@ -23,12 +22,11 @@ defineOptions({
   name: "CraftEditorPanelLayers",
 });
 
-const editor = useEditor();
-const { nodes } = storeToRefs(editor);
+const editor = useEditor<T>()();
+const { nodeTree } = storeToRefs(editor);
 
-const layerClick = (craftNode: CraftNode) => {
+const layerClick = (craftNode: CraftNode<T>) => {
   editor.selectNode(craftNode);
-  
 };
 </script>
 
@@ -56,5 +54,4 @@ ul.v-craft-node-layers {
   padding: 0;
   list-style-type: none;
 }
-
 </style>

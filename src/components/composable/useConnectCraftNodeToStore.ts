@@ -1,43 +1,27 @@
 import { storeToRefs } from "pinia";
-import {
-  ComponentPublicInstance,
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  Ref,
-  watchEffect,
-} from "vue";
+import { ComponentPublicInstance, computed, Ref, watchEffect } from "vue";
 import { CraftNode, craftNodeIsDraggable } from "../../lib/craftNode";
 import { useEditor } from "../../store/editor";
 
-export default (
-  craftNode: CraftNode,
-  nodeRef: Ref<ComponentPublicInstance<HTMLElement | null>>
+export default <T extends object>(
+  craftNode: CraftNode<T>,
+  nodeRef: Ref<
+    ComponentPublicInstance<HTMLElement> | null,
+    ComponentPublicInstance<HTMLElement> | null
+  >
 ): {
   selectNode: () => void;
   isDraggable: Ref<boolean>;
   isSelected: Ref<boolean>;
 } => {
-  const editor = useEditor();
+  const editor = useEditor<T>()();
   const { enabled, selectedUuid } = storeToRefs(editor);
 
   watchEffect(() => {
-    if (nodeRef.value?.$el) {
+    if (nodeRef?.value?.$el) {
       editor.setNodeRef(craftNode, nodeRef.value.$el);
     }
   });
-
-  onMounted(() => {
-    document.addEventListener("click", handleDocumentClick);
-  });
-
-  onBeforeUnmount(() => {
-    document.removeEventListener("click", handleDocumentClick);
-  });
-
-  const handleDocumentClick = () => {
-    // Implement if needed
-  };
 
   const isSelected = computed<boolean>(
     () => selectedUuid.value === craftNode.uuid

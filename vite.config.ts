@@ -1,11 +1,12 @@
-const path = require("path");
-const { defineConfig } = require("vite");
+/// <reference types="vitest" />
+import path from "path";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import dts from "vite-plugin-dts";
 
 const packageName = "v-craft";
 
-module.exports = defineConfig({
+export default defineConfig({
   plugins: [vue(), dts()],
   build: {
     sourcemap: true,
@@ -51,7 +52,10 @@ module.exports = defineConfig({
     emptyOutDir: true,
     reportCompressedSize: false,
   },
-
+  test: {
+    environment: "happy-dom",
+    globals: true,
+  },
   optimizeDeps: {
     exclude: [
       "@apollo/client",

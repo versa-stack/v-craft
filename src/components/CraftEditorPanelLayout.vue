@@ -15,15 +15,15 @@
     <div class="v-craft-grid-panel v-craft-panel-bottom"></div>
   </div>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends object">
 import { BlueprintsLibrary } from "../lib/model";
 import { useEditor } from "../store/editor";
 
 defineProps<{
-  blueprints: BlueprintsLibrary;
+  blueprints: BlueprintsLibrary<T>;
 }>();
 
-const editor = useEditor();
+const editor = useEditor<T>()();
 const deselectNodes = () => {
   editor.selectNode(null);
 };

@@ -1,37 +1,42 @@
+import type { FormKitSchemaFormKit } from "@formkit/core";
 import { CraftNode, craftNodeIsCanvas, CraftNodeRules } from "./craftNode";
 
-export type CraftNodeComponentMap = {
+export type CraftNodeComponentMap<T extends object> = {
   componentName: string;
-  propsSchema?: Record<string, any>;
+  propsSchema?: T;
+  eventsSchema?: T;
   defaultProps?: Record<string, any>;
   rules?: CraftNodeRules;
 };
 
-export type CraftNodeResolverMap = Record<string, CraftNodeComponentMap>;
+export type CraftNodeResolverMap<T extends object> = Record<
+  string,
+  CraftNodeComponentMap<T>
+>;
 
-export class CraftNodeResolver {
-  resolverMap: CraftNodeResolverMap = {};
+export class CraftNodeResolver<T extends object = FormKitSchemaFormKit> {
+  resolverMap: CraftNodeResolverMap<T> = {};
 
-  constructor(resolverMap: Record<string, CraftNodeComponentMap> = {}) {
+  constructor(resolverMap: Record<string, CraftNodeComponentMap<T>> = {}) {
     this.setResolverMap(resolverMap);
   }
 
-  setResolverMap(resolverMap: Record<string, CraftNodeComponentMap>) {
+  setResolverMap(resolverMap: Record<string, CraftNodeComponentMap<T>>) {
     this.resolverMap = {};
     Object.entries(resolverMap).forEach(([key, value]) => {
       this.resolverMap[value.componentName] = value;
     });
   }
 
-  resolve(name: string): CraftNodeComponentMap {
+  resolve(name: string): CraftNodeComponentMap<T> {
     return this.resolverMap[name];
   }
 
-  getDefaultProps(craftNode: CraftNode): Record<string, any> {
+  getDefaultProps(craftNode: CraftNode<T>): Record<string, any> {
     return this.resolveNode(craftNode)?.defaultProps || {};
   }
 
-  resolveNode(craftNode: CraftNode): CraftNodeComponentMap {
+  resolveNode(craftNode: CraftNode<T>): CraftNodeComponentMap<T> {
     if (craftNodeIsCanvas(craftNode)) {
       return this.resolve(craftNode.props.component);
     }
@@ -39,11 +44,15 @@ export class CraftNodeResolver {
     return this.resolve(craftNode.componentName);
   }
 
-  getSchema(craftNode: CraftNode): Record<string, any> {
+  getSchema(craftNode: CraftNode<T>): Record<string, any> {
     return this.resolveNode(craftNode)?.propsSchema || {};
   }
 
-  getRules(craftNode: CraftNode): CraftNodeRules {
+  getEventsSchema(craftNode: CraftNode<T>): Record<string, any> {
+    return this.resolveNode(craftNode)?.eventsSchema || {};
+  }
+
+  getRules(craftNode: CraftNode<T>): CraftNodeRules {
     return this.resolveNode(craftNode)?.rules || {};
   }
 }

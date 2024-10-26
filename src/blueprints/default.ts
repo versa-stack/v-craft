@@ -67,6 +67,7 @@ export const defaultBlueprints = {
       componentName: "CraftCanvas",
       props: {
         component: "CraftGraphqlQueryWrapper",
+        variables: "",
         map: {
           type: "list",
           fromPath: "$.countries[*]",

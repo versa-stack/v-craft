@@ -8,7 +8,14 @@ import { CraftEditorConfig, useEditor } from "@versa-stack/v-craft";
 import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
 
-const editor = useEditor();
+const editor = useEditor()();
+
+const eventsContext = {
+  editor,
+};
+
+editor.setEventsContext(eventsContext);
+
 editor.enable();
 
 const config: CraftEditorConfig = {

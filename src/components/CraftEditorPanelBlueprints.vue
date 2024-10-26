@@ -21,25 +21,27 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends object">
 import { ComputedRef, computed, inject } from "vue";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { CraftNode } from "../lib/craftNode";
 import { BlueprintGroup, BlueprintsLibrary } from "../lib/model";
 
 defineProps<{
-  blueprints: BlueprintsLibrary;
+  blueprints: BlueprintsLibrary<T>;
 }>();
 
-const resolver = inject<ComputedRef<CraftNodeResolver>>("resolver");
+const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver");
 
-const blueprintsWithDefaults = (group: BlueprintGroup) => {
+const blueprintsWithDefaults = (group: BlueprintGroup<T>) => {
   if (!resolver?.value) return [];
 
   const returnVal: any[] = [];
   Object.keys(group.blueprints).forEach((key) => {
     const blueprint = group.blueprints[key];
-    const defaultProps = resolver.value.getDefaultProps(blueprint as CraftNode);
+    const defaultProps = resolver.value.getDefaultProps(
+      blueprint as CraftNode<T>
+    );
     blueprint.props = { ...defaultProps, ...blueprint.props };
     returnVal.push(blueprint);
   });
@@ -66,7 +68,7 @@ defineEmits<{
     display: flex;
     align-items: center;
     cursor: pointer;
-    background-color: var(--v-craft-background-color-lighter-10)
+    background-color: var(--v-craft-background-color-lighter-10);
   }
 
   .v-craft-blueprint-label {

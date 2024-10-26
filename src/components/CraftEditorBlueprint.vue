@@ -7,12 +7,12 @@
     <slot></slot>
   </div>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends object">
 import { CraftNode } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
 import { useIndicator } from "../store/indicator";
 
-const editor = useEditor();
+const editor = useEditor<T>()();
 const indicator = useIndicator();
 
 defineOptions({
@@ -20,7 +20,7 @@ defineOptions({
 });
 
 const props = defineProps<{
-  craftNode: CraftNode;
+  craftNode: CraftNode<T>;
 }>();
 
 const handleDragStart = (e: MouseEvent) => {

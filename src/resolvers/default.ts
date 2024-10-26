@@ -1,10 +1,20 @@
-import { CraftNode, CraftNodeResolver, CraftNodeResolverMap } from "../index";
-import flexContainerSchema from "./property-schema/CraftComponentFlexContainer";
+import { CraftNode, CraftNodeResolver } from "../index";
 import boxModelContainerSchema from "./property-schema/CraftComponentBoxModelContainer";
+import flexContainerSchema from "./property-schema/CraftComponentFlexContainer";
 
 export const defaultResolvers = {
   CraftComponentSimpleText: {
     componentName: "CraftComponentSimpleText",
+    eventsSchema: {
+      $el: "div",
+      children: [
+        {
+          $formkit: "textarea",
+          name: "click",
+          label: "onClick"
+        }
+      ]
+    },
     propsSchema: [
       {
         $formkit: "select",
@@ -54,15 +64,17 @@ export const defaultResolvers = {
       },
     ],
     rules: {
-      canMoveIn(
-        craftNode: CraftNode,
-        targetNode: CraftNode,
-        resolver: CraftNodeResolver
+      canMoveIn<T extends object>(
+        craftNode: CraftNode<T>,
+        targetNode: CraftNode<T>,
+        resolver: CraftNodeResolver<T>
       ) {
         if (
           craftNode.componentName === defaultResolvers.CraftCanvas.componentName
         ) {
-          craftNode = resolver.resolve(craftNode.props.component) as CraftNode;
+          craftNode = resolver.resolve(
+            craftNode.props.component
+          ) as CraftNode<T>;
         }
 
         return (
@@ -116,10 +128,10 @@ export const defaultResolvers = {
       },
     ],
     rules: {
-      canMoveInto(
-        craftNode: CraftNode,
-        targetNode: CraftNode,
-        resolver: CraftNodeResolver
+      canMoveInto<T extends object>(
+        craftNode: CraftNode<T>,
+        targetNode: CraftNode<T>,
+        resolver: CraftNodeResolver<T>
       ) {
         if (
           targetNode.componentName ===
@@ -127,7 +139,7 @@ export const defaultResolvers = {
         ) {
           targetNode = resolver.resolve(
             targetNode.props.component
-          ) as CraftNode;
+          ) as CraftNode<T>;
         }
 
         return (
@@ -135,9 +147,12 @@ export const defaultResolvers = {
           defaultResolvers.CraftGraphqlProvider.componentName
         );
       },
-      canMoveIn(craftNode: CraftNode, targetNode: CraftNode) {
+      canMoveIn<T extends object>(
+        craftNode: CraftNode<T>,
+        targetNode: CraftNode<T>
+      ) {
         return targetNode.children.length < 1;
       },
     },
   },
-} as CraftNodeResolverMap;
+};

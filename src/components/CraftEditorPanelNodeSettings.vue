@@ -1,9 +1,10 @@
 <template>
-  <fieldset
-    class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
-    v-if="formSchema"
-  >
-    <legend class="formkit-legend">Properties</legend>
+  <slot :data="{ schema, computedProps, craftNode }">
+    <fieldset
+      class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
+      v-if="schema"
+    >
+      <legend class="formkit-legend">Properties</legend>
       <FormKit
         :key="craftNode?.uuid"
         type="form"
@@ -11,31 +12,32 @@
         @input="handleFormInput"
         :actions="false"
       >
-        <FormKitSchema :schema="formSchema" />
+        <FormKitSchema :schema="(schema as FormKitSchemaFormKit)" />
       </FormKit>
-  </fieldset>
+    </fieldset>
+  </slot>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends object = FormKitSchemaFormKit">
 import { toRefs, computed, watch } from "vue";
 import { FormKit, FormKitSchema } from "@formkit/vue";
 import {
-  FormKitSchemaNode,
   FormKitGroupValue,
   FormKitNode,
+  FormKitSchemaFormKit,
 } from "@formkit/core";
 import cloneDeep from "lodash-es/cloneDeep";
 import debounce from "lodash-es/debounce";
 import { CraftNode } from "../lib/craftNode";
 
-interface Props {
-  craftNode?: CraftNode;
-  schema?: FormKitSchemaNode[];
+export interface Props<T extends object> {
+  craftNode?: CraftNode<T>;
+  schema?: T;
 }
 
-const debounceTime = 32;
-const props = withDefaults(defineProps<Props>(), {
-  schema: () => [],
+const debounceTime = 50;
+const props = withDefaults(defineProps<Props<T>>(), {
+  schema: () => ({} as T),
 });
 
 const { craftNode, schema } = toRefs(props);
@@ -45,24 +47,6 @@ const emit = defineEmits<{
 }>();
 
 const computedProps = computed(() => cloneDeep(craftNode.value?.props || {}));
-
-const formSchema = computed(() => {
-  const staticSchema = {
-    $el: "div",
-    attrs: {
-      class: "form-wrapper",
-    },
-    children: [],
-  };
-
-  if (schema.value && schema.value.length > 0) {
-    staticSchema.children = [...staticSchema.children, ...schema.value] as any;
-  }
-
-  return staticSchema;
-});
-
-
 const debouncedEmit = debounce((newValue: FormKitGroupValue) => {
   emit("update:props", newValue as Record<string, any>);
 }, debounceTime);

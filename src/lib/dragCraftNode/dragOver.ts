@@ -1,15 +1,15 @@
-import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
-import { DragCraftNodeContext } from "./drop";
 import {
-  craftNodeCanBeSiblingOf,
   craftNodeCanBeChildOf,
+  craftNodeCanBeSiblingOf,
   craftNodeIsCanvas,
 } from "../craftNode";
+import { DragCraftNodeContext } from "./drop";
+import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
 
-const handleElementDragOver = (
+const handleElementDragOver = <T extends object>(
   e: MouseEvent,
   el: HTMLElement,
-  { editor, indicator, craftNode, resolver }: DragCraftNodeContext
+  { editor, indicator, craftNode, resolver }: DragCraftNodeContext<T>
 ) => {
   if (!editor.draggedNode) {
     return;
@@ -25,10 +25,10 @@ const handleElementDragOver = (
   indicator.pointAfter(el);
 };
 
-const handleCanvasDragOver = (
+const handleCanvasDragOver = <T extends object>(
   e: MouseEvent,
   el: HTMLElement,
-  { editor, indicator, craftNode, resolver }: DragCraftNodeContext
+  { editor, indicator, craftNode, resolver }: DragCraftNodeContext<T>
 ) => {
   if (!editor.draggedNode) return;
 
@@ -47,14 +47,14 @@ const handleCanvasDragOver = (
   indicator.pointInside(el);
 };
 
-export default (
+export default <T extends object>(
   e: MouseEvent,
   el: HTMLElement,
-  context: DragCraftNodeContext
+  context: DragCraftNodeContext<T>
 ) => {
   if (craftNodeIsCanvas(context.craftNode.value)) {
-    handleCanvasDragOver(e, el, context);
+    handleCanvasDragOver<T>(e, el, context);
     return;
   }
-  handleElementDragOver(e, el, context);
+  handleElementDragOver<T>(e, el, context);
 };

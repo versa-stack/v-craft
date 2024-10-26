@@ -23,14 +23,14 @@
   content: "";
   align-items: center;
   background-color: var(--v-craft-blue);
-  bottom: 0px;
+  bottom: -20px;
   color: var(--v-craft-white);
   display: flex;
   font-family: Arial, sans-serif;
   font-size: 12px;
   font-weight: normal;
   height: 20px;
-  left: -1px;
+  left: 0px;
   line-height: 1.4em;
   opacity: 0;
   padding: 0 5px !important;
@@ -42,10 +42,16 @@
   z-index: 100;
 }
 
-.v-craft-node.v-craft-canvas.v-craft-other-node-dragged::before,
-.v-craft-node:hover:not(:has(.v-craft-node:hover))::before,
-.v-craft-node-selected::before {
+.v-craft-node.v-craft-canvas.v-craft-other-node-dragged::before {
   opacity: 0.5;
+}
+
+.v-craft-node:hover:not(:has(.v-craft-node:hover)):not(.v-craft-node-selected)::before {
+  opacity: 0.8;
+}
+
+.v-craft-node-selected::before {
+  opacity: 1;
 }
 
 .v-craft-node.v-craft-canvas:hover {
@@ -54,11 +60,6 @@
 
 .dark .v-craft-node.v-craft-canvas:hover {
   border: 1px solid var(--v-craft-blue-darker-30);
-}
-
-
-.v-craft-node-selected::before {
-  opacity: 0.5;
 }
 
 .v-craft-node:hover:not(:has(.v-craft-node:hover))::after {

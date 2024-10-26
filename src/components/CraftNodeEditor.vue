@@ -14,14 +14,15 @@
         editor.draggedNode &&
         !craftNodeIsAncestorOf(editor.draggedNode, craftNode),
     }"
-    :draggable="isDraggable"
+    :draggable="editor.enabled && isDraggable"
     @dragstart.stop="handleDragStart"
     @dragover.prevent.stop="handleDragOver"
     @drop.prevent.stop="handleDrop"
     @dragend.prevent.stop="handleDragEnd"
     @click.stop="craftNodeClick"
+    v-on="eventHandlers"
   >
-    <template v-if="craftNode.children.length">
+    <template v-if="craftNode.children?.length">
       <CraftNodeWrapper
         v-for="childNode in craftNode.children"
         :key="childNode.uuid"
@@ -29,9 +30,9 @@
       />
     </template>
 
-    <template v-if="craftNode.data?.type">
+    <template v-if="craftNodeData?.type">
       <CraftNodeWrapper
-        :viewer="true"
+        :viewOnly="true"
         :key="`${craftNode.uuid}-data`"
         :craftNode="craftNode"
       />
@@ -46,41 +47,40 @@
   </component>
 </template>
 
-<script setup lang="ts">
-import { computed, ComputedRef, ref } from "vue";
+<script setup lang="ts" generic="T extends object">
+import { ComponentPublicInstance, computed, ref, watch } from "vue";
 import { craftNodeIsAncestorOf, craftNodeIsCanvas } from "../lib/craftNode";
-import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { useEditor } from "../store/editor";
 import useConnectCraftNodeToStore from "./composable/useConnectCraftNodeToStore";
 import { useCraftNode } from "./composable/useCraftNode";
 import useDragCraftNode from "./composable/useDragCraftNode";
+import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 
 defineOptions({
   name: "CraftNodeEditor",
 });
 
-const editor = useEditor();
-const nodeRef = ref<any>(null);
-const { craftNode, resolvedNode, defaultProps, resolver } = useCraftNode();
+const editor = useEditor<T>()();
+const nodeRef = ref<ComponentPublicInstance<HTMLElement> | null>(null);
+const { craftNode, resolvedNode, defaultProps, resolver } = useCraftNode<T>();
 
-const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
+const craftNodeData = computed(() => editor.nodeDataMap[craftNode.value.uuid]);
+
+const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore<T>(
   craftNode.value,
   nodeRef
 );
-const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
-  useDragCraftNode(
-    craftNode,
-    nodeRef,
-    (resolver as ComputedRef<CraftNodeResolver>).value
-  );
 
-const nodeName = computed(() =>
-  craftNode.value
-    ? `${
-        resolver?.value?.resolveNode(craftNode.value)?.componentName ||
-        "Unknown"
-      }`
-    : ""
+const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
+  useDragCraftNode<T>(craftNode, nodeRef, resolver.value);
+
+const { eventHandlers } = useCraftNodeEvents<T>(
+  craftNode,
+  editor.eventsContext as any
+);
+
+const nodeName = computed(
+  () => resolver?.value?.resolveNode(craftNode.value)?.componentName
 );
 
 const craftNodeClick = () => {
