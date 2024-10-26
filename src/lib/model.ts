@@ -1,5 +1,4 @@
 import { CraftNodeResolverMap } from "./CraftNodeResolver";
-import { EditorStoreType } from "../store/editor";
 import { CraftNode, CraftNodeDatasource } from "./craftNode";
 
 export type CraftBlueprintData = {

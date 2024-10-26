@@ -47,10 +47,10 @@ export {
   PatchesInputComponent,
 };
 
-export type CraftDataListItem = {
+export type CraftDataListItem<T extends object> = {
   dataItem: any;
   dataIndex: number;
-  childNode: CraftNode;
+  childNode: CraftNode<T>;
   childIndex: number;
   key: string;
 };
