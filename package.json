@@ -62,7 +62,7 @@
   "files": [
     "dist"
   ],
-  "types": "./dist/src/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "module": "./dist/v-craft.es.js",
   "exports": {
     ".": {

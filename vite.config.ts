@@ -7,7 +7,14 @@ import dts from "vite-plugin-dts";
 const packageName = "v-craft";
 
 export default defineConfig({
-  plugins: [vue(), dts()],
+  plugins: [
+    vue(),
+    dts({
+      insertTypesEntry: true,
+      include: ["src/**/*.ts", "src/**/*.vue"],
+      outDir: "dist/types",
+    }),
+  ],
   build: {
     sourcemap: true,
     minify: "esbuild",
