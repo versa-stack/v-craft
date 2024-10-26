@@ -6,28 +6,31 @@ import { useEditor } from "../../store/editor";
 import { useIndicator } from "../../store/indicator";
 import { debounce } from "lodash-es";
 
-export default (
-  craftNode: Ref<CraftNode>,
+export default <T extends object>(
+  craftNode: Ref<CraftNode<T>>,
   nodeRef: Ref<any>,
-  resolver: CraftNodeResolver
+  resolver: CraftNodeResolver<T>
 ): {
   handleDragStart: (e: MouseEvent) => void;
   handleDragOver: (e: MouseEvent) => void;
   handleDrop: (e: MouseEvent) => void;
   handleDragEnd: () => void;
 } => {
-  const editor = useEditor();
+  const editor = useEditor<T>()();
   const indicator = useIndicator();
 
   const handleDragStart = (e) => {
     if (!editor.enabled) {
-      e.preventDefault();
       return;
     }
     editor.dragNode(craftNode.value);
   };
 
   const handleDragOver = debounce((event: MouseEvent) => {
+    if (!editor.enabled) {
+      return;
+    }
+
     if (!nodeRef.value?.$el) {
       return;
     }
@@ -40,21 +43,25 @@ export default (
   }, 8);
 
   const handleDrop = (event: MouseEvent) => {
+    if (!editor.enabled) {
+      return;
+    }
     if (!nodeRef.value?.$el) {
       return;
     }
 
-    const outerNode = drag.handleDrop(event, nodeRef.value.$el, {
-      editor,
+    drag.handleDrop<T>(event, nodeRef.value.$el, {
+      editor: editor as any,
       indicator,
       craftNode,
       resolver,
     });
-
-    editor.setNode(outerNode);
   };
 
   const handleDragEnd = () => {
+    if (!editor.enabled) {
+      return;
+    }
     editor.dragNode(null);
     indicator.hide();
   };

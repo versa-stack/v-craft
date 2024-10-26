@@ -1,6 +1,6 @@
+import { v4 as uuidv4 } from "uuid";
 import { CraftNode } from "./craftNode";
 import CraftNodeResolver from "./CraftNodeResolver";
-import { v4 as uuidv4 } from "uuid";
 
 const formatComponentName = (vNode) => {
   if (typeof vNode.type === "symbol") {
@@ -18,18 +18,18 @@ const formatComponentName = (vNode) => {
   return "anonmymous";
 };
 
-const createNodeFromVNode = (
-  resolver: CraftNodeResolver,
+const createNodeFromVNode = <T extends object>(
+  resolver: CraftNodeResolver<T>,
   vNode,
-  parentNode: CraftNode | null = null
+  parentNode: CraftNode<T> | null = null
 ) => {
   const componentName = formatComponentName(vNode);
   const { props } = vNode;
-  const craftNode: CraftNode = {
+  const craftNode: CraftNode<T> = {
     componentName,
     props,
     children: [],
-    parent: parentNode,
+    parentUuid: parentNode?.uuid ?? null,
     uuid: uuidv4(),
   };
 
@@ -39,16 +39,16 @@ const createNodeFromVNode = (
       : vNode.children
     : null;
 
-  craftNode.children = createChildren(resolver, vnodeChildren, craftNode);
+  craftNode.children = createChildren<T>(resolver, vnodeChildren, craftNode);
 
   return craftNode;
 }
 
-const createChildren = (resolver, vnodeChildren, parent) => {
-  if (!vnodeChildren || !(vnodeChildren instanceof Array)) return [];
+const createChildren = <T extends object>(resolver, vnodeChildren, parent) => {
+  if (!vnodeChildren || !(vnodeChildren instanceof Array)) return [] as unknown as CraftNode<T>[];
   return vnodeChildren
-    .map((childVNode) => createNodeFromVNode(resolver, childVNode, parent))
-    .filter((childNode) => !!childNode);
+    .map((childVNode) => createNodeFromVNode<T>(resolver, childVNode, parent))
+    .filter((childNode) => !!childNode) as CraftNode<T>[];
 };
 
 export default createNodeFromVNode;

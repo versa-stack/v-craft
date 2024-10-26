@@ -1,11 +1,11 @@
 <template>
   <div class="content">
-    <CraftFrame :resolverMap="resolverMap" />
+    <CraftFrame :viewOnly="true" :resolverMap="resolverMap" />
   </div>
 </template>
 <script lang="ts" setup>
-import { useEditor, EditorStoreType } from "@versa-stack/v-craft";
+import { useEditor } from "@versa-stack/v-craft";
 import { resolverMap } from "./resolvermap";
-const editor: EditorStoreType = useEditor();
+const editor = useEditor()();
 editor.disable();
 </script>

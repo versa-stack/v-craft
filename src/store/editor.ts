@@ -1,294 +1,308 @@
+import type { FormKitSchemaFormKit } from "@formkit/core";
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
-import { markRaw, Ref, ref, shallowRef, ShallowRef } from "vue";
+import { markRaw } from "vue";
 import {
-  buildCraftNodeTree,
   CraftNode,
   craftNodeCanBeChildOf,
   craftNodeCanBeSiblingOf,
+  CraftNodeDatasource,
   resolveNodeName,
 } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 
-export type EditorState = {
-  nodeRecord: Record<string, CraftNode>;
-  selectedUuid: uuidv4 | null;
-  draggedNode: Ref<CraftNode | null>;
+export type EditorState<T extends object> = {
+  nodeMap: Map<string, CraftNode<T>>;
+  rootNodes: string[];
+  selectedUuid: string | null;
+  draggedNode: CraftNode<T> | null;
   enabled: boolean;
-  nodes: ShallowRef<CraftNode[]>;
   nodeRefsRecord: Record<string, HTMLElement>;
-  pendingUpdates: Set<CraftNode>;
-  resolver: CraftNodeResolver | null;
-  nodesToDelete: Set<string>;
+  resolver: CraftNodeResolver<T> | null;
+  eventsContext: Record<string, any>;
+  nodeDataMap: Record<string, CraftNodeDatasource|null>;
 };
 
-export type EditorStoreType = ReturnType<typeof useEditor>;
+export type EditorStoreInstanceType<T extends object = FormKitSchemaFormKit> =
+  ReturnType<ReturnType<typeof useEditor<T>>>;
 
-export const useEditor = defineStore("editor", {
-  state: () =>
-    ({
-      nodeRecord: {} as Record<string, CraftNode>,
-      selectedUuid: null as uuidv4 | null,
-      draggedNode: ref(null),
+export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
+  defineStore("editor", {
+    state: (): EditorState<T> => ({
+      nodeMap: new Map(),
+      rootNodes: [],
+      selectedUuid: null,
+      draggedNode: null,
       enabled: false,
-      nodes: shallowRef<CraftNode[]>([]),
-      nodeRefsRecord: {} as Record<string, HTMLElement>,
-      pendingUpdates: new Set<CraftNode>(),
-      resolver: null as CraftNodeResolver | null,
-      nodesToDelete: new Set<string>(),
-    } as EditorState),
+      nodeRefsRecord: {},
+      resolver: null,
+      eventsContext: {},
+      nodeDataMap: {},
+    }),
 
-  actions: {
-    clear() {
-      this.nodeRecord = {};
-      this.selectedUuid = null;
-      this.draggedNode = null;
-      this.enabled = false;
-      this.nodes = shallowRef<CraftNode[]>([]) as any;
-      this.nodeRefsRecord = {};
-      this.pendingUpdates.clear();
-    },
-
-    enable() {
-      this.enabled = true;
-    },
-
-    disable() {
-      this.enabled = false;
-    },
-
-    setResolver(resolver: CraftNodeResolver) {
-      this.resolver = resolver;
-    },
-
-    setNodeRef(craftNode: CraftNode, ref: HTMLElement) {
-      this.nodeRefsRecord[craftNode.uuid] = ref;
-    },
-
-    setNode(craftNode: CraftNode) {
-      this.pendingUpdates.add({ ...craftNode });
-    },
-
-    applyPendingUpdates() {
-      if (this.pendingUpdates.size > 0 || this.nodesToDelete.size > 0) {
-        this.nodes = updateNodesInTree(
-          this.nodes,
-          Array.from(this.pendingUpdates),
-          this.nodesToDelete
-        );
-        this.updateNodeRecord();
-        this.pendingUpdates.clear();
-        this.nodesToDelete.clear();
-      }
-    },
-
-    toggleNodeVisibility(craftNode: CraftNode) {
-      craftNode.visible = !craftNode.visible;
-      this.setNode(craftNode);
-    },
-
-    updateNodeProps(nodeUuid: string, newProps: Record<string, any>) {
-      const node = this.nodeRecord[nodeUuid];
-      if (node) {
-        const updatedNode = {
-          ...node,
-          props: { ...node.props, ...newProps },
-        };
-        this.setNode(updatedNode);
-      }
-    },
-
-    updateNodeRecord() {
-      this.nodeRecord = {};
-      const mapNodes = (nodes: CraftNode[]) => {
-        nodes.forEach((node) => {
-          this.nodeRecord[node.uuid] = markRaw(node);
-          if (node.children && node.children.length > 0) {
-            mapNodes(node.children);
-          }
-        });
-      };
-      mapNodes(this.nodes);
-    },
-
-    setNodes(nodes: CraftNode[]) {
-      this.nodes = shallowRef<CraftNode[]>(
-        markRaw(nodes.map(buildCraftNodeTree))
-      ) as any;
-      this.updateNodeRecord();
-    },
-
-    selectNode(craftNode: CraftNode | null) {
-      this.selectedUuid = craftNode?.uuid ?? null;
-    },
-
-    dragNode(craftNode: CraftNode | null) {
-      this.draggedNode = craftNode;
-    },
-
-    removeNode(craftNode: CraftNode) {
-      this.emancipateNode(craftNode);
-      if (craftNode.uuid === this.selectedUuid) {
+    actions: {
+      clear() {
+        this.nodeMap.clear();
+        this.rootNodes = [];
         this.selectedUuid = null;
-      }
-      this.nodesToDelete.add(craftNode.uuid);
-      this.applyPendingUpdates();
-    },
+        this.draggedNode = null;
+        this.nodeRefsRecord = {};
+      },
 
-    emancipateNode(craftNode: CraftNode) {
-      const { parent } = craftNode;
-      if (!parent) {
-        return craftNode;
-      }
-      const parentRef = this.nodeRecord[parent.uuid];
-      const index = parentRef.children.findIndex(
-        (c) => c.uuid === craftNode.uuid
-      );
-      parentRef.children.splice(index, 1);
-      craftNode.parent = null;
-      this.setNode(parentRef);
-      this.setNode(craftNode);
-      return craftNode;
-    },
-    appendNodeTo(node: CraftNode, targetNode: CraftNode) {
-      if (!this.resolver) {
-        throw new Error("Resolver is not set.");
-      }
+      enable() {
+        this.enabled = true;
+      },
 
-      if (!craftNodeCanBeChildOf(node, targetNode, this.resolver)) {
-        throw new Error(
-          `${resolveNodeName(
-            node
-          )} is not allowed to be a child of ${resolveNodeName(targetNode)}.`
-        );
-      }
+      disable() {
+        this.enabled = false;
+      },
 
-      const targetNodeRef = this.nodeRecord[targetNode.uuid];
+      setResolver(resolver: CraftNodeResolver<T>) {
+        this.resolver = resolver;
+      },
 
-      node = this.emancipateNode(node);
-      this.applyPendingUpdates();
-      node.parent = targetNodeRef;
-      this.setNode(node);
-      this.applyPendingUpdates();
+      setNodeRef(craftNode: CraftNode<T>, ref: HTMLElement) {
+        this.nodeRefsRecord[craftNode.uuid] = ref;
+      },
 
-      if (!targetNodeRef.children) {
-        targetNodeRef.children = [] as CraftNode[];
-      }
+      toggleNodeVisibility(craftNode: CraftNode<T>) {
+        const node = this.nodeMap.get(craftNode.uuid);
+        if (node) {
+          node.visible = !node.visible;
+        }
+      },
 
-      targetNodeRef.children.push(node);
-      this.setNode(targetNode);
-      this.applyPendingUpdates();
-    },
+      setNodeData(uuid: string, data: CraftNodeDatasource|null) {
+        this.nodeDataMap[uuid] = data;
+      },
 
-    prependNodeTo(node: CraftNode, targetNode: CraftNode) {
-      if (!this.resolver) {
-        throw new Error("Resolver is not set");
-      }
-      if (!craftNodeCanBeChildOf(node, targetNode, this.resolver)) {
-        throw new Error(
-          `${resolveNodeName(
-            node
-          )} is not allowed to be a child of ${resolveNodeName(targetNode)}.`
-        );
-      }
+      updateNodeProps(nodeUuid: string, newProps: Record<string, any>) {
+        const node = this.nodeMap.get(nodeUuid);
+        if (node) {
+          Object.assign(node.props, newProps);
+        }
+      },
 
-      const targetNodeRef = this.nodeRecord[targetNode.uuid];
-      node = this.emancipateNode(node);
-      node.parent = targetNodeRef;
+      updateNodeEvents(nodeUuid: string, newEvents: Record<string, string>) {
+        const node = this.nodeMap.get(nodeUuid);
+        if (node) {
+          if (!node.events) {
+            node.events = {};
+          }
+          Object.assign(node.events as any, newEvents);
+        }
+      },
 
-      if (!targetNodeRef.children?.length) {
-        targetNodeRef.children = [node];
-      } else {
-        targetNodeRef.children.splice(0, 0, node);
-      }
+      setNodes(nodes: CraftNode<T>[]) {
+        this.clear();
+        this.rootNodes = [];
 
-      this.setNode(node);
-      this.setNode(targetNodeRef);
-      this.applyPendingUpdates();
-    },
-
-    insertNodeBefore(node: CraftNode, targetNode: CraftNode) {
-      if (!this.resolver) {
-        throw new Error("Resolver is not set");
-      }
-      if (!craftNodeCanBeSiblingOf(node, targetNode, this.resolver)) {
-        throw new Error("Can not be the sibling of the target node.");
-      }
-
-      node = this.emancipateNode(node);
-      const parentOfTargetNode = targetNode.parent;
-      if (!parentOfTargetNode) {
-        throw new Error("Target node has no parent.");
-      }
-
-      const indexOfTargetNode = parentOfTargetNode.children.indexOf(targetNode);
-      parentOfTargetNode.children.splice(indexOfTargetNode, 0, node);
-      node.parent = parentOfTargetNode;
-      this.setNode(node);
-      this.setNode(parentOfTargetNode);
-      this.applyPendingUpdates();
-    },
-    insertNodeAfter(node: CraftNode, targetNode: CraftNode) {
-      if (!this.resolver) {
-        throw new Error("Resolver is not set");
-      }
-
-      if (!craftNodeCanBeSiblingOf(node, targetNode, this.resolver)) {
-        throw new Error("Can not be the sibling of the target node.");
-      }
-
-      node = this.emancipateNode(node);
-      const parentOfTargetNode = targetNode.parent;
-      if (!parentOfTargetNode) {
-        throw new Error("Target node has no parent.");
-      }
-
-      const indexOfTargetNode = parentOfTargetNode.children.indexOf(targetNode);
-      parentOfTargetNode.children.splice(indexOfTargetNode + 1, 0, node);
-      node.parent = parentOfTargetNode;
-      this.setNode(node);
-      this.setNode(parentOfTargetNode);
-      this.applyPendingUpdates();
-    },
-  },
-  getters: {
-    hasNodes: (state) => state.nodes.length > 0,
-    selectedNode(state) {
-      return state.selectedUuid ? state.nodeRecord[state.selectedUuid] : null;
-    },
-    selectedRef: (state) =>
-      state.selectedUuid ? state.nodeRefsRecord[state.selectedUuid] : null,
-    getRef: (state) => (uuid: string) => state.nodeRefsRecord[uuid],
-  },
-});
-
-const updateNodesInTree = (
-  nodes: CraftNode[],
-  updatedNodes: CraftNode[],
-  nodesToDelete: Set<string>
-): CraftNode[] => {
-  return nodes
-    .filter((node) => !nodesToDelete.has(node.uuid))
-    .map((node) => {
-      const source = updatedNodes.find((u) => u.uuid === node.uuid);
-      if (source) {
-        return {
-          ...source,
-          children: source.children
-            ? updateNodesInTree(source.children, updatedNodes, nodesToDelete)
-            : [],
+        const addNode = (node: CraftNode<T>) => {
+          this.nodeMap.set(node.uuid, { ...node, children: [] });
+          if (!node.parentUuid) {
+            this.rootNodes.push(node.uuid);
+          }
+          (node.children || []).forEach((child) => {
+            child.parentUuid = node.uuid;
+            addNode(child);
+            this.nodeMap.get(node.uuid)!.children.push(child);
+          });
         };
-      }
-      if (node.children) {
-        const updatedChildren = updateNodesInTree(
-          node.children,
-          updatedNodes,
-          nodesToDelete
+
+        nodes.forEach(addNode);
+      },
+
+      addNodeRecursively(node: CraftNode<T>, parentUuid: string | null = null) {
+        const uuid = node.uuid || uuidv4();
+        const newNode = { ...node, uuid, parentUuid };
+        this.nodeMap.set(uuid, markRaw(newNode));
+
+        if (!parentUuid) {
+          this.rootNodes.push(uuid);
+        }
+
+        node.children?.forEach((child) => this.addNodeRecursively(child, uuid));
+      },
+
+      selectNode(craftNode: CraftNode<T> | null) {
+        this.selectedUuid = craftNode?.uuid ?? null;
+      },
+
+      dragNode(craftNode: CraftNode<T> | null) {
+        this.draggedNode = craftNode;
+      },
+
+      removeNode(craftNode: CraftNode<T>) {
+        this.emancipateNode(craftNode);
+        if (craftNode.uuid === this.selectedUuid) {
+          this.selectedUuid = null;
+        }
+        this.nodeMap.delete(craftNode.uuid);
+        delete this.nodeRefsRecord[craftNode.uuid];
+
+        if (!craftNode.parentUuid) {
+          this.rootNodes = this.rootNodes.filter(
+            (uuid) => uuid !== craftNode.uuid
+          );
+        }
+      },
+
+      emancipateNode(craftNode: CraftNode<T>) {
+        const parentUuid = craftNode.parentUuid;
+        if (!parentUuid) return craftNode;
+
+        const parent = this.nodeMap.get(parentUuid);
+        if (parent) {
+          parent.children = parent.children?.filter(
+            (child) => child.uuid !== craftNode.uuid
+          );
+        }
+
+        craftNode.parentUuid = null;
+        return craftNode;
+      },
+
+      appendNodeTo(node: CraftNode<T>, targetNode: CraftNode<T>) {
+        if (!this.resolver) throw new Error("Resolver is not set.");
+
+        if (!craftNodeCanBeChildOf(node, targetNode, this.resolver)) {
+          throw new Error(
+            `${resolveNodeName(
+              node
+            )} is not allowed to be a child of ${resolveNodeName(targetNode)}.`
+          );
+        }
+
+        node = this.emancipateNode(node);
+
+        node.parentUuid = targetNode.uuid;
+
+        const targetParent = this.nodeMap.get(targetNode.uuid);
+
+        if (targetParent) {
+          targetParent.children = targetParent.children || [];
+          targetParent.children.push(node);
+        }
+
+        this.nodeMap.set(node.uuid, node);
+      },
+
+      prependNodeTo(node: CraftNode<T>, targetNode: CraftNode<T>) {
+        if (!this.resolver) throw new Error("Resolver is not set");
+
+        if (!craftNodeCanBeChildOf(node, targetNode, this.resolver)) {
+          throw new Error(
+            `${resolveNodeName(
+              node
+            )} is not allowed to be a child of ${resolveNodeName(targetNode)}.`
+          );
+        }
+
+        node = this.emancipateNode(node);
+
+        node.parentUuid = targetNode.uuid;
+
+        const targetParent = this.nodeMap.get(targetNode.uuid);
+
+        if (targetParent) {
+          targetParent.children = targetParent.children || [];
+          targetParent.children.unshift(node);
+        }
+
+        this.nodeMap.set(node.uuid, node);
+      },
+
+      insertNodeBefore(node: CraftNode<T>, targetNode: CraftNode<T>) {
+        const parentNode = this.nodeMap.get(targetNode.parentUuid!);
+        if (!parentNode) return;
+
+        // Remove the node from its current parent if it exists
+        if (node.parentUuid) {
+          const currentParent = this.nodeMap.get(node.parentUuid);
+          if (currentParent) {
+            currentParent.children = currentParent.children.filter(
+              (child) => child.uuid !== node.uuid
+            );
+            this.nodeMap.set(currentParent.uuid, currentParent);
+          }
+        }
+
+        // Update the node's parent
+        node.parentUuid = parentNode.uuid;
+
+        // Insert the node before the target node
+        const index = parentNode.children.findIndex(
+          (child) => child.uuid === targetNode.uuid
         );
-        return updatedChildren === node.children
-          ? node
-          : { ...node, children: updatedChildren };
+        if (index !== -1) {
+          parentNode.children.splice(index, 0, node);
+        } else {
+          parentNode.children.push(node);
+        }
+
+        // Update the nodeMap
+        this.nodeMap.set(node.uuid, node);
+        this.nodeMap.set(parentNode.uuid, parentNode);
+      },
+
+      insertNodeAfter(node: CraftNode<T>, targetNode: CraftNode<T>) {
+        if (!this.resolver) throw new Error("Resolver is not set");
+
+        if (!craftNodeCanBeSiblingOf(node, targetNode, this.resolver)) {
+          throw new Error("Can not be the sibling of the target node.");
+        }
+
+        node = this.emancipateNode(node);
+
+        const parentUuid = targetNode.parentUuid;
+
+        if (!parentUuid) throw new Error("Target node has no parent.");
+
+        const parent = this.nodeMap.get(parentUuid);
+
+        if (parent) {
+          const index = parent.children?.indexOf(targetNode) ?? -1;
+
+          if (index !== -1) {
+            parent.children?.splice(index + 1, 0, node);
+            node.parentUuid = parentUuid;
+            this.nodeMap.set(node.uuid, node);
+          }
+        }
+      },
+
+      setEventsContext(context: Record<string, any>) {
+        this.eventsContext = context;
+      },
+    },
+
+    getters: {
+      hasNodes: (state) => state.nodeMap.size > 0,
+      selectedNode(state): CraftNode<T> | null {
+        return state.selectedUuid
+          ? state.nodeMap.get(state.selectedUuid) || null
+          : null;
+      },
+      selectedRef: (state) =>
+        state.selectedUuid ? state.nodeRefsRecord[state.selectedUuid] : null,
+      getRef: (state) => (uuid: string) => state.nodeRefsRecord[uuid],
+      allNodes(state): CraftNode<T>[] {
+        return Array.from(state.nodeMap.values());
+      },
+      nodeTree(): CraftNode<T>[] {
+        const buildTree = (nodeUuid: string): CraftNode<T> => {
+          const node = this.nodeMap.get(nodeUuid);
+          if (!node) throw new Error(`Node with UUID ${nodeUuid} not found`);
+
+          return {
+            ...node,
+            children: (node.children || []).map((child) =>
+              buildTree(child.uuid)
+            ),
+          };
+        };
+
+        return this.rootNodes.map((rootUuid) => buildTree(rootUuid));
       }
-      return node;
-    });
-};
+    },
+  });

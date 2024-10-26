@@ -15,8 +15,9 @@
   </component>
 </template>
 
-<script setup lang="ts">
-import { computed, ComputedRef, inject, useAttrs, useSlots } from "vue";
+<script setup lang="ts" generic="T extends object">
+import { computed, inject, useAttrs, useSlots } from "vue";
+import type { ComputedRef } from "vue";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 
 defineOptions({
@@ -30,7 +31,7 @@ const props = defineProps<{
   component: string;
 }>();
 
-const resolver = inject<ComputedRef<CraftNodeResolver>>("resolver");
+const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver");
 const resolved = computed(() => resolver?.value.resolve(props.component));
 
 const filteredAttrs = computed(() => {

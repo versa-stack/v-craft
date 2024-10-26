@@ -5,24 +5,24 @@ import CraftNodeResolver, {
 } from "../../lib/CraftNodeResolver";
 import { CraftDataListItem } from "..";
 
-export const useCraftNode = () => {
-  const craftNode = inject<Ref<CraftNode, CraftNode>>("craftNode")!;
-  const resolver = inject<ComputedRef<CraftNodeResolver>>("resolver")!;
+export const useCraftNode = <T extends object>() => {
+  const craftNode = inject<Ref<CraftNode<T>, CraftNode<T>>>("craftNode")!;
+  const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver")!;
 
   if (!craftNode || !resolver) {
     throw new Error("craftNode or resolver not provided");
   }
 
   const resolvedNode = computed(() => {
-    if (!resolver || !craftNode?.value) return {} as CraftNodeComponentMap;
+    if (!resolver || !craftNode?.value) return {} as CraftNodeComponentMap<T>;
     return resolver.value.resolve(
       craftNode.value.componentName
-    ) as CraftNodeComponentMap;
+    ) as CraftNodeComponentMap<T>;
   });
 
   const defaultProps = computed(() => resolvedNode.value?.defaultProps || {});
 
-  const combinationGenerator = function* (): Generator<
+  const dataListGenerator = function* (): Generator<
     CraftDataListItem,
     void,
     unknown
@@ -44,7 +44,7 @@ export const useCraftNode = () => {
   };
 
   const dataList = computed(() => ({
-    [Symbol.iterator]: combinationGenerator,
+    [Symbol.iterator]: dataListGenerator,
   }));
 
   return {

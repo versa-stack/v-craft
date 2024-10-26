@@ -3,104 +3,105 @@
     ref="nodeRef"
     v-if="resolver && resolvedNode"
     :is="resolvedNode.componentName"
-    v-bind="{ ...defaultProps, ...currentCraftNode.props }"
+    v-bind="nodeProps"
+    v-on="eventHandlers"
   >
-    <template v-if="!currentCraftNode.data">
+    <template v-if="!data?.type">
       <CraftNodeWrapper
         v-for="childNode in currentCraftNode.children"
-        :viewer="true"
+        :viewOnly="true"
         :key="childNode.uuid"
         :craftNode="childNode"
       />
     </template>
 
-    <template v-else-if="currentCraftNode.data.type === 'single'">
+    <template v-else>
       <CraftNodeWrapper
-        v-for="childNode in currentCraftNode.children"
-        :viewer="true"
-        :key="`${childNode.uuid}-single-${JSON.stringify(
-          currentCraftNode.data.item
-        )}`"
-        :craftNode="{
-          ...childNode,
-          props: { ...childNode.props, ...(currentCraftNode.data.item || {}) },
-        }"
-      />
-    </template>
-
-    <template v-else-if="currentCraftNode.data.type === 'list'">
-      <CraftNodeWrapper
-        v-for="item in computedDataList"
-        :viewer="true"
+        v-for="item in computedChildren"
+        :viewOnly="true"
         :key="item.key"
-        :craftNode="{
-          ...item.childNode,
-          props: { ...item.childNode.props, ...(item.dataItem || {}) },
-        }"
+        :craftNode="item.craftNode"
       />
     </template>
   </component>
 </template>
 
-<script lang="ts" setup>
-import { computed, watch, ref } from "vue";
-import { useCraftNode } from "./composable/useCraftNode";
-import CraftNodeWrapper from "./CraftNodeWrapper.vue";
+<script lang="ts" setup generic="T extends object">
+import { computed, onMounted, ref } from "vue";
 import { useEditor } from "../store/editor";
-import { CraftDataListItem } from ".";
+import { useCraftNode } from "./composable/useCraftNode";
+import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
+import CraftNodeWrapper from "./CraftNodeWrapper.vue";
 
 defineOptions({
   name: "CraftNodeViewer",
 });
 
-const editor = useEditor();
+const editor = useEditor<T>()();
 const {
   craftNode: currentCraftNode,
   resolvedNode,
   defaultProps,
   resolver,
   dataList,
-} = useCraftNode();
+} = useCraftNode<T>();
 
-const forceUpdate = ref(0);
+const nodeProps = computed(() => ({
+  ...defaultProps,
+  ...currentCraftNode.value?.props,
+}));
 
-watch(
-  () => editor.pendingUpdates.size,
-  () => {
-    forceUpdate.value++;
+const data = computed(() => {
+  return editor.nodeDataMap[currentCraftNode.value.uuid];
+});
+
+const computedChildren = computed(() => {
+  if (!data.value) return [];
+
+  if (data.value.type === "single") {
+    return currentCraftNode.value.children.map((childNode) => ({
+      key: `${childNode.uuid}-single`,
+      craftNode: {
+        ...childNode,
+        props: {
+          ...childNode.props,
+          ...(data.value?.item || {}),
+        },
+      },
+    }));
   }
-);
-
-const computedDataList = computed<CraftDataListItem[]>(() => {
-  forceUpdate.value;
 
   if (
-    currentCraftNode.value?.children.length &&
-    currentCraftNode.value?.data?.type === "list" &&
-    Array.isArray(currentCraftNode.value.data.list)
+    data.value.type === "list" &&
+    data.value.list &&
+    (Array.isArray(data.value.list) ||
+      typeof data.value.list[Symbol.iterator] === "function")
   ) {
-    return Array.from(dataList.value).map((item) => ({
-      ...item,
+    const dataArray = Array.isArray(dataList.value)
+      ? dataList.value
+      : Array.from(dataList.value);
+
+    return dataArray.map((item, index) => ({
+      key: `${item.childNode.uuid}-${index}`,
       craftNode: {
         ...item.childNode,
         props: { ...item.childNode.props, ...item.dataItem },
       },
-      key: `${item.childNode.uuid}-${item.dataIndex}-${JSON.stringify(
-        item.dataItem
-      )}-${forceUpdate.value}`,
     }));
   }
   return [];
 });
 
 const nodeRef = ref<HTMLElement | null>(null);
-watch(
-  () => nodeRef.value,
-  (newRef) => {
-    if (newRef && currentCraftNode.value) {
-      editor.setNodeRef(currentCraftNode.value, newRef);
-    }
-  },
-  { immediate: true }
+
+const { eventHandlers } = useCraftNodeEvents<T>(
+  currentCraftNode,
+  editor.eventsContext as any
 );
+
+onMounted(() => {
+  if (nodeRef.value && currentCraftNode.value) {
+    editor.setNodeRef(currentCraftNode.value, nodeRef.value);
+  }
+});
 </script>

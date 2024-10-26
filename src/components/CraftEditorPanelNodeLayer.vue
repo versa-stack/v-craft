@@ -12,9 +12,14 @@
         type="button"
         class="v-craft-component-icon"
         @click.prevent.stop="iconClick"
-      >{{ isVisible ? 'hide' : 'show' }}</button>
+      >
+        {{ isVisible ? "hide" : "show" }}
+      </button>
     </div>
-    <ul class="v-craft-node-layers nested-layers" v-if="craftNode.children?.length">
+    <ul
+      class="v-craft-node-layers nested-layers"
+      v-if="craftNode.children?.length"
+    >
       <CraftEditorPanelNodeLayer
         v-for="(n, index) in craftNode.children"
         :key="index"
@@ -25,7 +30,7 @@
     </ul>
   </li>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends object">
 import { computed, toRefs, watch } from "vue";
 import { useEditor } from "../store/editor";
 import { CraftNode, resolveNodeName } from "../lib/craftNode";
@@ -33,7 +38,7 @@ import { storeToRefs } from "pinia";
 
 const props = withDefaults(
   defineProps<{
-    craftNode: CraftNode;
+    craftNode: CraftNode<T>;
     visible?: boolean;
   }>(),
   {
@@ -50,7 +55,7 @@ const isVisible = computed(
 );
 
 const emit = defineEmits(["layer-click"]);
-const editor = useEditor();
+const editor = useEditor<T>()();
 const { selectedNode } = storeToRefs(editor);
 
 const componentName = computed(() => resolveNodeName(craftNode.value));
@@ -100,7 +105,6 @@ const iconClick = () => {
 
     &:hover {
       background-color: var(--v-craft-gray-medium-lighter-15);
-      
     }
   }
 

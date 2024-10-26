@@ -8,15 +8,15 @@ export type CraftBlueprintData = {
   props: Record<string, any>;
 };
 
-export type BlueprintsLibrary = {
+export type BlueprintsLibrary<T extends object> = {
   metadata?: BlueprintsMetadata;
-  groups: BlueprintGroup[];
+  groups: BlueprintGroup<T>[];
 };
 
-export type BlueprintGroup = {
+export type BlueprintGroup<T extends object> = {
   label: string;
   metadata: BlueprintsMetadata;
-  blueprints: Blueprints;
+  blueprints: Blueprints<T>;
 };
 
 export type BlueprintsMetadata = {
@@ -25,16 +25,19 @@ export type BlueprintsMetadata = {
   help?: string;
 };
 
-export type Blueprints = Record<string, Blueprint>;
+export type Blueprints<T extends object> = Record<string, Blueprint<T>>;
 
-export type Blueprint = Omit<CraftNode, "parent" | "uuid" | "children"> & {
+export type Blueprint<T extends object> = Omit<
+  CraftNode<T>,
+  "parent" | "uuid" | "children"
+> & {
   label?: string;
-  children: Blueprint[];
+  children: Blueprint<T>[];
 };
 
-export type CraftEditorConfig = {
-  blueprintsLibrary: BlueprintsLibrary;
-  resolverMap: CraftNodeResolverMap;
+export type CraftEditorConfig<T extends object> = {
+  blueprintsLibrary: BlueprintsLibrary<T>;
+  resolverMap: CraftNodeResolverMap<T>;
 };
 
 export type CraftGraphqlQueryWrapperPropMap = {

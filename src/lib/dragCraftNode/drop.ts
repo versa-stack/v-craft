@@ -1,28 +1,29 @@
 import { Ref } from "vue";
-import { EditorStoreType } from "../../store/editor";
+import { EditorStoreInstanceType } from "../../store/editor";
 import { IndicatorStoreType } from "../../store/indicator";
 import {
+  buildCraftNodeTree,
   CraftNode,
   craftNodeCanBeChildOf,
   craftNodeCanBeSiblingOf,
   craftNodeIsCanvas,
-  buildCraftNodeTree,
 } from "../craftNode";
 import CraftNodeResolver from "../CraftNodeResolver";
 import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
+import { cloneDeep } from "lodash-es";
 
-export type DragCraftNodeContext = {
-  editor: EditorStoreType;
+export type DragCraftNodeContext<T extends object> = {
+  editor: EditorStoreInstanceType<T>;
   indicator: IndicatorStoreType;
-  craftNode: Ref<CraftNode>;
-  resolver: CraftNodeResolver;
+  craftNode: Ref<CraftNode<T>>;
+  resolver: CraftNodeResolver<T>;
 };
 
-const handleElementDrop = (
+const handleElementDrop = <T extends object>(
   e: MouseEvent,
   el: HTMLElement,
-  draggedNode: CraftNode,
-  context: DragCraftNodeContext
+  draggedNode: CraftNode<T>,
+  context: DragCraftNodeContext<T>
 ) => {
   if (
     !craftNodeCanBeSiblingOf(
@@ -34,7 +35,9 @@ const handleElementDrop = (
     return context.craftNode.value;
   }
 
-  const parent = context.craftNode.value.parent;
+  const parent = context.craftNode.value.parentUuid
+    ? context.editor.nodeMap.get(context.craftNode.value.parentUuid)
+    : null;
   if (!parent) {
     return context.craftNode.value;
   }
@@ -55,11 +58,11 @@ const handleElementDrop = (
   return context.craftNode.value;
 };
 
-const handleCanvasDrop = (
+const handleCanvasDrop = <T extends object>(
   e: MouseEvent,
   el: HTMLElement,
-  draggedNode: CraftNode,
-  context: DragCraftNodeContext
+  draggedNode: CraftNode<T>,
+  context: DragCraftNodeContext<T>
 ) => {
   if (mouseOnEdge(e, el)) {
     return handleElementDrop(e, el, draggedNode, context);
@@ -84,10 +87,10 @@ const handleCanvasDrop = (
   return context.craftNode.value;
 };
 
-export default (
+export default <T extends object>(
   e: MouseEvent,
   el: HTMLElement,
-  context: DragCraftNodeContext
+  context: DragCraftNodeContext<T>
 ) => {
   if (!context.editor.draggedNode) {
     return context.craftNode.value;
@@ -95,16 +98,14 @@ export default (
 
   const nodeCopy = (() => {
     if (context.editor.draggedNode?.uuid) {
-      return context.editor.draggedNode;
+      return JSON.parse(JSON.stringify(context.editor.draggedNode));
     }
     return buildCraftNodeTree(
       JSON.parse(JSON.stringify(context.editor.draggedNode))
     );
   })();
 
-  const updatedNode = craftNodeIsCanvas(context.craftNode.value)
+  return craftNodeIsCanvas(context.craftNode.value)
     ? handleCanvasDrop(e, el, nodeCopy, context)
     : handleElementDrop(e, el, nodeCopy, context);
-
-  return updatedNode;
 };
