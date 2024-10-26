@@ -28,6 +28,7 @@
 
 <script lang="ts" setup generic="T extends object">
 import { computed, onMounted, ref } from "vue";
+import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
 import { useCraftNode } from "./composable/useCraftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
@@ -43,7 +44,6 @@ const {
   resolvedNode,
   defaultProps,
   resolver,
-  dataList,
 } = useCraftNode<T>();
 
 const nodeProps = computed(() => ({
@@ -55,42 +55,11 @@ const data = computed(() => {
   return editor.nodeDataMap[currentCraftNode.value.uuid];
 });
 
-const computedChildren = computed(() => {
-  if (!data.value) return [];
-
-  if (data.value.type === "single") {
-    return currentCraftNode.value.children.map((childNode) => ({
-      key: `${childNode.uuid}-single`,
-      craftNode: {
-        ...childNode,
-        props: {
-          ...childNode.props,
-          ...(data.value?.item || {}),
-        },
-      },
-    }));
-  }
-
-  if (
-    data.value.type === "list" &&
-    data.value.list &&
-    (Array.isArray(data.value.list) ||
-      typeof data.value.list[Symbol.iterator] === "function")
-  ) {
-    const dataArray = Array.isArray(dataList.value)
-      ? dataList.value
-      : Array.from(dataList.value);
-
-    return dataArray.map((item, index) => ({
-      key: `${item.childNode.uuid}-${index}`,
-      craftNode: {
-        ...item.childNode,
-        props: { ...item.childNode.props, ...item.dataItem },
-      },
-    }));
-  }
-  return [];
-});
+const computedChildren = computed(() =>
+  data.value
+    ? computeDataNodes(data.value, currentCraftNode.value.children)
+    : []
+);
 
 const nodeRef = ref<HTMLElement | null>(null);
 
@@ -104,4 +73,46 @@ onMounted(() => {
     editor.setNodeRef(currentCraftNode.value, nodeRef.value);
   }
 });
+
+type ComputedDataNode = { key: string; craftNode: CraftNode<T> };
+
+const computeDataNodes = (
+  data: CraftNodeDatasource,
+  children: CraftNode<T>[]
+): ComputedDataNode[] => {
+  if (data.type === "single") {
+    return children.map((childNode) => ({
+      key: `${childNode.uuid}-single`,
+      craftNode: {
+        ...childNode,
+        props: {
+          ...childNode.props,
+          ...(data.item || {}),
+        },
+      },
+    }));
+  }
+
+  if (data.type === "list") {
+    if (!data.list) return [];
+
+    return children.reduce((acc, childNode) => {
+      return acc.concat(
+        //@ts-ignore
+        data.list.map((item, index) => ({
+          key: `${childNode.uuid}-data-${index}`,
+          craftNode: {
+            ...childNode,
+            props: {
+              ...childNode.props,
+              ...(item || {}),
+            },
+          },
+        }))
+      );
+    }, [] as ComputedDataNode[]);
+  }
+
+  return [];
+};
 </script>

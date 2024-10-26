@@ -9,7 +9,7 @@
       </div>
       <div class="v-craft-grid-panel v-craft-panel-right flex-shrink">
         <CraftEditorPanelLayers />
-        <!-- <CraftEditorPanelSettings /> -->
+        <CraftEditorPanelSettings />
       </div>
     </div>
     <div class="v-craft-grid-panel v-craft-panel-bottom"></div>
