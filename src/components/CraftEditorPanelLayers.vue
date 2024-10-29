@@ -1,6 +1,6 @@
 <template>
   <div class="v-craft-panel v-craft-layers-panel">
-    <h3 class="v-craft-title">layers</h3>
+    <h3 class="v-craft-title">tree</h3>
     <div class="v-craft-layers">
       <ul class="v-craft-node-layers">
         <CraftEditorPanelNodeLayer

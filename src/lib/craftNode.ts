@@ -38,12 +38,8 @@ export type CraftNodeDatasource = {
   type: "single" | "list";
 };
 
-export const setCraftNodeProps = <T extends object>(
-  craftNode: CraftNode<T>,
-  props: any
-) => {
-  craftNode.props = { ...craftNode.props, ...props };
-};
+export const isVisible = <T extends object>(craftNode: CraftNode<T>) =>
+  craftNode.visible === undefined || craftNode.visible;
 
 export const craftNodeInCanvas = <T extends object>(
   craftNode: CraftNode<T>

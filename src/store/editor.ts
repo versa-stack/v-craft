@@ -7,6 +7,7 @@ import {
   craftNodeCanBeChildOf,
   craftNodeCanBeSiblingOf,
   CraftNodeDatasource,
+  isVisible,
   resolveNodeName,
 } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
@@ -68,7 +69,17 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
       toggleNodeVisibility(craftNode: CraftNode<T>) {
         const node = this.nodeMap.get(craftNode.uuid);
         if (node) {
-          node.visible = !node.visible;
+          node.visible = !isVisible(node);
+          if (node.children) {
+            const setVisibility = (n: CraftNode<T>) => {
+              n.visible = node.visible;
+              n.children?.map(setVisibility);
+              this.nodeMap.set(n.uuid, n);
+              return n;
+            };
+            node.children.map(setVisibility);
+          }
+          this.nodeMap.set(node.uuid, node);
         }
       },
 
