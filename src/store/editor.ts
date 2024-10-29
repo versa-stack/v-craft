@@ -20,7 +20,7 @@ export type EditorState<T extends object> = {
   nodeRefsRecord: Record<string, HTMLElement>;
   resolver: CraftNodeResolver<T> | null;
   eventsContext: Record<string, any>;
-  nodeDataMap: Record<string, CraftNodeDatasource|null>;
+  nodeDataMap: Record<string, CraftNodeDatasource | null>;
 };
 
 export type EditorStoreInstanceType<T extends object = FormKitSchemaFormKit> =
@@ -72,7 +72,7 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         }
       },
 
-      setNodeData(uuid: string, data: CraftNodeDatasource|null) {
+      setNodeData(uuid: string, data: CraftNodeDatasource | null) {
         this.nodeDataMap[uuid] = data;
       },
 
@@ -137,6 +137,16 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         if (craftNode.uuid === this.selectedUuid) {
           this.selectedUuid = null;
         }
+
+        const removeDescendants = (node: CraftNode<T>) => {
+          node.children?.forEach((child) => {
+            this.nodeMap.delete(child.uuid);
+            delete this.nodeRefsRecord[child.uuid];
+            removeDescendants(child);
+          });
+        };
+
+        removeDescendants(craftNode);
         this.nodeMap.delete(craftNode.uuid);
         delete this.nodeRefsRecord[craftNode.uuid];
 
@@ -159,7 +169,13 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         }
 
         craftNode.parentUuid = null;
+        this.nodeMap.delete(craftNode.uuid);
         return craftNode;
+      },
+
+      addNodeAndChildrenToMap(node: CraftNode<T>) {
+        this.nodeMap.set(node.uuid, node);
+        node.children?.forEach((child) => this.addNodeAndChildrenToMap(child));
       },
 
       appendNodeTo(node: CraftNode<T>, targetNode: CraftNode<T>) {
@@ -174,7 +190,6 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         }
 
         node = this.emancipateNode(node);
-
         node.parentUuid = targetNode.uuid;
 
         const targetParent = this.nodeMap.get(targetNode.uuid);
@@ -182,9 +197,10 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         if (targetParent) {
           targetParent.children = targetParent.children || [];
           targetParent.children.push(node);
+          this.nodeMap.set(targetParent.uuid, targetParent);
         }
 
-        this.nodeMap.set(node.uuid, node);
+        this.addNodeAndChildrenToMap(node);
       },
 
       prependNodeTo(node: CraftNode<T>, targetNode: CraftNode<T>) {
@@ -199,7 +215,6 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         }
 
         node = this.emancipateNode(node);
-
         node.parentUuid = targetNode.uuid;
 
         const targetParent = this.nodeMap.get(targetNode.uuid);
@@ -207,42 +222,38 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         if (targetParent) {
           targetParent.children = targetParent.children || [];
           targetParent.children.unshift(node);
+          this.nodeMap.set(targetParent.uuid, targetParent);
         }
 
-        this.nodeMap.set(node.uuid, node);
+        this.addNodeAndChildrenToMap(node);
       },
 
       insertNodeBefore(node: CraftNode<T>, targetNode: CraftNode<T>) {
-        const parentNode = this.nodeMap.get(targetNode.parentUuid!);
-        if (!parentNode) return;
+        if (!this.resolver) throw new Error("Resolver is not set");
 
-        // Remove the node from its current parent if it exists
-        if (node.parentUuid) {
-          const currentParent = this.nodeMap.get(node.parentUuid);
-          if (currentParent) {
-            currentParent.children = currentParent.children.filter(
-              (child) => child.uuid !== node.uuid
-            );
-            this.nodeMap.set(currentParent.uuid, currentParent);
+        if (!craftNodeCanBeSiblingOf(node, targetNode, this.resolver)) {
+          throw new Error("Can not be the sibling of the target node.");
+        }
+
+        node = this.emancipateNode(node);
+
+        const parentUuid = targetNode.parentUuid;
+
+        if (!parentUuid) throw new Error("Target node has no parent.");
+
+        const parent = this.nodeMap.get(parentUuid);
+
+        if (parent) {
+          const index =
+            parent.children?.findIndex((n) => n.uuid === targetNode.uuid) ?? -1;
+
+          if (index !== -1) {
+            parent.children?.splice(index, 0, node);
+            node.parentUuid = parentUuid;
+            this.nodeMap.set(parent.uuid, parent);
+            this.addNodeAndChildrenToMap(node);
           }
         }
-
-        // Update the node's parent
-        node.parentUuid = parentNode.uuid;
-
-        // Insert the node before the target node
-        const index = parentNode.children.findIndex(
-          (child) => child.uuid === targetNode.uuid
-        );
-        if (index !== -1) {
-          parentNode.children.splice(index, 0, node);
-        } else {
-          parentNode.children.push(node);
-        }
-
-        // Update the nodeMap
-        this.nodeMap.set(node.uuid, node);
-        this.nodeMap.set(parentNode.uuid, parentNode);
       },
 
       insertNodeAfter(node: CraftNode<T>, targetNode: CraftNode<T>) {
@@ -261,12 +272,14 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         const parent = this.nodeMap.get(parentUuid);
 
         if (parent) {
-          const index = parent.children?.indexOf(targetNode) ?? -1;
+          const index =
+            parent.children?.findIndex((n) => n.uuid === targetNode.uuid) ?? -1;
 
           if (index !== -1) {
             parent.children?.splice(index + 1, 0, node);
             node.parentUuid = parentUuid;
-            this.nodeMap.set(node.uuid, node);
+            this.nodeMap.set(parent.uuid, parent);
+            this.addNodeAndChildrenToMap(node);
           }
         }
       },
@@ -278,7 +291,7 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
 
     getters: {
       hasNodes: (state) => state.nodeMap.size > 0,
-      selectedNode(state): CraftNode<T> | null {
+      selectedNode: (state): CraftNode<T> | null => {
         return state.selectedUuid
           ? state.nodeMap.get(state.selectedUuid) || null
           : null;
@@ -286,13 +299,15 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
       selectedRef: (state) =>
         state.selectedUuid ? state.nodeRefsRecord[state.selectedUuid] : null,
       getRef: (state) => (uuid: string) => state.nodeRefsRecord[uuid],
-      allNodes(state): CraftNode<T>[] {
+      allNodes: (state): CraftNode<T>[] => {
         return Array.from(state.nodeMap.values());
       },
-      nodeTree(): CraftNode<T>[] {
+      nodeTree: (state): CraftNode<T>[] => {
         const buildTree = (nodeUuid: string): CraftNode<T> => {
-          const node = this.nodeMap.get(nodeUuid);
-          if (!node) throw new Error(`Node with UUID ${nodeUuid} not found`);
+          const node = state.nodeMap.get(nodeUuid);
+          if (!node) {
+            throw new Error(`Node with UUID ${nodeUuid} not found`);
+          }
 
           return {
             ...node,
@@ -302,7 +317,7 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
           };
         };
 
-        return this.rootNodes.map((rootUuid) => buildTree(rootUuid));
-      }
+        return state.rootNodes.map((rootUuid) => buildTree(rootUuid));
+      },
     },
   });

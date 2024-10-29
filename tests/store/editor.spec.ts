@@ -188,7 +188,7 @@ describe("useEditor", () => {
     rootNode.children = [child1, child2];
     child1.children = [grandchild1];
 
-    store.setNodes([rootNode, child1, child2, grandchild1]);
+    store.setNodes([rootNode]);
 
     const verifyNodeTreeConsistency = (operation: string) => {
       const flattenTree = (nodes: CraftNode<any>[]): string[] => {
@@ -226,5 +226,73 @@ describe("useEditor", () => {
     expect(store.nodeTree[0].children.length).toBe(3); // grandchild1, child1, newChild
     expect(store.nodeTree[0].children[1].children.length).toBe(0); // child1 no longer has children
     expect(store.nodeMap.size).toBe(4); // root, grandchild1, child1, newChild
+  });
+
+  it("should add new nodes to nodeMap when appending", () => {
+    const store = useEditor()();
+    const resolver = new CraftNodeResolver<any>();
+    store.setResolver(resolver);
+
+    const parentNode = createTestNode({ componentName: "CraftCanvas" });
+    const newChildNode = createTestNode(); // This node is not in the nodeMap yet
+
+    store.setNodes([parentNode]);
+    store.appendNodeTo(newChildNode, parentNode);
+
+    expect(store.nodeMap.has(newChildNode.uuid)).toBe(true);
+    expect(store.nodeMap.get(parentNode.uuid)?.children).toContainEqual(
+      newChildNode
+    );
+  });
+
+  it("should add new nodes to nodeMap when prepending", () => {
+    const store = useEditor()();
+    const resolver = new CraftNodeResolver<any>();
+    store.setResolver(resolver);
+
+    const parentNode = createTestNode({ componentName: "CraftCanvas" });
+    const newChildNode = createTestNode(); // This node is not in the nodeMap yet
+
+    store.setNodes([parentNode]);
+    store.prependNodeTo(newChildNode, parentNode);
+
+    expect(store.nodeMap.has(newChildNode.uuid)).toBe(true);
+    expect(store.nodeMap.get(parentNode.uuid)?.children[0]).toEqual(
+      newChildNode
+    );
+  });
+
+  it("should add new nodes to nodeMap when inserting before", () => {
+    const store = useEditor()();
+    const resolver = new CraftNodeResolver<any>();
+    store.setResolver(resolver);
+
+    const parentNode = createTestNode({ componentName: "CraftCanvas" });
+    const existingChild = createTestNode({ parentUuid: parentNode.uuid });
+    parentNode.children = [existingChild];
+    const newNode = createTestNode(); // This node is not in the nodeMap yet
+
+    store.setNodes([parentNode, existingChild]);
+    store.insertNodeBefore(newNode, existingChild);
+
+    expect(store.nodeMap.has(newNode.uuid)).toBe(true);
+    expect(store.nodeMap.get(parentNode.uuid)?.children[0]).toEqual(newNode);
+  });
+
+  it("should add new nodes to nodeMap when inserting after", () => {
+    const store = useEditor()();
+    const resolver = new CraftNodeResolver<any>();
+    store.setResolver(resolver);
+
+    const parentNode = createTestNode({ componentName: "CraftCanvas" });
+    const existingChild = createTestNode({ parentUuid: parentNode.uuid });
+    parentNode.children = [existingChild];
+    const newNode = createTestNode(); // This node is not in the nodeMap yet
+
+    store.setNodes([parentNode, existingChild]);
+    store.insertNodeAfter(newNode, existingChild);
+
+    expect(store.nodeMap.has(newNode.uuid)).toBe(true);
+    expect(store.nodeMap.get(parentNode.uuid)?.children[1]).toEqual(newNode);
   });
 });

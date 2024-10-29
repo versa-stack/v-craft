@@ -1,6 +1,7 @@
 <template>
   <CraftNodeWrapper
-    v-for="craftNode in nodes"
+    v-if="editor.hasNodes"
+    v-for="craftNode in editor.nodeTree"
     :key="craftNode.uuid"
     :craftNode="craftNode"
     :viewOnly="viewOnly"
@@ -9,15 +10,22 @@
 </template>
 
 <script lang="ts" setup generic="T extends object">
-import { computed, ComputedRef, inject, onMounted, provide, ref } from "vue";
-import { CraftNode } from "../lib/craftNode";
+import { storeToRefs } from "pinia";
+import {
+  ComputedRef,
+  inject,
+  onMounted,
+  provide,
+  ref,
+  useSlots,
+  watch,
+} from "vue";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
 } from "../lib/CraftNodeResolver";
+import vNodeToCraftNode from "../lib/vNodeToCraftNode";
 import { useEditor } from "../store/editor";
 import Indicator from "./CraftDropIndicator.vue";
-import { useSlots } from "vue";
-import vNodeToCraftNode from "../lib/vNodeToCraftNode";
 
 defineOptions({
   name: "CraftFrame",
@@ -34,22 +42,25 @@ const props = withDefaults(
 );
 
 const editor = useEditor<T>()();
+const { hasNodes } = storeToRefs(editor);
 const resolver = props.resolverMap
   ? ref(new CraftNodeResolver(props.resolverMap))
   : inject<ComputedRef<CraftNodeResolver<T>>>("resolver");
 
-const nodes = computed(() => editor.nodeTree);
+if (resolver?.value) {
+  editor.setResolver(resolver.value);
+}
 
 if (props.resolverMap) {
   provide("resolver", resolver);
 }
 
-onMounted(() => {
-  if (resolver?.value) {
-    editor.setResolver(resolver.value);
+const mountNodes = () => {
+  if (!resolver?.value) {
+    return;
   }
 
-  if (!editor.hasNodes && resolver?.value) {
+  if (!hasNodes.value) {
     const slots = useSlots();
     const defaultSlots = slots.default ? slots.default() : [];
 
@@ -77,11 +88,31 @@ onMounted(() => {
           return [node];
         }
       })
-      .filter(Boolean); // Filter out invalid nodes
+      .filter(Boolean);
 
     if (createdNodes.length) {
       editor.setNodes(createdNodes);
     }
   }
-});
+};
+
+onMounted(mountNodes);
+
+watch(
+  () => hasNodes.value,
+  () => {
+    mountNodes();
+  }
+);
+
+watch(
+  () => resolver?.value,
+  (res) => {
+    if (!res) {
+      return;
+    }
+
+    editor.setResolver(res);
+  }
+);
 </script>

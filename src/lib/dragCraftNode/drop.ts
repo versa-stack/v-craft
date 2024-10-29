@@ -93,6 +93,7 @@ export default <T extends object>(
   context: DragCraftNodeContext<T>
 ) => {
   if (!context.editor.draggedNode) {
+    console.log("no dragged node found");
     return context.craftNode.value;
   }
 
