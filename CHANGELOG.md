@@ -1,3 +1,10 @@
+## [0.0.12-alpha.2](https://github.com/versa-stack/v-craft/compare/v0.0.12-alpha.1...v0.0.12-alpha.2) (2024-10-29)
+
+
+### Bug Fixes
+
+* fixed node insert mistakes when checking for index ([0810638](https://github.com/versa-stack/v-craft/commit/0810638aeed317f736846b342a010b95920d6735))
+
 ## [0.0.12-alpha.1](https://github.com/versa-stack/v-craft/compare/v0.0.11...v0.0.12-alpha.1) (2024-10-26)
 
 
