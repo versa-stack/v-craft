@@ -65,7 +65,8 @@ const nodeRef = ref<HTMLElement | null>(null);
 
 const { eventHandlers } = useCraftNodeEvents<T>(
   currentCraftNode,
-  editor.eventsContext as any
+  editor,
+  editor.eventsContext
 );
 
 onMounted(() => {

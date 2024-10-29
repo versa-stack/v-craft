@@ -76,7 +76,8 @@ const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
 
 const { eventHandlers } = useCraftNodeEvents<T>(
   craftNode,
-  editor.eventsContext as any
+  editor,
+  editor.eventsContext
 );
 
 const nodeName = computed(

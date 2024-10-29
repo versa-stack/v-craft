@@ -5,7 +5,8 @@ import { EditorStoreInstanceType } from "../../store/editor";
 
 export const useCraftNodeEvents = <T extends object>(
   craftNode: Ref<CraftNode<T>>,
-  ctx: Record<string, any> & { editor: EditorStoreInstanceType<T> }
+  editor: EditorStoreInstanceType<T>,
+  ctx: Record<string, any>
 ) => {
   const eventHandlersMap = new Map();
 
@@ -19,17 +20,27 @@ export const useCraftNodeEvents = <T extends object>(
 
     Object.entries(craftNode.value.events).forEach(([eventName, eventCode]) => {
       const handler = (...args: any[]) => {
-        const eventHandler = new Function(
-          "ctx",
-          "craftNode",
-          "args",
-          eventCode
-        );
-        eventHandler(
-          ctx,
-          ctx.editor.nodeMap.get(craftNode.value.uuid),
-          ...args
-        );
+        try {
+          const eventHandler = new Function(
+            "ctx",
+            "craftNode",
+            "args",
+            eventCode
+          );
+          eventHandler(
+            { ...ctx, editor },
+            editor.nodeMap.get(craftNode.value.uuid),
+            ...args
+          );
+        } catch (e) {
+          console.error(
+            `Event code execution failed with code: 
+${eventCode}
+
+Error:`,
+            e
+          );
+        }
       };
 
       eventHandlersMap.set(eventName, handler);
