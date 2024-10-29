@@ -20,11 +20,11 @@ For documentation and examples, including installation instructions and quick st
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for more details.
+We welcome contributions! Please see our [Contributing Guide](/CONTRIBUTING.md) for more details.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](/LICENSE).
 
 ## Acknowledgements
 

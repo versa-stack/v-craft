@@ -21,6 +21,10 @@ export default defineConfig({
     ],
   },
 
+  rewrites: {
+    "CONTRIBUTING.md": "/CONTRIBUTING.md",
+    LICENSE: "/LICENSE.md",
+  },
   vite: {
     resolve: {
       alias: {

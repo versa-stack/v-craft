@@ -2,4 +2,4 @@
 
 ### Setup
 
-<<< @/.vitepress/theme/index.ts{1-3,8,15-17}
+<<< @/.vitepress/theme/index.ts
