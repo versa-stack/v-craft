@@ -1,3 +1,11 @@
+## [0.0.12-alpha.3](https://github.com/versa-stack/v-craft/compare/v0.0.12-alpha.2...v0.0.12-alpha.3) (2024-10-29)
+
+
+### Bug Fixes
+
+* craftnode events passes editor now directly with the context. ([42a6d56](https://github.com/versa-stack/v-craft/commit/42a6d563cf7477075b9686db20dbf9d5c731f9a0))
+* improved node visibility handling. ([a35d82e](https://github.com/versa-stack/v-craft/commit/a35d82e6eda9ac7b4bd536340bfa2ea58eac6529))
+
 ## [0.0.12-alpha.2](https://github.com/versa-stack/v-craft/compare/v0.0.12-alpha.1...v0.0.12-alpha.2) (2024-10-29)
 
 
