@@ -38,22 +38,6 @@ export const defaultBlueprints = {
       },
       children: [],
     },
-    ContainerWithTextBlueprint: {
-      label: "Container with Text",
-      componentName: "CraftCanvas",
-      props: {
-        component: "CraftComponentSimpleContainer",
-      },
-      children: [
-        {
-          componentName: "CraftComponentSimpleText",
-          props: {
-            content: "Some prefilled text.",
-            componentName: "h1",
-          },
-        },
-      ],
-    },
     CraftGraphqlProvider: {
       label: "Graphql Provider",
       componentName: "CraftCanvas",
