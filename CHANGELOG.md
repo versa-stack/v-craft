@@ -1,3 +1,10 @@
+## [0.0.12-alpha.4](https://github.com/versa-stack/v-craft/compare/v0.0.12-alpha.3...v0.0.12-alpha.4) (2024-11-03)
+
+
+### Bug Fixes
+
+* Removed CraftNodeWrapper for better performance in the frontend. ([172f34c](https://github.com/versa-stack/v-craft/commit/172f34c4bb82674c4cab47206b1489daa607d691))
+
 ## [0.0.12-alpha.3](https://github.com/versa-stack/v-craft/compare/v0.0.12-alpha.2...v0.0.12-alpha.3) (2024-10-29)
 
 
