@@ -9,7 +9,6 @@ import CraftComponentSimpleContainer from "../../src/components/CraftComponentSi
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeEditor from "../../src/components/CraftNodeEditor.vue";
 import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
-import CraftNodeWrapper from "../../src/components/CraftNodeWrapper.vue";
 import { CraftNode } from "../../src/lib/craftNode";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
@@ -60,14 +59,15 @@ describe("CraftNodeEditor", () => {
     );
 
     const wrapper = mount(CraftNodeEditor, {
+      props: {
+        craftNode: craftNode.value,
+      },
       global: {
         components: {
-          CraftNodeWrapper,
           CraftNodeViewer,
           CraftComponentSimpleText,
         },
         provide: {
-          craftNode,
           resolver,
         },
       },
@@ -112,16 +112,17 @@ describe("CraftNodeEditor", () => {
     );
 
     const wrapper = mount(CraftNodeEditor, {
+      props: {
+        craftNode: craftNode.value,
+      },
       global: {
         components: {
-          CraftNodeWrapper,
           CraftNodeViewer,
           CraftComponentSimpleContainer,
           CraftComponentSimpleText,
           CraftCanvas,
         },
         provide: {
-          craftNode,
           resolver,
         },
       },
@@ -163,7 +164,13 @@ describe("CraftNodeEditor", () => {
 
     const simpleText = createSimpleText();
     editor.setNodes([simpleText]);
-    const craftNode = ref(editor.nodeMap.get(simpleText.uuid));
+    const craftNode = ref<CraftNode<any> | null>(
+      editor.nodeMap.get(simpleText.uuid) || null
+    );
+
+    if (!craftNode) {
+      throw Error("Craft node was not found.");
+    }
 
     const resolver = ref(
       new CraftNodeResolver<any>({
@@ -172,10 +179,12 @@ describe("CraftNodeEditor", () => {
     );
 
     const wrapper = mount(CraftNodeEditor, {
+      props: {
+        craftNode: craftNode.value as CraftNode<any>,
+      },
       global: {
         components: {
           CraftComponentSimpleText,
-          CraftNodeWrapper,
           CraftNodeViewer,
         },
         provide: {

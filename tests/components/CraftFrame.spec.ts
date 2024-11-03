@@ -7,7 +7,6 @@ import Indicator from "../../src/components/CraftDropIndicator.vue";
 import CraftFrame from "../../src/components/CraftFrame.vue";
 import CraftNodeEditor from "../../src/components/CraftNodeEditor.vue";
 import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
-import CraftNodeWrapper from "../../src/components/CraftNodeWrapper.vue";
 import { CraftNodeResolverMap } from "../../src/lib/CraftNodeResolver";
 import { defaultResolvers } from "../../src/resolvers/default";
 import { useEditor } from "../../src/store/editor";
@@ -27,7 +26,6 @@ describe("CraftFrame", () => {
       },
       global: {
         components: {
-          CraftNodeWrapper,
           CraftNodeEditor,
           CraftNodeViewer,
           CraftFrame,
@@ -39,7 +37,7 @@ describe("CraftFrame", () => {
     });
   };
 
-  it("renders CraftNodeWrappers for each node in the editor", async () => {
+  it("renders CraftNodeViewer for each node in the editor", async () => {
     const editor = useEditor()();
     editor.setNodes([
       {
@@ -59,10 +57,8 @@ describe("CraftFrame", () => {
     const wrapper = createWrapper();
     await nextTick();
 
-    const html = wrapper.html();
-
     expect(
-      wrapper.findAllComponents({ name: "CraftNodeWrapper" })
+      wrapper.findAllComponents({ name: "CraftNodeViewer" })
     ).toHaveLength(2);
   });
 
@@ -82,7 +78,7 @@ describe("CraftFrame", () => {
     const editor = useEditor()();
     expect(editor.nodeMap).toHaveLength(2);
     expect(
-      wrapper.findAllComponents({ name: "CraftNodeWrapper" })
+      wrapper.findAllComponents({ name: "CraftNodeViewer" })
     ).toHaveLength(2);
   });
 
@@ -111,7 +107,7 @@ describe("CraftFrame", () => {
 
     expect(editor.nodeTree).toHaveLength(1);
     expect(
-      wrapper.findAllComponents({ name: "CraftNodeWrapper" })
+      wrapper.findAllComponents({ name: "CraftNodeViewer" })
     ).toHaveLength(1);
   });
 

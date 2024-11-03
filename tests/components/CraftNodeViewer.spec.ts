@@ -8,7 +8,6 @@ import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleContainer from "../../src/components/CraftComponentSimpleContainer.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
-import CraftNodeWrapper from "../../src/components/CraftNodeWrapper.vue";
 import { CraftNode } from "../../src/lib/craftNode";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
@@ -59,14 +58,15 @@ describe("CraftNodeViewer", () => {
     );
 
     const wrapper = mount(CraftNodeViewer, {
+      props: {
+        craftNode: craftNode.value,
+      },
       global: {
         components: {
-          CraftNodeWrapper,
           CraftNodeViewer,
           CraftComponentSimpleText,
         },
         provide: {
-          craftNode,
           resolver,
         },
       },
@@ -111,16 +111,17 @@ describe("CraftNodeViewer", () => {
     );
 
     const wrapper = mount(CraftNodeViewer, {
+      props: {
+        craftNode: craftNode.value,
+      },
       global: {
         components: {
-          CraftNodeWrapper,
           CraftNodeViewer,
           CraftComponentSimpleContainer,
           CraftComponentSimpleText,
           CraftCanvas,
         },
         provide: {
-          craftNode,
           resolver,
         },
       },

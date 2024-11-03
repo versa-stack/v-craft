@@ -18,7 +18,6 @@ import CraftGraphqlProvider from "./CraftGraphqlProvider.vue";
 import CraftGraphqlQueryWrapper from "./CraftGraphqlQueryWrapper.vue";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
 import CraftNodeViewer from "./CraftNodeViewer.vue";
-import CraftNodeWrapper from "./CraftNodeWrapper.vue";
 import GraphqlInputComponent from "./GraphqlInputComponent.vue";
 import PatchesInputComponent from "./PatchesInputComponent.vue";
 
@@ -42,7 +41,6 @@ export {
   CraftGraphqlQueryWrapper,
   CraftNodeEditor,
   CraftNodeViewer,
-  CraftNodeWrapper,
   GraphqlInputComponent,
   PatchesInputComponent,
 };
