@@ -1,3 +1,15 @@
+# [0.1.0-alpha.1](https://github.com/versa-stack/v-craft/compare/v0.0.12-alpha.4...v0.1.0-alpha.1) (2024-11-05)
+
+
+### Bug Fixes
+
+* Fixed missing resolver within node viewer and editor. ([159fe58](https://github.com/versa-stack/v-craft/commit/159fe580ae6bb0db527c71329980ee02c1e7ca18))
+
+
+### Features
+
+* Reworked simple text component for inline editing. ([a318be8](https://github.com/versa-stack/v-craft/commit/a318be874a37f5576afc32a9f56304134db11f82))
+
 ## [0.0.12-alpha.4](https://github.com/versa-stack/v-craft/compare/v0.0.12-alpha.3...v0.0.12-alpha.4) (2024-11-03)
 
 
