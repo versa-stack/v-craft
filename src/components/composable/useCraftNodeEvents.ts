@@ -19,6 +19,10 @@ export const useCraftNodeEvents = <T extends object>(
     }
 
     Object.entries(craftNode.value.events).forEach(([eventName, eventCode]) => {
+      if (!eventCode.trim()) {
+        return;
+      }
+
       const handler = (...args: any[]) => {
         try {
           const eventHandler = new Function(

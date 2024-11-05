@@ -16,7 +16,7 @@
         !craftNodeIsAncestorOf(editor.draggedNode, craftNode),
     }"
     :draggable="editor.enabled && isDraggable"
-    @click.stop="craftNodeClick"
+    @click.prevent.stop="craftNodeClick"
     @dragend.prevent.stop="handleDragEnd"
     @dragover.prevent.stop="handleDragOver"
     @dragstart.stop="handleDragStart"
@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends object">
-import { ComponentPublicInstance, computed, ref, toRef } from "vue";
+import { ComponentPublicInstance, computed, provide, ref, toRef } from "vue";
 import {
   CraftNode,
   craftNodeIsAncestorOf,
@@ -68,6 +68,8 @@ const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
 const { resolvedNode, defaultProps, resolver } =
   useResolveCraftNode<T>(craftNode);
+
+if(resolver.value) provide("resolver", resolver);
 
 const nodeRef = ref<ComponentPublicInstance<HTMLElement> | null>(null);
 const craftNodeData = computed(() => editor.nodeDataMap[craftNode.value.uuid]);

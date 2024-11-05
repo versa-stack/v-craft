@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup generic="T extends object">
-import { computed, onMounted, ref, toRef } from "vue";
+import { computed, onMounted, provide, ref, toRef } from "vue";
 import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
@@ -42,6 +42,8 @@ const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
 const { resolvedNode, defaultProps, resolver } =
   useResolveCraftNode<T>(craftNode);
+
+if(resolver.value) provide("resolver", resolver);
 
 const nodeProps = computed(() => ({
   ...defaultProps,
