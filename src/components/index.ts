@@ -1,8 +1,5 @@
 import { CraftNode } from "../lib/craftNode";
 import CraftCanvas from "./CraftCanvas.vue";
-import CraftComponentBoxModelContainer from "./CraftComponentBoxModelContainer.vue";
-import CraftComponentFlexContainer from "./CraftComponentFlexContainer.vue";
-import CraftComponentSimpleContainer from "./CraftComponentSimpleContainer.vue";
 import CraftComponentSimpleText from "./CraftComponentSimpleText.vue";
 import CraftEditor from "./CraftEditor.vue";
 import CraftEditorBlueprint from "./CraftEditorBlueprint.vue";
@@ -23,9 +20,6 @@ import PatchesInputComponent from "./PatchesInputComponent.vue";
 
 export {
   CraftCanvas,
-  CraftComponentBoxModelContainer,
-  CraftComponentFlexContainer,
-  CraftComponentSimpleContainer,
   CraftComponentSimpleText,
   CraftEditor,
   CraftEditorBlueprint,

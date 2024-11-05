@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
 import { nextTick, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
-import CraftComponentSimpleContainer from "../../src/components/CraftComponentSimpleContainer.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeEditor from "../../src/components/CraftNodeEditor.vue";
 import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
@@ -31,13 +30,13 @@ const createSimpleText = (
   };
 };
 
-const createSimpleContainer = <T extends object = FormKitSchemaFormKit>(
+const createCanvas = <T extends object = FormKitSchemaFormKit>(
   children: CraftNode<T>[]
 ) => {
   return {
     componentName: "CraftCanvas",
     props: {
-      component: "CraftComponentSimpleContainer",
+      componentName: "div"
     },
     children,
     uuid: uuidv4(),
@@ -98,7 +97,7 @@ describe("CraftNodeEditor", () => {
   });
 
   it("renders the correct component tree based on craftNode", async () => {
-    const craftNode = ref(createSimpleContainer([createSimpleText()]));
+    const craftNode = ref(createCanvas([createSimpleText()]));
     const editor = useEditor()();
     editor.enable();
 
@@ -106,8 +105,9 @@ describe("CraftNodeEditor", () => {
       new CraftNodeResolver({
         CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
         CraftCanvas: defaultResolvers.CraftCanvas,
-        CraftComponentSimpleContainer:
-          defaultResolvers.CraftComponentSimpleContainer,
+        div: {
+          componentName: "div"
+        }
       } as CraftNodeResolverMap<any>)
     );
 
@@ -118,7 +118,6 @@ describe("CraftNodeEditor", () => {
       global: {
         components: {
           CraftNodeViewer,
-          CraftComponentSimpleContainer,
           CraftComponentSimpleText,
           CraftCanvas,
         },
@@ -129,9 +128,9 @@ describe("CraftNodeEditor", () => {
     });
 
     expect(
-      wrapper.findComponent({ name: "CraftComponentSimpleContainer" }).exists()
+      wrapper.findComponent({ name: "CraftCanvas" }).exists()
     ).toBe(true);
-
+    
     expect(
       wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()
     ).toBe(true);
