@@ -7,6 +7,8 @@ export * from "./lib/craftNode";
 export * from "./lib/CraftNodeResolver";
 export * from "./lib/model";
 export * from "./resolvers/default";
+export * from "./resolvers/apollo";
+export * from "./blueprints/apollo";
 export { useEditor } from "./store/editor";
 export type { EditorState, EditorStoreInstanceType } from "./store/editor";
 export { useIndicator } from "./store/indicator";
