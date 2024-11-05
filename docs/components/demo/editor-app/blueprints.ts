@@ -1,31 +1,47 @@
 import { BlueprintsLibrary, defaultBlueprints } from "@versa-stack/v-craft";
+import { htmlResolvers } from "./resolvermap";
+import { CraftNodeResolverMap } from "../../../../src/lib/CraftNodeResolver";
+import { Blueprints } from "../../../../dist/types/lib/model";
+import { apolloBlueprints } from "../../../../src/blueprints/apollo";
+
+const createHtmlElementBlueprints = () => {
+  const resolverMap: CraftNodeResolverMap<any> = htmlResolvers;
+  const blueprints: Blueprints<any> = {};
+
+  Object.entries(resolverMap).forEach(([key, value]) => {
+    blueprints[key] = {
+      label: `HTML <${value.componentName}>`,
+      componentName: "CraftCanvas",
+      props: {
+        ...value.defaultProps,
+        componentName: value.componentName,
+      },
+      children: [],
+    };
+  });
+
+  return blueprints;
+};
 
 export default {
   groups: [
     defaultBlueprints,
     {
       metadata: {
-        name: "docs-example",
+        name: "html-elements",
       },
-      label: "Docs Examples",
+      label: "HTML Elements",
       blueprints: {
-        ContainerWithTextBlueprint: {
-          label: "Container with Text",
+        div: {
+          label: "HTML <div>",
           componentName: "CraftCanvas",
           props: {
-            component: "CraftComponentSimpleContainer",
+            componentName: "div",
           },
-          children: [
-            {
-              componentName: "CraftComponentSimpleText",
-              props: {
-                content: "Some prefilled text.",
-                componentName: "h1",
-              },
-            },
-          ],
         },
+        ...createHtmlElementBlueprints(),
       },
     },
+    apolloBlueprints,
   ],
 } as BlueprintsLibrary;

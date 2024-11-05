@@ -15,9 +15,7 @@ export default defineConfig({
     sidebar: [
       { text: "Installation", link: "/index" },
       { text: "Editor", link: "/editor" },
-      { text: "Editor Usage", link: "/editor-usage" },
       { text: "Viewer", link: "/viewer" },
-      { text: "Viewer Usage", link: "/viewer-usage" },
     ],
   },
 

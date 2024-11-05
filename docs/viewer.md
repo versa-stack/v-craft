@@ -6,3 +6,8 @@ import Viewer from "./components/demo/editor-app/viewer.vue"
   <Viewer />
 </DemoContainer>
 
+
+:::details Show Code
+<<< @/components/demo/editor-app/viewer.vue
+:::
+
