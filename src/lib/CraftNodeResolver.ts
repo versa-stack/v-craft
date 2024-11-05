@@ -38,7 +38,7 @@ export class CraftNodeResolver<T extends object = FormKitSchemaFormKit> {
 
   resolveNode(craftNode: CraftNode<T>): CraftNodeComponentMap<T> {
     if (craftNodeIsCanvas(craftNode)) {
-      return this.resolve(craftNode.props.component);
+      return this.resolve(craftNode.props.componentName);
     }
 
     return this.resolve(craftNode.componentName);

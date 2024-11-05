@@ -28,11 +28,11 @@ const slots = useSlots();
 const attrs = useAttrs();
 
 const props = defineProps<{
-  component: string;
+  componentName: string;
 }>();
 
 const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver");
-const resolved = computed(() => resolver?.value.resolve(props.component));
+const resolved = computed(() => resolver?.value.resolve(props.componentName));
 
 const filteredAttrs = computed(() => {
   const { children, ...rest } = attrs;

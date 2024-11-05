@@ -90,7 +90,7 @@ export const craftNodeIsAncestorOf = <T extends object>(
 
 export const resolveNodeName = <T extends object>(craftNode: CraftNode<T>) => {
   if (craftNode.componentName === "CraftCanvas") {
-    return craftNode.props.component;
+    return craftNode.props.componentName;
   }
 
   return craftNode.componentName;
