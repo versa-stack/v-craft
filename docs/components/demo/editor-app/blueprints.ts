@@ -31,16 +31,7 @@ export default {
         name: "html-elements",
       },
       label: "HTML Elements",
-      blueprints: {
-        div: {
-          label: "HTML <div>",
-          componentName: "CraftCanvas",
-          props: {
-            componentName: "div",
-          },
-        },
-        ...createHtmlElementBlueprints(),
-      },
+      blueprints: createHtmlElementBlueprints(),
     },
     apolloBlueprints,
   ],
