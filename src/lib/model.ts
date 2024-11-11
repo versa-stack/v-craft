@@ -39,19 +39,23 @@ export type CraftEditorConfig<T extends object> = {
   resolverMap: CraftNodeResolverMap<T>;
 };
 
-export type CraftGraphqlQueryWrapperPropMap = {
-  type: "single" | "list";
-  fromPath: string;
-  patches: CraftGraphqlQueryWrapperPatch[];
-};
+export type CraftGraphqlQueryWrapperPropMap = CraftDataWrapperPropMap;
 
-export type CraftGraphqlQueryWrapperPatch = {
-  toPath: string;
-  fromPath: string;
-  type: "single" | "list";
-  patchSource: "mapPathResult" | "value" | "child";
-  value: any;
-  default?: any;
-};
+export type CraftGraphqlQueryWrapperPatch = CraftDataWrapperPatch;
 
 export type CraftGraphqlQueryWrapperData = CraftNodeDatasource;
+
+export type CraftDataWrapperPatch<V = any, D = any> = {
+  default?: D;
+  fromPath: string;
+  patchSource: "mapPathResult" | "value" | "child";
+  toPath: string;
+  type: "single" | "list";
+  value: V;
+};
+
+export type CraftDataWrapperPropMap<V = any, D = any> = {
+  fromPath: string;
+  patches: CraftDataWrapperPatch<V, D>[];
+  type: "single" | "list";
+};
