@@ -1,3 +1,10 @@
+# [0.1.0-alpha.2](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.1...v0.1.0-alpha.2) (2024-11-18)
+
+
+### Features
+
+* removed graphql and data components. will be provided in external packages. ([912449f](https://github.com/versa-stack/v-craft/commit/912449fe15d1b14a20e00e65b47ce0025e91037e))
+
 # [0.1.0-alpha.1](https://github.com/versa-stack/v-craft/compare/v0.0.12-alpha.4...v0.1.0-alpha.1) (2024-11-05)
 
 
