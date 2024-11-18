@@ -164,61 +164,6 @@ onBeforeMount(() => {
               componentName: "footer",
             },
             children: [
-              {
-                label: "Graphql Provider",
-                componentName: "CraftCanvas",
-                props: {
-                  componentName: "CraftGraphqlProvider",
-                  endpoint: "https://countries.trevorblades.com/graphql",
-                },
-                children: [
-                  {
-                    label: "Graphql Query Wrapper",
-                    componentName: "CraftCanvas",
-                    props: {
-                      componentName: "CraftGraphqlQueryWrapper",
-                      variables: "",
-                      map: {
-                        type: "list",
-                        fromPath: "$.countries[*]",
-                        patches: [
-                          {
-                            fromPath: "$.emoji",
-                            toPath: "$.content",
-                            type: "single",
-                          },
-                          {
-                            fromPath: "$.props.componentName",
-                            toPath: "$.componentName",
-                            patchSource: "child",
-                            default: "span",
-                            type: "single",
-                          },
-                        ],
-                      },
-                      query:
-                        "query GetCountries {\n  countries {\n    code\n    emoji\n  }\n}",
-                    },
-                    children: [
-                      {
-                        label: "Text",
-                        componentName: "CraftComponentSimpleText",
-                        props: {
-                          content: "Loading flags...",
-                          componentName: "span",
-                        },
-                        children: [],
-                        uuid: "5508a9ca-2f8d-4bc7-b4f5-480199836233",
-                        parentUuid: "091a5e37-e874-4a38-a4ee-a361e3279bc7",
-                      },
-                    ],
-                    uuid: "091a5e37-e874-4a38-a4ee-a361e3279bc7",
-                    parentUuid: "acc93b5c-7654-4903-8d1c-c1672d93ba02",
-                  },
-                ],
-                uuid: "acc93b5c-7654-4903-8d1c-c1672d93ba02",
-                parentUuid: "5f76c3b0-4af1-4979-9b22-cb8d2ef0bcc3",
-              },
             ],
             uuid: "5f76c3b0-4af1-4979-9b22-cb8d2ef0bcc3",
             parentUuid: "f0e246b7-73df-4fcb-bf37-b7df25e50e14",

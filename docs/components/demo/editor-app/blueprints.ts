@@ -1,8 +1,10 @@
-import { BlueprintsLibrary, defaultBlueprints } from "@versa-stack/v-craft";
+import {
+  Blueprints,
+  BlueprintsLibrary,
+  CraftNodeResolverMap,
+  defaultBlueprints,
+} from "@versa-stack/v-craft";
 import { htmlResolvers } from "./resolvermap";
-import { CraftNodeResolverMap } from "../../../../src/lib/CraftNodeResolver";
-import { Blueprints } from "../../../../dist/types/lib/model";
-import { apolloBlueprints } from "../../../../src/blueprints/apollo";
 
 const createHtmlElementBlueprints = () => {
   const resolverMap: CraftNodeResolverMap<any> = htmlResolvers;
@@ -33,6 +35,5 @@ export default {
       label: "HTML Elements",
       blueprints: createHtmlElementBlueprints(),
     },
-    apolloBlueprints,
   ],
 } as BlueprintsLibrary;

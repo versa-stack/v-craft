@@ -1,7 +1,6 @@
 import {
   CraftNodeResolverMap,
   defaultResolvers,
-  apolloResolvers,
 } from "@versa-stack/v-craft";
 
 const resolveHtmlElements = (elements: string[]) => {
@@ -52,6 +51,5 @@ export const htmlResolvers = {
 
 export const resolverMap: CraftNodeResolverMap = {
   ...defaultResolvers,
-  ...apolloResolvers,
   ...htmlResolvers,
 };

@@ -6,6 +6,7 @@
     v-on="eventHandlers"
     :data-node-name="nodeName"
     :is="resolvedNode.componentName"
+    :style="{ '--node-color': nodeColor }"
     :class="{
       'v-craft-node-selected': isSelected,
       'v-craft-node': editor.enabled,
@@ -69,7 +70,7 @@ const { editor, visible } = useCraftNodeWrapper(craftNode);
 const { resolvedNode, defaultProps, resolver } =
   useResolveCraftNode<T>(craftNode);
 
-if(resolver.value) provide("resolver", resolver);
+if (resolver.value) provide("resolver", resolver);
 
 const nodeRef = ref<ComponentPublicInstance<HTMLElement> | null>(null);
 const craftNodeData = computed(() => editor.nodeDataMap[craftNode.value.uuid]);
@@ -95,7 +96,21 @@ const nodeName = computed(
 const craftNodeClick = () => {
   selectNode();
 };
+
+const generateColorFromUUID = (uuid: string): string => {
+  let hash = 0;
+  for (let i = 0; i < uuid.length; i++) {
+    hash = uuid.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const h = hash % 360;
+  const s = 70 + (hash % 30);
+  const l = 45 + (hash % 30);
+  return `hsla(${h}, ${s}%, ${l}%, 0.9)`;
+};
+
+const nodeColor = computed(() => generateColorFromUUID(craftNode.value.uuid));
 </script>
+
 <style lang="scss" scoped>
 @use "../assets/craftNodeEditor";
 

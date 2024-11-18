@@ -11,12 +11,8 @@ import CraftEditorPanelNodeLayer from "./CraftEditorPanelNodeLayer.vue";
 import CraftEditorPanelNodeSettings from "./CraftEditorPanelNodeSettings.vue";
 import CraftEditorPanelSettings from "./CraftEditorPanelSettings.vue";
 import CraftFrame from "./CraftFrame.vue";
-import CraftGraphqlProvider from "./CraftGraphqlProvider.vue";
-import CraftGraphqlQueryWrapper from "./CraftGraphqlQueryWrapper.vue";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
 import CraftNodeViewer from "./CraftNodeViewer.vue";
-import GraphqlInputComponent from "./GraphqlInputComponent.vue";
-import PatchesInputComponent from "./PatchesInputComponent.vue";
 
 export {
   CraftCanvas,
@@ -31,12 +27,8 @@ export {
   CraftEditorPanelNodeSettings,
   CraftEditorPanelSettings,
   CraftFrame,
-  CraftGraphqlProvider,
-  CraftGraphqlQueryWrapper,
   CraftNodeEditor,
   CraftNodeViewer,
-  GraphqlInputComponent,
-  PatchesInputComponent,
 };
 
 export type CraftDataListItem<T extends object> = {

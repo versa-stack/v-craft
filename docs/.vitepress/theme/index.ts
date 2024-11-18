@@ -1,5 +1,5 @@
 import { defaultConfig, plugin } from "@formkit/vue";
-import { VCraft, inputs } from "@versa-stack/v-craft";
+import { VCraft } from "@versa-stack/v-craft";
 import { createPinia } from "pinia";
 import DefaultTheme from "vitepress/theme";
 import DemoContainer from "../components/DemoContainer.vue";
@@ -22,7 +22,6 @@ export default {
         config: {
           rootClasses,
         },
-        inputs
       })
     );
     app.component("DemoContainer", DemoContainer);

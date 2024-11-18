@@ -9,11 +9,12 @@
 .v-craft-node::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: calc(-1 * var(--v-craft-node-editor-border-padding));
+  left: calc(-1 * var(--v-craft-node-editor-border-padding));
+  right: calc(-1 * var(--v-craft-node-editor-border-padding));
+  bottom: calc(-1 * var(--v-craft-node-editor-border-padding));
   border: 1px solid transparent;
+  border-radius: 4px;
   transition: border-color var(--v-craft-transition-duration) ease-in-out,
     box-shadow var(--v-craft-transition-duration) ease-in-out;
   pointer-events: none;
@@ -22,15 +23,15 @@
 .v-craft-node::before {
   content: "";
   align-items: center;
-  background-color: var(--v-craft-blue);
-  bottom: -20px;
+  background-color: var(--node-color, var(--v-craft-blue));
+  bottom: calc(-20px - var(--v-craft-node-editor-border-padding));
   color: var(--v-craft-white);
   display: flex;
   font-family: Arial, sans-serif;
   font-size: 12px;
   font-weight: normal;
   height: 20px;
-  left: 0px;
+  left: calc(-1 * var(--v-craft-node-editor-border-padding) + 3px);
   line-height: 1.4em;
   opacity: 0;
   padding: 0 5px !important;
@@ -46,55 +47,49 @@
   opacity: 0.5;
 }
 
-.v-craft-node:hover:not(:has(.v-craft-node:hover)):not(.v-craft-node-selected)::before {
-  opacity: 0.8;
+.v-craft-node:hover:not(:has(.v-craft-node:hover)):not(
+    .v-craft-node-selected
+  )::before {
+  opacity: 1;
 }
 
 .v-craft-node-selected::before {
   opacity: 1;
 }
 
-.v-craft-node.v-craft-canvas:hover {
-  border: 1px solid var(--v-craft-blue-lighter-10);
-}
-
-.dark .v-craft-node.v-craft-canvas:hover {
-  border: 1px solid var(--v-craft-blue-darker-30);
-}
-
 .v-craft-node:hover:not(:has(.v-craft-node:hover))::after {
-  border-color: var(--v-craft-blue-lighter-20);
-  box-shadow: 0 0 0 1px var(--v-craft-blue);
+  border-color: var(--node-color, var(--v-craft-blue-lighter-20));
+  box-shadow: 0 0 0 1px var(--node-color, var(--v-craft-blue));
 }
 
 .dark .v-craft-node:hover:not(:has(.v-craft-node:hover))::after {
-  border-color: var(--v-craft-blue-darker-25);
-  box-shadow: 0 0 0 1px var(--v-craft-blue);
+  border-color: var(--node-color, var(--v-craft-blue-darker-25));
+  box-shadow: 0 0 0 1px var(--node-color, var(--v-craft-blue));
 }
 
 .v-craft-node.v-craft-canvas:hover:not(:has(.v-craft-node:hover)):not(
     .v-craft-node-selected
   )::after {
-  box-shadow: 0 0 0.5em 0.1em var(--v-craft-blue-transparent-20);
+  box-shadow: 0 0 0.5em 0.1em rgba(var(--node-color), 0.2);
 }
 
 .v-craft-node-selected::after {
-  border: 1px solid var(--v-craft-blue);
-  box-shadow: 0 0 0 1px var(--v-craft-blue);
+  border: 1px solid var(--node-color, var(--v-craft-blue));
+  box-shadow: 0 0 0 1px var(--node-color, var(--v-craft-blue));
 }
 
 .v-craft-node-selected:not(:hover)::after {
-  border: 1px solid var(--v-craft-blue);
-  box-shadow: 0 0 0.5em 0.1em var(--v-craft-blue-transparent-20);
+  border: 1px solid var(--node-color, var(--v-craft-blue));
+  box-shadow: 0 0 0.5em 0.1em rgba(var(--node-color), 0.2);
 }
 
 .v-craft-node-selected::after {
-  border: 1px solid var(--v-craft-blue);
-  box-shadow: 0 0 0 1px var(--v-craft-blue);
+  border: 1px solid var(--node-color, var(--v-craft-blue));
+  box-shadow: 0 0 0 1px var(--node-color, var(--v-craft-blue));
 }
 
 .v-craft-node.v-craft-canvas.v-craft-other-node-dragged::after {
-  border: 2px dashed var(--v-craft-blue);
+  border: 2px dashed var(--node-color, var(--v-craft-blue));
 }
 
 .v-craft-node.v-craft-canvas:first-child {
@@ -110,8 +105,8 @@
 }
 
 .v-craft-node.v-craft-canvas.v-craft-other-node-dragged {
-  padding: 1.25em;
-  margin: 1.25em 0 !important;
+  padding: 10px !important;
+  margin-bottom: 25px !important;
 }
 
 .v-craft-node-selected {
@@ -119,7 +114,7 @@
 }
 
 .v-craft-node.v-craft-drag-over {
-  box-shadow: 0 0 0 2px var(--v-craft-blue);
+  box-shadow: 0 0 0 2px var(--node-color, var(--v-craft-blue));
 }
 
 .v-craft-node.v-craft-dragging {

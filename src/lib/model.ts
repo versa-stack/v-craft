@@ -41,21 +41,21 @@ export type CraftEditorConfig<T extends object> = {
 
 export type CraftGraphqlQueryWrapperPropMap = CraftDataWrapperPropMap;
 
-export type CraftGraphqlQueryWrapperPatch = CraftDataWrapperPatch;
+export type CraftGraphqlQueryWrapperPatch = CraftDataPatch;
 
 export type CraftGraphqlQueryWrapperData = CraftNodeDatasource;
 
-export type CraftDataWrapperPatch<V = any, D = any> = {
-  default?: D;
+export type CraftDataPatch<V = any, D = any> = {
+  defaultValue?: D;
   fromPath: string;
   patchSource: "mapPathResult" | "value" | "child";
   toPath: string;
   type: "single" | "list";
-  value: V;
+  value?: V;
 };
 
 export type CraftDataWrapperPropMap<V = any, D = any> = {
   fromPath: string;
-  patches: CraftDataWrapperPatch<V, D>[];
+  patches: CraftDataPatch<V, D>[];
   type: "single" | "list";
 };

@@ -1,12 +1,12 @@
 import jp from "jsonpath";
 import { setValueByPath } from "./setValueByPath";
-import { CraftDataWrapperPropMap, CraftDataWrapperPatch } from "./model";
+import { CraftDataWrapperPropMap, CraftDataPatch } from "./model";
 import { CraftNodeDatasource } from "./craftNode";
 
 export const mapData = <
   M extends CraftDataWrapperPropMap = CraftDataWrapperPropMap<any, any>,
   D extends CraftNodeDatasource = CraftNodeDatasource,
-  P extends CraftDataWrapperPatch = CraftDataWrapperPatch<any, any>
+  P extends CraftDataPatch = CraftDataPatch<any, any>
 >(
   data: any,
   mapConfig: M,
@@ -21,7 +21,7 @@ export const mapData = <
   const applyPatch = (source: any, patch: P) => {
     let patchSource = source;
     if (patch.patchSource === "value") {
-      return patch.value ?? patch.default ?? null;
+      return patch.value ?? patch.defaultValue ?? null;
     }
 
     if (patch.patchSource === "child") {
@@ -32,7 +32,7 @@ export const mapData = <
       patch.type === "single"
         ? jp.value(patchSource, patch.fromPath)
         : jp.query(patchSource, patch.fromPath);
-    return value ?? patch.default ?? null;
+    return value ?? patch.defaultValue ?? null;
   };
 
   const rootData =
