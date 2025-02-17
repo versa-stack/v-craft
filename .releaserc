@@ -13,5 +13,65 @@
     "@semantic-release/npm",
     "@semantic-release/github",
     "@semantic-release/git"
-  ]
+  ],
+  "preset": "conventionalcommits",
+  "presetConfig": {
+    "types": [
+      {
+        "type": "feat",
+        "section": "sparkles: Features",
+        "hidden": false
+      },
+      {
+        "type": "fix",
+        "section": "bug: Bug Fixes",
+        "hidden": false
+      },
+      {
+        "type": "perf",
+        "section": "zap: Performance Improvements",
+        "hidden": false
+      },
+      {
+        "type": "revert",
+        "section": "rewind: Reverts",
+        "hidden": true
+      },
+      {
+        "type": "docs",
+        "section": "books: Documentation",
+        "hidden": true
+      },
+      {
+        "type": "style",
+        "section": "lipstick: Styles",
+        "hidden": true
+      },
+      {
+        "type": "chore",
+        "section": "octopus: Miscellaneous Chores",
+        "hidden": true
+      },
+      {
+        "type": "refactor",
+        "section": "recycle: Code Refactoring",
+        "hidden": true
+      },
+      {
+        "type": "test",
+        "section": "white_check_mark: Tests",
+        "hidden": true
+      },
+      {
+        "type": "build",
+        "section": "package: Build System",
+        "hidden": true
+      },
+      {
+        "type": "ci",
+        "section": "construction_worker: Continuous Integration",
+        "hidden": true
+      }
+    ]
+  }
 }
