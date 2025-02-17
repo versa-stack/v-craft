@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/versa-stack/v-craft/branch/develop/graph/badge.svg?token=VLUY6V79PV)](https://codecov.io/gh/versa-stack/v-craft)
+
 # @versa-stack/v-craft
 
 ## Vue 3 Drag-and-Drop Page Editor
