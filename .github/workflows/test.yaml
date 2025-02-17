@@ -1,0 +1,39 @@
+name: Test
+
+on:
+  workflow_run:
+    workflows: ["Dependencies"]
+    types:
+      - completed
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Read .nvmrc
+      run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Download node_modules
+      uses: actions/download-artifact@v2
+      with:
+        name: node_modules
+        path: node_modules
+
+    - name: Run tests with coverage
+      run: npm run test:coverage
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
