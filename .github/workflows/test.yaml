@@ -41,7 +41,7 @@ jobs:
           ${{ runner.os }}-
 
     - name: Install Dependencies
-      run: npm ci
+      run: npm ci --include-dev
 
     - name: Run tests with coverage
       run: npm run test:coverage
