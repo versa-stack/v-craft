@@ -1,8 +1,6 @@
 [![codecov](https://codecov.io/gh/versa-stack/v-craft/branch/develop/graph/badge.svg?token=VLUY6V79PV)](https://codecov.io/gh/versa-stack/v-craft)
 
-# @versa-stack/v-craft
-
-## Vue 3 Drag-and-Drop Page Editor
+# @versa-stack/v-craft | Vue 3 Drag-and-Drop Page Editor
 
 @versa-stack/v-craft is an easily configurable page editor for Vue 3 components. This project aims to provide a powerful and flexible drag-and-drop interface for creating websites with little to no programming knowledge.
 

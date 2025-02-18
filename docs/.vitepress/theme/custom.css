@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-#VPContent.VPContent.has-sidebar {
+.Layout.no-aside #VPContent.VPContent.has-sidebar
+{
   padding-right: 0;
+}
+
+
+.Layout.no-aside .VPNav .content {
+  background-color: var(--vp-nav-bg-color);
 }

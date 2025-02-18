@@ -9,11 +9,21 @@ export default defineConfig({
   description: "An attempt to deliver a Vue.js 3 page editor library.",
 
   themeConfig: {
-    aside: false,
-    nav: [],
-    outline: false,
+    aside: true,
+    socialLinks: [
+      {icon: "github", link: "https://github.com/versa-stack/v-craft"},
+    ],
+    nav: [
+      {
+        text: "Versions",
+        items: [
+          { text: "develop", link: `${process.env.PUBLIC_BASE ?? '/'}` },
+        ],
+      },
+    ],
     sidebar: [
-      { text: "Installation", link: "/index" },
+      { text: "Home", link: "/" },
+      { text: "Installation", link: "/installation" },
       { text: "Editor", link: "/editor" },
       { text: "Viewer", link: "/viewer" },
     ],

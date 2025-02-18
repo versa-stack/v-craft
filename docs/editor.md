@@ -1,3 +1,8 @@
+---
+aside: false
+pageClass: no-aside
+---
+
 <script lang="ts" setup>
 import Editor from "./components/demo/editor-app/editor.vue"
 import { useEditor } from "@versa-stack/v-craft"
