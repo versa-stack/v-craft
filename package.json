@@ -41,6 +41,7 @@
     "@vue/apollo-composable": "^4.2.1",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
+    "conventional-changelog-conventionalcommits": "^8.0.0",
     "graphql": "^16.9.0",
     "graphql-tag": "^2.12.6",
     "happy-dom": "^15.7.4",
