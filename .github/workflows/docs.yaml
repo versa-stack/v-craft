@@ -5,8 +5,8 @@ on:
     branches:
     - main
     - develop
-
-  workflow_dispatch:
+    paths:
+    - docs/**
 
 permissions:
   contents: read
