@@ -3,6 +3,7 @@ import path from "path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import dts from "vite-plugin-dts";
+import tailwindcss from "@tailwindcss/vite";
 
 const packageName = "v-craft";
 
@@ -14,6 +15,7 @@ export default defineConfig({
       include: ["src/**/*.ts", "src/**/*.vue"],
       outDir: "dist/types",
     }),
+    tailwindcss()
   ],
   build: {
     sourcemap: true,
