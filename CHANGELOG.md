@@ -1,3 +1,14 @@
+## [0.1.0-alpha.3](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2025-03-14)
+
+### sparkles: Features
+
+* Added draggingDisabled flag to editor to allow for inline editing with SimplTextComponent. ([4b611bf](https://github.com/versa-stack/v-craft/commit/4b611bf733e3f7582ffef27b1503199f1d2302ab))
+
+### bug: Bug Fixes
+
+* fixed build errors and changed package type to module. ([c50b249](https://github.com/versa-stack/v-craft/commit/c50b249d27459aec86a8ba1729d47afe6db16232))
+* Fixed disappearing element when dropping it as its own sibling. ([62238e1](https://github.com/versa-stack/v-craft/commit/62238e17ae7b1f8776a2da250816158eeadfc81b))
+
 # [0.1.0-alpha.2](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.1...v0.1.0-alpha.2) (2024-11-18)
 
 
