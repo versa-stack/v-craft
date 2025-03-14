@@ -26,10 +26,6 @@
    npm i locash-es@4.17.21 uui@10.0.0
    ```
 
-   ::: info
-   You won't need the apollo and graphql packages listed in the peerDependencies as these will be removed in future versions
-   :::
-
 ## Setup
 
 ### Register v-craft and formkit

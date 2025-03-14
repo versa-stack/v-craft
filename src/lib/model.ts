@@ -1,5 +1,5 @@
 import { CraftNodeResolverMap } from "./CraftNodeResolver";
-import { CraftNode, CraftNodeDatasource } from "./craftNode";
+import { CraftNode } from "./craftNode";
 
 export type CraftBlueprintData = {
   label: string;
@@ -38,12 +38,6 @@ export type CraftEditorConfig<T extends object> = {
   blueprintsLibrary: BlueprintsLibrary<T>;
   resolverMap: CraftNodeResolverMap<T>;
 };
-
-export type CraftGraphqlQueryWrapperPropMap = CraftDataWrapperPropMap;
-
-export type CraftGraphqlQueryWrapperPatch = CraftDataPatch;
-
-export type CraftGraphqlQueryWrapperData = CraftNodeDatasource;
 
 export type CraftDataPatch<V = any, D = any> = {
   defaultValue?: D;

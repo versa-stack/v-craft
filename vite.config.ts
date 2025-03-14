@@ -28,11 +28,7 @@ export default defineConfig({
     rollupOptions: {
       external: [
         "vue",
-        "@apollo/client",
         "@formkit/vue",
-        "@vue/apollo-composable",
-        "graphql",
-        "graphql-tag",
         "lodash-es",
         "pinia",
         "uuid",
@@ -41,11 +37,7 @@ export default defineConfig({
       output: {
         globals: {
           vue: "Vue",
-          "@apollo/client": "ApolloClient",
           "@formkit/vue": "FormKitVue",
-          "@vue/apollo-composable": "VueApolloComposable",
-          graphql: "graphql",
-          "graphql-tag": "gql",
           "lodash-es": "_",
           pinia: "Pinia",
           uuid: "uuid",
@@ -72,11 +64,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: [
-      "@apollo/client",
       "@formkit/vue",
-      "@vue/apollo-composable",
-      "graphql",
-      "graphql-tag",
       "lodash-es",
       "pinia",
       "uuid",
