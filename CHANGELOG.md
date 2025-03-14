@@ -1,3 +1,9 @@
+## [0.1.0-alpha.5](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.4...v0.1.0-alpha.5) (2025-03-14)
+
+### 🐛 Bug Fixes
+
+* Fixed faulty css export in package. ([232a2b2](https://github.com/versa-stack/v-craft/commit/232a2b2f2db75c5483ac86b7169b953c57a22ea6))
+
 ## [0.1.0-alpha.4](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.3...v0.1.0-alpha.4) (2025-03-14)
 
 ### ✨ Features
