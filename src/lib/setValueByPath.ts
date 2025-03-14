@@ -9,6 +9,10 @@ export function setValueByPath(obj: any, path: string, value: any): void {
     const nextPart = parts[i + 1];
     const isNextPartArrayIndex = /^\d+$/.test(nextPart);
 
+    if (part === '__proto__' || part === 'constructor' || part === 'prototype') {
+      throw new Error('Invalid path part: ' + part);
+    }
+
     if (!(part in current)) {
       current[part] = isNextPartArrayIndex ? [] : {};
     }
@@ -29,6 +33,9 @@ export function setValueByPath(obj: any, path: string, value: any): void {
   }
 
   const lastPart = parts[parts.length - 1];
+  if (lastPart === '__proto__' || lastPart === 'constructor' || lastPart === 'prototype') {
+    throw new Error('Invalid path part: ' + lastPart);
+  }
   if (/^\d+$/.test(lastPart)) {
     const index = parseInt(lastPart, 10);
     if (!Array.isArray(current)) {
