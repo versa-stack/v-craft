@@ -22,6 +22,7 @@ export type EditorState<T extends object> = {
   resolver: CraftNodeResolver<T> | null;
   eventsContext: Record<string, any>;
   nodeDataMap: Record<string, CraftNodeDatasource | null>;
+  draggingDisabled: boolean;
 };
 
 export type EditorStoreInstanceType<T extends object = FormKitSchemaFormKit> =
@@ -39,6 +40,7 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
       resolver: null,
       eventsContext: {},
       nodeDataMap: {},
+      draggingDisabled: false,
     }),
 
     actions: {
@@ -48,6 +50,7 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         this.selectedUuid = null;
         this.draggedNode = null;
         this.nodeRefsRecord = {};
+        this.draggingDisabled = false;
       },
 
       enable() {
@@ -56,6 +59,13 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
 
       disable() {
         this.enabled = false;
+      },
+
+      disableDragging() {
+        this.draggingDisabled = true;
+      },
+      enableDragging() {
+        this.draggingDisabled = false;
       },
 
       setResolver(resolver: CraftNodeResolver<T>) {

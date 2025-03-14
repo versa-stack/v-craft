@@ -15,7 +15,7 @@ export default <T extends object>(
   isSelected: Ref<boolean>;
 } => {
   const editor = useEditor<T>()();
-  const { enabled, selectedUuid } = storeToRefs(editor);
+  const { enabled, selectedUuid, draggingDisabled } = storeToRefs(editor);
 
   watchEffect(() => {
     if (nodeRef?.value?.$el) {
@@ -28,7 +28,7 @@ export default <T extends object>(
   );
 
   const isDraggable = computed<boolean>(() => {
-    return enabled.value && craftNodeIsDraggable(craftNode);
+    return enabled.value && !draggingDisabled.value && craftNodeIsDraggable(craftNode);
   });
 
   const selectNode = () => {

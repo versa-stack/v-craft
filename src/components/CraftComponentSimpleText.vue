@@ -59,6 +59,7 @@ const handleDoubleClick = () => {
 const startEditing = () => {
   originalValue.value = props.content;
   isEditing.value = true;
+  editor.disableDragging();
   nextTick(() => {
     if (textareaRef.value) {
       textareaRef.value.focus();
@@ -75,6 +76,7 @@ const adjustTextareaHeight = () => {
 };
 
 const finishEditing = async () => {
+  editor.enableDragging();
   if (isEditing.value) {
     isEditing.value = false;
     const newValue = textareaRef.value?.value.trim() || "";
@@ -92,8 +94,6 @@ const finishEditing = async () => {
       });
 
       await nextTick();
-
-      console.log(craftNode.value.props.content);
       emit("update:content", newValue);
     }
   }
