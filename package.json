@@ -69,6 +69,6 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/v-craft.es.js"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./dist/v-craft.css": "./dist/v-craft.css"
   }
 }
