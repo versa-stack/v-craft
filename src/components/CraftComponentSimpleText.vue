@@ -1,7 +1,7 @@
 <template>
   <component
     :is="componentName"
-    :class="{ 'editable-text': enabled, 'is-editable': enabled, 'is-editing': isEditing }"
+    :class="{ 'pre-wrap': !isEditing, 'editable-text': enabled, 'is-editable': enabled, 'is-editing': isEditing }"
     @dblclick="handleDoubleClick"
   >
     {{ isEditing ? "" : content }}
@@ -112,7 +112,8 @@ watch(enabled, (newValue) => {
 </script>
 
 <style lang="scss" scoped>
-.editable-text {
+.pre-wrap {
+  white-space: pre-wrap;
 }
 
 .editable-text.is-editable:hover {

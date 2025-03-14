@@ -25,6 +25,18 @@ watch(() => editor.nodeTree, (nt) => {
 
 </script>
 
+
+::: info Editor Demo
+Below you can see a working demo of the UI Editor.<br/>
+You can drag components from the `blueprints` panel onto the canvas or reaarange them via drag and drop within the canvas itself. <br/>
+Click components to see their properties in the `component inspector`. <br/>
+The `tree` panel shows you an overview of components in the canvas where you can also hide or show individual components.
+
+Double clicking any text will enter in place editing.
+:::
+
+---
+
 <DemoContainer>
   <Editor />
 </DemoContainer>
