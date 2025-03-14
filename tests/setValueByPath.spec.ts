@@ -37,4 +37,16 @@ describe('setValueByPath', () => {
     setValueByPath(obj, '$.users[0].name', 'John');
     expect(obj).toEqual({ users: [{ name: 'John' }] });
   });
+
+  it('should raise error if path is invalid', () => {
+    const obj = {};
+    const invalidPatths = [
+      '__proto__',
+      'constructor',
+      'prototype',
+    ];
+    for (const path of invalidPatths) {
+      expect(() => setValueByPath(obj, `$.${path}`, 'John')).toThrowError();
+    }
+  });
 });
