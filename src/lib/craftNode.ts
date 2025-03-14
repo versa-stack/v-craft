@@ -27,7 +27,7 @@ export type CraftNode<T extends object> = {
   parentUuid?: string | null;
   props: any;
   rules?: CraftNodeRules;
-  uuid: uuidv4;
+  uuid: string;
   visible?: boolean;
   events?: Record<string, string>;
 };

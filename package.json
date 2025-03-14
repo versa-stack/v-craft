@@ -14,6 +14,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage  --reporter=junit --outputFile=test-report.junit.xml"
   },
+  "type": "module",
   "peerDependencies": {
     "@formkit/vue": "^1.6.7",
     "jsonpath": "^1.1.1",
