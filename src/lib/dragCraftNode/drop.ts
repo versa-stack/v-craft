@@ -10,7 +10,6 @@ import {
 } from "../craftNode";
 import CraftNodeResolver from "../CraftNodeResolver";
 import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
-import { cloneDeep } from "lodash-es";
 
 export type DragCraftNodeContext<T extends object> = {
   editor: EditorStoreInstanceType<T>;
@@ -46,6 +45,10 @@ const handleElementDrop = <T extends object>(
     (c) => c.uuid === context.craftNode.value.uuid
   );
   if (!sibling) {
+    return context.craftNode.value;
+  }
+
+  if (sibling.uuid === draggedNode.uuid) {
     return context.craftNode.value;
   }
 
@@ -93,7 +96,6 @@ export default <T extends object>(
   context: DragCraftNodeContext<T>
 ) => {
   if (!context.editor.draggedNode) {
-    console.log("no dragged node found");
     return context.craftNode.value;
   }
 
