@@ -1,3 +1,9 @@
+## [0.1.0-alpha.4](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.3...v0.1.0-alpha.4) (2025-03-14)
+
+### sparkles: Features
+
+* Enabled prewrapping for simple text component to preserve whitespace. ([c4d593a](https://github.com/versa-stack/v-craft/commit/c4d593a18b4ddb66a945453ae6388a2307413125))
+
 ## [0.1.0-alpha.3](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2025-03-14)
 
 ### sparkles: Features
