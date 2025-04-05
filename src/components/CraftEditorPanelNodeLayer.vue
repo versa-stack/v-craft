@@ -31,10 +31,10 @@
   </li>
 </template>
 <script lang="ts" setup generic="T extends object">
-import { computed, toRefs, watch } from "vue";
-import { useEditor } from "../store/editor";
-import { CraftNode, resolveNodeName } from "../lib/craftNode";
 import { storeToRefs } from "pinia";
+import { computed, toRefs } from "vue";
+import { CraftNode, resolveNodeName } from "../lib/craftNode";
+import { useEditor } from "../store/editor";
 
 const props = withDefaults(
   defineProps<{
