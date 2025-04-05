@@ -1,3 +1,9 @@
+## [0.1.0-alpha.7](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.6...v0.1.0-alpha.7) (2025-04-05)
+
+### ✨ Features
+
+* Custom editor layout and panels. ([8e493b5](https://github.com/versa-stack/v-craft/commit/8e493b5bc6f878cce42f686a053303f408e47d17))
+
 ## [0.1.0-alpha.6](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.5...v0.1.0-alpha.6) (2025-04-05)
 
 ### ✨ Features
