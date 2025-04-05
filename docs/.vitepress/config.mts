@@ -11,20 +11,19 @@ export default defineConfig({
   themeConfig: {
     aside: true,
     socialLinks: [
-      {icon: "github", link: "https://github.com/versa-stack/v-craft"},
+      { icon: "github", link: "https://github.com/versa-stack/v-craft" },
     ],
     nav: [
       {
         text: "Versions",
-        items: [
-          { text: "develop", link: `${process.env.PUBLIC_BASE ?? '/'}` },
-        ],
+        items: [{ text: "develop", link: `${process.env.PUBLIC_BASE ?? "/"}` }],
       },
     ],
     sidebar: [
       { text: "Home", link: "/" },
       { text: "Installation", link: "/installation" },
       { text: "Editor", link: "/editor" },
+      { text: "Customized Editor", link: "/custom-editor" },
       { text: "Viewer", link: "/viewer" },
     ],
   },

@@ -1,44 +1,56 @@
 <template>
-  <div
-    ref="panel"
-    class="v-craft-panel v-craft-settings-panel"
-    @click.prevent.stop="() => false"
+  <slot
+    name="panel-content"
+    :selectedNode="selectedNode"
+    :nodeName="nodeName"
+    :handlePropsUpdate="handlePropsUpdate"
+    :schema="schema"
+    :eventsSchema="eventsSchema"
+    :handleEventsUpdate="handleEventsUpdate"
+    :deleteable="deleteable"
+    :removeNode="removeNode"
   >
-    <h3 class="v-craft-title">component inspector</h3>
-    <span class="text-sm">{{  selectedNode?.uuid  }}</span>
-    <div v-if="!selectedNode">
-      <p>select a component to inspect</p>
-    </div>
     <div
-      class="v-craft-properties"
-      :class="{ 'v-craft-visible': selectedNode }"
+      ref="panel"
+      class="v-craft-panel v-craft-settings-panel"
+      @click.prevent.stop="() => false"
     >
-      <h4>{{ nodeName }}</h4>
-      <div v-if="schema" class="v-craft-settings">
-        <CraftEditorPanelNodeSettings
-          :craftNode="selectedNode"
-          :schema="schema"
-          @update:props="handlePropsUpdate"
-        />
+      <h3 class="v-craft-title">component inspector</h3>
+      <span class="text-sm">{{ selectedNode?.uuid }}</span>
+      <div v-if="!selectedNode">
+        <p>select a component to inspect</p>
       </div>
-      <div v-if="eventsSchema" class="v-craft-settings">
-        <CraftEditorPanelNodeEventsSettings
-          :craftNode="selectedNode"
-          :schema="eventsSchema"
-          @update:events="handleEventsUpdate"
-        />
-      </div>
-      <div class="v-craft-actions" data-type="button">
-        <button
-          class="formkit-input v-craft-delete"
-          v-if="deleteable"
-          @click.prevent="removeNode"
-        >
-          Delete
-        </button>
+      <div
+        class="v-craft-properties"
+        :class="{ 'v-craft-visible': selectedNode }"
+      >
+        <h4>{{ nodeName }}</h4>
+        <div v-if="schema" class="v-craft-settings">
+          <CraftEditorPanelNodeSettings
+            :craftNode="selectedNode"
+            :schema="schema"
+            @update:props="handlePropsUpdate"
+          />
+        </div>
+        <div v-if="eventsSchema" class="v-craft-settings">
+          <CraftEditorPanelNodeEventsSettings
+            :craftNode="selectedNode"
+            :schema="eventsSchema"
+            @update:events="handleEventsUpdate"
+          />
+        </div>
+        <div class="v-craft-actions" data-type="button">
+          <button
+            class="formkit-input v-craft-delete"
+            v-if="deleteable"
+            @click.prevent="removeNode"
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  </slot>
 </template>
 
 <script lang="ts" setup generic="T extends object">
