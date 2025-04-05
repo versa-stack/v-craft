@@ -1,3 +1,9 @@
+## [0.1.0-alpha.6](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.5...v0.1.0-alpha.6) (2025-04-05)
+
+### ✨ Features
+
+* Allow override of CraftEditorPanelLayout ([069e2be](https://github.com/versa-stack/v-craft/commit/069e2beb21f902444d6a9afa9837538f1d7d5e73))
+
 ## [0.1.0-alpha.5](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.4...v0.1.0-alpha.5) (2025-03-14)
 
 ### 🐛 Bug Fixes
