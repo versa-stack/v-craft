@@ -1,19 +1,20 @@
 <template>
-  <div class="v-craft-panel-manager">
-    <div class="flex w-full justify-between gap-10">
-      <div class="v-craft-grid-panel v-craft-panel-left flex-shrink">
-        <CraftEditorPanelBlueprints :blueprints="blueprints" />
-      </div>
-      <div class="v-craft-panel-center flex-grow" @click.stop="deselectNodes">
-        <slot></slot>
-      </div>
-      <div class="v-craft-grid-panel v-craft-panel-right flex-shrink">
-        <CraftEditorPanelLayers />
-        <CraftEditorPanelSettings />
+  <slot name="panel-layout" :blueprints="blueprints" :deselectNodes="deselectNodes" >
+    <div class="v-craft-panel-manager">
+      <div class="flex w-full justify-between gap-10">
+        <div class="v-craft-grid-panel v-craft-panel-left shrink">
+          <CraftEditorPanelBlueprints :blueprints="blueprints" />
+        </div>
+        <div class="v-craft-panel-center flex grow" @click.stop="deselectNodes">
+          <slot></slot>
+        </div>
+        <div class="v-craft-grid-panel v-craft-panel-right shrink">
+          <CraftEditorPanelLayers />
+          <CraftEditorPanelSettings />
+        </div>
       </div>
     </div>
-    <div class="v-craft-grid-panel v-craft-panel-bottom"></div>
-  </div>
+  </slot>
 </template>
 <script lang="ts" setup generic="T extends object">
 import { BlueprintsLibrary } from "../lib/model";
