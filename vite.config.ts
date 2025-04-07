@@ -15,7 +15,7 @@ export default defineConfig({
       include: ["src/**/*.ts", "src/**/*.vue"],
       outDir: "dist/types",
     }),
-    tailwindcss()
+    tailwindcss(),
   ],
   build: {
     sourcemap: true,
@@ -24,7 +24,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
       fileName: (format) => `${packageName}.${format}.js`,
-      formats: ["es", "umd"],
+      formats: ["es"], 
       name: packageName,
     },
     rollupOptions: {
@@ -45,10 +45,15 @@ export default defineConfig({
           uuid: "uuid",
           jsonpath: "jsonpath",
         },
+        interop: "auto",
       },
     },
     commonjsOptions: {
-      include: [],
+      include: [
+        /node_modules/,
+        /jsonpath/,
+      ],
+      transformMixedEsModules: true,
     },
     emptyOutDir: true,
     reportCompressedSize: false,
@@ -57,20 +62,14 @@ export default defineConfig({
     environment: "happy-dom",
     globals: true,
     coverage: {
-      reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'src/**/*.{test,spec}.{js,ts}',
-      ],
+      reporter: ["text", "json", "html"],
+      exclude: ["node_modules/", "src/**/*.{test,spec}.{js,ts}"],
     },
   },
   optimizeDeps: {
-    exclude: [
-      "@formkit/vue",
-      "lodash-es",
-      "pinia",
-      "uuid",
+    include: [
       "jsonpath",
+      "lodash-es",
     ],
   },
 });

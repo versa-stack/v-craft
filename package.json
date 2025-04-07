@@ -15,10 +15,12 @@
     "test:coverage": "vitest run --coverage  --reporter=junit --outputFile=test-report.junit.xml"
   },
   "type": "module",
+  "dependencies": {
+    "jsonpath": "^1.1.1",
+    "lodash-es": "^4.17.21"
+  },
   "peerDependencies": {
     "@formkit/vue": "^1.6.7",
-    "jsonpath": "^1.1.1",
-    "lodash-es": "^4.17.21",
     "pinia": "^2.0||^3.0",
     "uuid": "^10.0.0||^11.0.0",
     "vue": "^3.5"
@@ -40,8 +42,6 @@
     "autoprefixer": "^10.4.21",
     "conventional-changelog-conventionalcommits": "^8.0.0",
     "happy-dom": "^17.4.4",
-    "jsonpath": "^1.1.1",
-    "lodash-es": "^4.17.21",
     "nodemon": "^3.1.9",
     "pinia": "^3.0",
     "postcss": "^8.5.3",

@@ -1,4 +1,4 @@
-import jp from "jsonpath";
+import * as jp from "jsonpath";
 import { setValueByPath } from "./setValueByPath";
 import { CraftDataWrapperPropMap, CraftDataPatch } from "./model";
 import { CraftNodeDatasource } from "./craftNode";
