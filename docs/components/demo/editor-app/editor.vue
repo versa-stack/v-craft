@@ -1,5 +1,10 @@
 <template>
-  <CraftEditor :config="config" :useIframe="true" :iFrameStyleSheets="[cssUrl]">
+  <CraftEditor
+    :config="config"
+    :inheritStyles="true"
+    :useIframe="true"
+    :iFrameStyleSheets="[cssUrl]"
+  >
     <CraftCanvas componentName="div" />
   </CraftEditor>
   <div class="editor-switch">

@@ -1,6 +1,7 @@
 <template>
   <div v-show="$slots.default">
     <iframe
+      id="v-craft-iframe"
       ref="iframeRef"
       :class="iframeClass"
       :style="iframeStyle"
@@ -13,7 +14,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, StyleValue, onUnmounted } from "vue";
+import {
+  ref,
+  nextTick,
+  StyleValue,
+  onUnmounted,
+  toRef,
+  toRefs,
+  watch,
+} from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -22,13 +31,19 @@ const props = withDefaults(
     inheritStyles?: boolean;
     styleSheets?: string[];
     styles?: string[];
+    iframeId?: string;
+    width?: "auto" | number;
+    height?: "auto" | number;
   }>(),
   {
+    iframeId: "v-craft-iframe",
     iframeClass: "",
     iframeStyle: () => ({}),
-    inheritStyles: true,
+    inheritStyles: false,
     styleSheets: () => [],
     styles: () => [],
+    width: "auto",
+    height: "auto",
   }
 );
 
@@ -37,11 +52,18 @@ const hasLoad = ref(false);
 const iframeBody = ref();
 const observer = ref<MutationObserver>();
 const resizeObserver = ref<ResizeObserver>();
+const { width, height } = toRefs(props);
 
 const onLoad = () => {
   nextTick(() => {
+    if (!iframeRef.value) {
+      console.error("iframe could not be loaded.");
+      return;
+    }
+
+    emit("iframeLoad", iframeRef.value);
+    iframeRef.value?.setAttribute("data-iframe-ready", "true");
     setupBody();
-    inheritAttributes();
     if (props.inheritStyles) inheritStyles();
 
     props.styles.forEach((el) => {
@@ -57,21 +79,38 @@ const onLoad = () => {
     hasLoad.value = true;
 
     nextTick(() => {
+      if (!iframeRef.value) {
+        return;
+      }
+
       iframeBody.value = iframeRef.value?.contentWindow?.document.body;
       setupAutoResize();
     });
   });
 };
 
+watch([width, height], ([w, h]) => {
+  setupAutoResize();
+});
+
 const setupAutoResize = () => {
-  const iframeWindow = iframeRef.value?.contentWindow;
+  if (!iframeRef.value) {
+    return;
+  }
+  const iframeWindow = iframeRef.value.contentWindow;
   if (!iframeWindow) return;
 
-  // Cleanup previous observers
   observer.value?.disconnect();
   resizeObserver.value?.disconnect();
 
-  // MutationObserver for content changes
+  if (height.value !== "auto" || width.value !== "auto") {
+    iframeRef.value.style.height = `${height.value}px`;
+    iframeRef.value.style.width = `${width.value}px`;
+    return;
+  }
+
+  iframeRef.value.style.width = "100%";
+
   observer.value = new MutationObserver(updateIframeHeight);
   observer.value.observe(iframeWindow.document.body, {
     childList: true,
@@ -80,11 +119,9 @@ const setupAutoResize = () => {
     characterData: true,
   });
 
-  // ResizeObserver for intrinsic sizing elements
   resizeObserver.value = new ResizeObserver(updateIframeHeight);
   resizeObserver.value.observe(iframeWindow.document.body);
 
-  // Initial height set
   updateIframeHeight();
 };
 
@@ -96,7 +133,7 @@ const updateIframeHeight = () => {
     const body = iframeDocument.body;
     const html = iframeDocument.documentElement;
 
-    const height = Math.max(
+    const _height = Math.min(
       body.scrollHeight,
       body.offsetHeight,
       html.scrollHeight,
@@ -104,7 +141,7 @@ const updateIframeHeight = () => {
     );
 
     if (iframeRef.value) {
-      iframeRef.value.style.height = `${height}px`;
+      iframeRef.value.style.height = `calc(${_height}px + 1.75rem)`;
     }
   });
 };
@@ -135,11 +172,6 @@ const insertStyleSheet = (target: HTMLIFrameElement, sheet: string) => {
   target.contentWindow?.document.head.appendChild(link);
 };
 
-const inheritAttributes = () => {
-  copyAttributes("html");
-  copyAttributes("body");
-};
-
 const setupBody = () => {
   const iframeDoc = iframeRef.value?.contentWindow?.document as Document;
   if (!iframeDoc) return;
@@ -151,19 +183,9 @@ const setupBody = () => {
   (body.attributes as NamedNodeMap).setNamedItem(id);
 };
 
-const copyAttributes = (tagName: string) => {
-  const htmlTag =
-    iframeRef.value?.contentWindow?.parent.document.querySelector(tagName);
-  const targetTag =
-    iframeRef.value?.contentWindow?.document.querySelector(tagName);
-  if (!htmlTag || !targetTag) return;
-
-  Array.from(htmlTag.attributes as NamedNodeMap).forEach((attribute: Attr) => {
-    if (attribute.name === "id") return;
-    const clonedAttr = attribute.cloneNode(true) as Attr;
-    targetTag.attributes.setNamedItem(clonedAttr);
-  });
-};
+const emit = defineEmits<{
+  (e: "iframeLoad", iframe: HTMLIFrameElement): void;
+}>();
 
 onUnmounted(() => {
   observer.value?.disconnect();

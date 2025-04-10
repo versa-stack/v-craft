@@ -39,7 +39,7 @@ const props = withDefaults(
   }>(),
   {
     useIframe: false,
-    inheritStyles: true,
+    inheritStyles: false,
     iFrameStyleSheets: () => [],
   }
 );
