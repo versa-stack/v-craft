@@ -1,5 +1,10 @@
 <template>
-  <CraftEditor :config="config">
+  <CraftEditor
+    :config="config"
+    :inheritStyles="true"
+    :useIframe="true"
+    :iFrameStyleSheets="[cssUrl]"
+  >
     <CraftCanvas componentName="div" />
   </CraftEditor>
   <div class="editor-switch">
@@ -18,6 +23,7 @@ import { CraftEditorConfig, useEditor } from "@versa-stack/v-craft";
 import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
 import { onBeforeMount, ref, watch } from "vue";
+import cssUrl from "../../../.vitepress/theme/frame.css?url";
 
 const editor = useEditor()();
 
@@ -163,8 +169,7 @@ onBeforeMount(() => {
             props: {
               componentName: "footer",
             },
-            children: [
-            ],
+            children: [],
             uuid: "5f76c3b0-4af1-4979-9b22-cb8d2ef0bcc3",
             parentUuid: "f0e246b7-73df-4fcb-bf37-b7df25e50e14",
           },

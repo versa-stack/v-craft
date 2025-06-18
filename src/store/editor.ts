@@ -323,6 +323,7 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
       allNodes: (state): CraftNode<T>[] => {
         return Array.from(state.nodeMap.values());
       },
+      getDraggedNode: (state) => state.draggedNode,
       nodeTree: (state): CraftNode<T>[] => {
         const buildTree = (nodeUuid: string): CraftNode<T> => {
           const node = state.nodeMap.get(nodeUuid);

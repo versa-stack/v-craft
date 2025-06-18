@@ -1,4 +1,4 @@
-import jp from "jsonpath";
+import * as jp from "jsonpath";
 
 const walk = (
   data: Record<string, any>,

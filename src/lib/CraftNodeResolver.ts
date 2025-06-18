@@ -14,7 +14,7 @@ export type CraftNodeResolverMap<T extends object> = Record<
   CraftNodeComponentMap<T>
 >;
 
-export class CraftNodeResolver<T extends object = FormKitSchemaFormKit> {
+export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
   resolverMap: CraftNodeResolverMap<T> = {};
 
   constructor(resolverMap: Record<string, CraftNodeComponentMap<T>> = {}) {

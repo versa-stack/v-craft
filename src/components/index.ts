@@ -15,6 +15,7 @@ import CraftEditorPanelSettings from "./CraftEditorPanelSettings.vue";
 import CraftFrame from "./CraftFrame.vue";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
 import CraftNodeViewer from "./CraftNodeViewer.vue";
+import CraftIframe from "./CraftIframe.vue";
 
 import * as Utils from "./utils";
 
@@ -33,9 +34,10 @@ export {
   CraftEditorPanelNodeSettings,
   CraftEditorPanelSettings,
   CraftFrame,
+  CraftIframe,
   CraftNodeEditor,
   CraftNodeViewer,
-  Utils
+  Utils,
 };
 
 export type CraftDataListItem<T extends object> = {
