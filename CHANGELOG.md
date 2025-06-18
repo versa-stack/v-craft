@@ -1,3 +1,9 @@
+## [0.1.0-alpha.8](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.7...v0.1.0-alpha.8) (2025-06-18)
+
+### ✨ Features
+
+* added iframe option to CraftFrame component. ([#20](https://github.com/versa-stack/v-craft/issues/20)) ([22c146b](https://github.com/versa-stack/v-craft/commit/22c146b962ac9982b9e7a55b03de563d40c8b102))
+
 ## [0.1.0-alpha.7](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.6...v0.1.0-alpha.7) (2025-04-05)
 
 ### ✨ Features
