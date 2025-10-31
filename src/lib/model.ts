@@ -7,15 +7,15 @@ export type CraftBlueprintData = {
   props: Record<string, any>;
 };
 
-export type BlueprintsLibrary<T extends object> = {
+export type BlueprintsLibrary = {
   metadata?: BlueprintsMetadata;
-  groups: BlueprintGroup<T>[];
+  groups: BlueprintGroup[];
 };
 
-export type BlueprintGroup<T extends object> = {
+export type BlueprintGroup = {
   label: string;
   metadata: BlueprintsMetadata;
-  blueprints: Blueprints<T>;
+  blueprints: Blueprints;
 };
 
 export type BlueprintsMetadata = {
@@ -24,18 +24,15 @@ export type BlueprintsMetadata = {
   help?: string;
 };
 
-export type Blueprints<T extends object> = Record<string, Blueprint<T>>;
+export type Blueprints = Record<string, Blueprint>;
 
-export type Blueprint<T extends object> = Omit<
-  CraftNode<T>,
-  "parent" | "uuid" | "children"
-> & {
+export type Blueprint = Omit<CraftNode, "parent" | "uuid" | "children"> & {
   label?: string;
-  children: Blueprint<T>[];
+  children: Blueprint[];
 };
 
 export type CraftEditorConfig<T extends object> = {
-  blueprintsLibrary: BlueprintsLibrary<T>;
+  blueprintsLibrary: BlueprintsLibrary;
   resolverMap: CraftNodeResolverMap<T>;
 };
 

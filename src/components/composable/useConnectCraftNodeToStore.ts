@@ -4,7 +4,7 @@ import { CraftNode, craftNodeIsDraggable } from "../../lib/craftNode";
 import { useEditor } from "../../store/editor";
 
 export default <T extends object>(
-  craftNode: CraftNode<T>,
+  craftNode: CraftNode,
   nodeRef: Ref<
     ComponentPublicInstance<HTMLElement> | null,
     ComponentPublicInstance<HTMLElement> | null
@@ -28,7 +28,11 @@ export default <T extends object>(
   );
 
   const isDraggable = computed<boolean>(() => {
-    return enabled.value && !draggingDisabled.value && craftNodeIsDraggable(craftNode);
+    return (
+      enabled.value &&
+      !draggingDisabled.value &&
+      craftNodeIsDraggable(craftNode)
+    );
   });
 
   const selectNode = () => {

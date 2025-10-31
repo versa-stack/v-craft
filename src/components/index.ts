@@ -43,7 +43,7 @@ export {
 export type CraftDataListItem<T extends object> = {
   dataItem: any;
   dataIndex: number;
-  childNode: CraftNode<T>;
+  childNode: CraftNode;
   childIndex: number;
   key: string;
 };

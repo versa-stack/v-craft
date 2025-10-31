@@ -62,13 +62,12 @@ defineOptions({
 });
 
 const props = defineProps<{
-  craftNode: CraftNode<T>;
+  craftNode: CraftNode;
 }>();
 
 const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, defaultProps, resolver } =
-  useResolveCraftNode<T>(craftNode);
+const { resolvedNode, defaultProps, resolver } = useResolveCraftNode(craftNode);
 
 if (resolver.value) provide("resolver", resolver);
 
@@ -81,7 +80,7 @@ const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore<T>(
 );
 
 const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
-  useDragCraftNode<T>(craftNode, nodeRef, resolver.value);
+  useDragCraftNode(craftNode, nodeRef, resolver.value);
 
 const { eventHandlers } = useCraftNodeEvents<T>(
   craftNode,

@@ -32,11 +32,11 @@ export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
     return this.resolverMap[name];
   }
 
-  getDefaultProps(craftNode: CraftNode<T>): Record<string, any> {
+  getDefaultProps(craftNode: CraftNode): Record<string, any> {
     return this.resolveNode(craftNode)?.defaultProps || {};
   }
 
-  resolveNode(craftNode: CraftNode<T>): CraftNodeComponentMap<T> {
+  resolveNode(craftNode: CraftNode): CraftNodeComponentMap<T> {
     if (craftNodeIsCanvas(craftNode)) {
       return this.resolve(craftNode.props.componentName);
     }
@@ -44,15 +44,15 @@ export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
     return this.resolve(craftNode.componentName);
   }
 
-  getSchema(craftNode: CraftNode<T>): Record<string, any> {
+  getSchema(craftNode: CraftNode): Record<string, any> {
     return this.resolveNode(craftNode)?.propsSchema || {};
   }
 
-  getEventsSchema(craftNode: CraftNode<T>): Record<string, any> {
+  getEventsSchema(craftNode: CraftNode): Record<string, any> {
     return this.resolveNode(craftNode)?.eventsSchema || {};
   }
 
-  getRules(craftNode: CraftNode<T>): CraftNodeRules {
+  getRules(craftNode: CraftNode): CraftNodeRules {
     return this.resolveNode(craftNode)?.rules || {};
   }
 }

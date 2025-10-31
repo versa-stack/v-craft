@@ -32,7 +32,7 @@ import { toRefs } from "vue";
 import { CraftNode } from "../lib/craftNode";
 
 export interface Props<T extends object> {
-  craftNode: CraftNode<T>;
+  craftNode: CraftNode;
   schema?: T;
 }
 

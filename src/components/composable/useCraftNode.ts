@@ -3,7 +3,7 @@ import { CraftNode } from "../../lib/craftNode";
 import { useResolveCraftNode } from "./useResolveCraftNode";
 
 export const useCraftNode = <T extends object>() => {
-  const craftNode = inject<Ref<CraftNode<T>, CraftNode<T>>>("craftNode")!;
+  const craftNode = inject<Ref<CraftNode, CraftNode>>("craftNode")!;
   if (!craftNode) {
     throw new Error("craftNode or resolver not provided");
   }

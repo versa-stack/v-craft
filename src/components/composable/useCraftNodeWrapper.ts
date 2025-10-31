@@ -4,7 +4,7 @@ import { computed, provide, readonly, Ref, toRef } from "vue";
 import { CraftNode } from "../../lib/craftNode";
 
 export const useCraftNodeWrapper = <T extends object>(
-  craftNode: Ref<CraftNode<T>>
+  craftNode: Ref<CraftNode>
 ) => {
   const editor = useEditor<T>()();
   const { enabled } = storeToRefs(editor);

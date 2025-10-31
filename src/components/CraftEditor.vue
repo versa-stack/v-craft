@@ -45,7 +45,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: "nodeDragStart", n: CraftNode<T>): void;
+  (e: "nodeDragStart", n: CraftNode): void;
   (e: "nodeDragEnd"): void;
 }>();
 

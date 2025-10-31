@@ -7,7 +7,7 @@ import { useIndicator } from "../../store/indicator";
 import { debounce } from "lodash-es";
 
 export default <T extends object>(
-  craftNode: Ref<CraftNode<T>>,
+  craftNode: Ref<CraftNode>,
   nodeRef: Ref<any>,
   resolver: CraftNodeResolver<T>
 ): {

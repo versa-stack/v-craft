@@ -4,7 +4,7 @@ import { computed } from "vue";
 import { EditorStoreInstanceType } from "../../store/editor";
 
 export const useCraftNodeEvents = <T extends object>(
-  craftNode: Ref<CraftNode<T>>,
+  craftNode: Ref<CraftNode>,
   editor: EditorStoreInstanceType<T>,
   ctx: Record<string, any>
 ) => {

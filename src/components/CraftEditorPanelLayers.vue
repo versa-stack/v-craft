@@ -25,7 +25,7 @@ defineOptions({
 const editor = useEditor<T>()();
 const { nodeTree } = storeToRefs(editor);
 
-const layerClick = (craftNode: CraftNode<T>) => {
+const layerClick = (craftNode: CraftNode) => {
   editor.selectNode(craftNode);
 };
 </script>

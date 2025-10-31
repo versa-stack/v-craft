@@ -20,7 +20,7 @@ defineOptions({
 });
 
 const props = defineProps<{
-  craftNode: CraftNode<T>;
+  craftNode: CraftNode;
 }>();
 
 const handleDragStart = (e: MouseEvent) => {

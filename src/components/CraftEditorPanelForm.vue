@@ -14,7 +14,7 @@ import { debounce } from "lodash-es";
 import type { CraftNode } from "../lib/craftNode";
 
 export interface Props<T extends object, V, N> {
-  craftNode?: CraftNode<T>;
+  craftNode?: CraftNode;
   model?: V;
   schema?: T;
 }

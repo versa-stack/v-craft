@@ -5,7 +5,7 @@ import CraftNodeResolver, {
 } from "../../lib/CraftNodeResolver";
 
 export const useResolveCraftNode = <T extends object>(
-  craftNode: Ref<CraftNode<T>>
+  craftNode: Ref<CraftNode>
 ) => {
   const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver")!;
   const resolvedNode = computed(() => {

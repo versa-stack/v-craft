@@ -14,14 +14,14 @@ import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
 export type DragCraftNodeContext<T extends object> = {
   editor: EditorStoreInstanceType<T>;
   indicator: IndicatorStoreType;
-  craftNode: Ref<CraftNode<T>>;
+  craftNode: Ref<CraftNode>;
   resolver: CraftNodeResolver<T>;
 };
 
 const handleElementDrop = <T extends object>(
   e: MouseEvent,
   el: HTMLElement,
-  draggedNode: CraftNode<T>,
+  draggedNode: CraftNode,
   context: DragCraftNodeContext<T>
 ) => {
   if (
@@ -64,7 +64,7 @@ const handleElementDrop = <T extends object>(
 const handleCanvasDrop = <T extends object>(
   e: MouseEvent,
   el: HTMLElement,
-  draggedNode: CraftNode<T>,
+  draggedNode: CraftNode,
   context: DragCraftNodeContext<T>
 ) => {
   if (mouseOnEdge(e, el)) {

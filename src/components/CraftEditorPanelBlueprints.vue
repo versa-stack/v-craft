@@ -6,11 +6,11 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup generic="T extends object">
+<script lang="ts" setup>
 import { BlueprintsLibrary } from "../lib/model";
 
 defineProps<{
-  blueprints: BlueprintsLibrary<T>;
+  blueprints: BlueprintsLibrary;
 }>();
 
 defineEmits<{

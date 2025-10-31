@@ -38,7 +38,7 @@ import { useEditor } from "../store/editor";
 
 const props = withDefaults(
   defineProps<{
-    craftNode: CraftNode<T>;
+    craftNode: CraftNode;
     visible?: boolean;
   }>(),
   {

@@ -26,7 +26,7 @@ import { BlueprintsLibrary } from "../lib/model";
 import { useEditor } from "../store/editor";
 
 defineProps<{
-  blueprints: BlueprintsLibrary<T>;
+  blueprints: BlueprintsLibrary;
 }>();
 
 const editor = useEditor<T>()();

@@ -35,15 +35,14 @@ defineOptions({
   name: "CraftNodeViewer",
 });
 const props = defineProps<{
-  craftNode: CraftNode<T>;
+  craftNode: CraftNode;
 }>();
 
 const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, defaultProps, resolver } =
-  useResolveCraftNode<T>(craftNode);
+const { resolvedNode, defaultProps, resolver } = useResolveCraftNode(craftNode);
 
-if(resolver.value) provide("resolver", resolver);
+if (resolver.value) provide("resolver", resolver);
 
 const nodeProps = computed(() => ({
   ...defaultProps,
@@ -72,11 +71,11 @@ onMounted(() => {
   }
 });
 
-type ComputedDataNode = { key: string; craftNode: CraftNode<T> };
+type ComputedDataNode = { key: string; craftNode: CraftNode };
 
 const computeDataNodes = (
   data: CraftNodeDatasource,
-  children: CraftNode<T>[]
+  children: CraftNode[]
 ): ComputedDataNode[] => {
   if (data.type === "single") {
     return children.map((childNode) => ({

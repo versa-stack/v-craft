@@ -21,11 +21,11 @@ const formatComponentName = (vNode) => {
 const createNodeFromVNode = <T extends object>(
   resolver: CraftNodeResolver<T>,
   vNode,
-  parentNode: CraftNode<T> | null = null
+  parentNode: CraftNode | null = null
 ) => {
   const componentName = formatComponentName(vNode);
   const { props } = vNode;
-  const craftNode: CraftNode<T> = {
+  const craftNode: CraftNode = {
     componentName,
     props,
     children: [],
@@ -42,13 +42,14 @@ const createNodeFromVNode = <T extends object>(
   craftNode.children = createChildren<T>(resolver, vnodeChildren, craftNode);
 
   return craftNode;
-}
+};
 
 const createChildren = <T extends object>(resolver, vnodeChildren, parent) => {
-  if (!vnodeChildren || !(vnodeChildren instanceof Array)) return [] as unknown as CraftNode<T>[];
+  if (!vnodeChildren || !(vnodeChildren instanceof Array))
+    return [] as unknown as CraftNode[];
   return vnodeChildren
     .map((childVNode) => createNodeFromVNode<T>(resolver, childVNode, parent))
-    .filter((childNode) => !!childNode) as CraftNode<T>[];
+    .filter((childNode) => !!childNode) as CraftNode[];
 };
 
 export default createNodeFromVNode;

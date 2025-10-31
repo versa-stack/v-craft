@@ -27,7 +27,7 @@ import { BlueprintsLibrary } from "../lib/model";
 import { blueprintsWithDefaults } from "./utils";
 
 defineProps<{
-  blueprints: BlueprintsLibrary<T>;
+  blueprints: BlueprintsLibrary;
 }>();
 
 const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver");

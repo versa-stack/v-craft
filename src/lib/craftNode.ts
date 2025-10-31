@@ -4,25 +4,25 @@ import { useEditor } from "../store/editor";
 
 export type CraftNodeRules = {
   canMoveIn?: <T extends object>(
-    craftNode: CraftNode<T>,
-    targetNode: CraftNode<T>,
+    craftNode: CraftNode,
+    targetNode: CraftNode,
     resolver: CraftNodeResolver<T>
   ) => boolean;
   canMoveOut?: <T extends object>(
-    craftNode: CraftNode<T>,
-    targetNode: CraftNode<T>,
+    craftNode: CraftNode,
+    targetNode: CraftNode,
     resolver: CraftNodeResolver<T>
   ) => boolean;
-  canDrag?: <T extends object>(craftNode: CraftNode<T>) => boolean;
+  canDrag?: <T extends object>(craftNode: CraftNode) => boolean;
   canMoveInto?: <T extends object>(
-    craftNode: CraftNode<T>,
-    targetNode: CraftNode<T>,
+    craftNode: CraftNode,
+    targetNode: CraftNode,
     resolver: CraftNodeResolver<T>
   ) => boolean;
 };
 
-export type CraftNode<T extends object> = {
-  children: CraftNode<T>[];
+export type CraftNode = {
+  children: CraftNode[];
   componentName: string;
   parentUuid?: string | null;
   props: any;
@@ -38,17 +38,15 @@ export type CraftNodeDatasource = {
   type: "single" | "list";
 };
 
-export const isVisible = <T extends object>(craftNode: CraftNode<T>) =>
+export const isVisible = (craftNode: CraftNode) =>
   craftNode.visible === undefined || craftNode.visible;
 
-export const craftNodeInCanvas = <T extends object>(
-  craftNode: CraftNode<T>
-) => {
+export const craftNodeInCanvas = <T extends object>(craftNode: CraftNode) => {
   let node = craftNode;
   const editor = useEditor<T>()();
 
   while (node.parentUuid) {
-    node = editor.nodeMap.get(node.parentUuid) as CraftNode<T>;
+    node = editor.nodeMap.get(node.parentUuid) as CraftNode;
     if (craftNodeIsCanvas(node)) {
       return true;
     }
@@ -58,7 +56,7 @@ export const craftNodeInCanvas = <T extends object>(
 };
 
 export const craftNodeIsDraggable = <T extends object>(
-  craftNode: CraftNode<T>
+  craftNode: CraftNode
 ) => {
   if (!craftNodeInCanvas(craftNode)) {
     return false;
@@ -72,8 +70,8 @@ export const craftNodeIsDraggable = <T extends object>(
 };
 
 export const craftNodeIsAncestorOf = <T extends object>(
-  craftNode: CraftNode<T>,
-  descendant: CraftNode<T>
+  craftNode: CraftNode,
+  descendant: CraftNode
 ) => {
   const editor = useEditor<T>()();
   let currentNode = descendant;
@@ -82,13 +80,13 @@ export const craftNodeIsAncestorOf = <T extends object>(
     if (currentNode.parentUuid === craftNode.uuid) {
       return true;
     }
-    currentNode = editor.nodeMap.get(currentNode.parentUuid) as CraftNode<T>;
+    currentNode = editor.nodeMap.get(currentNode.parentUuid) as CraftNode;
   }
 
   return false;
 };
 
-export const resolveNodeName = <T extends object>(craftNode: CraftNode<T>) => {
+export const resolveNodeName = <T extends object>(craftNode: CraftNode) => {
   if (craftNode.componentName === "CraftCanvas") {
     return craftNode.props.componentName;
   }
@@ -97,8 +95,8 @@ export const resolveNodeName = <T extends object>(craftNode: CraftNode<T>) => {
 };
 
 export const craftNodeCanBeChildOf = <T extends object>(
-  craftNode: CraftNode<T>,
-  targetNode: CraftNode<T>,
+  craftNode: CraftNode,
+  targetNode: CraftNode,
   resolver: CraftNodeResolver<T>
 ) => {
   if (!craftNodeIsCanvas(targetNode)) {
@@ -117,7 +115,7 @@ export const craftNodeCanBeChildOf = <T extends object>(
 
   if (craftNode.parentUuid) {
     const editor = useEditor<T>()();
-    const parent = editor.nodeMap.get(craftNode.parentUuid) as CraftNode<T>;
+    const parent = editor.nodeMap.get(craftNode.parentUuid) as CraftNode;
 
     const rules = resolver.resolve(resolveNodeName<T>(parent))?.rules || {};
     if (
@@ -149,15 +147,13 @@ export const craftNodeCanBeChildOf = <T extends object>(
   return true;
 };
 
-export const craftNodeIsCanvas = <T extends object>(
-  craftNode: CraftNode<T>
-) => {
+export const craftNodeIsCanvas = <T extends object>(craftNode: CraftNode) => {
   return craftNode.componentName === "CraftCanvas";
 };
 
 export const craftNodeCanBeSiblingOf = <T extends object>(
-  craftNode: CraftNode<T>,
-  targetNode: CraftNode<T>,
+  craftNode: CraftNode,
+  targetNode: CraftNode,
   resolver: CraftNodeResolver<T>
 ) => {
   const editor = useEditor<T>()();
@@ -171,14 +167,14 @@ export const craftNodeCanBeSiblingOf = <T extends object>(
 
   return craftNodeCanBeChildOf(
     craftNode,
-    editor.nodeMap.get(targetNode.parentUuid) as CraftNode<T>,
+    editor.nodeMap.get(targetNode.parentUuid) as CraftNode,
     resolver
   );
 };
 
 export const buildCraftNodeTree = <T extends object>(
-  craftNode: CraftNode<T>
-): CraftNode<T> => {
+  craftNode: CraftNode
+): CraftNode => {
   if (!craftNode.uuid) {
     craftNode.uuid = uuidv4();
   }
