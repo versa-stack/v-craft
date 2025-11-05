@@ -1,3 +1,9 @@
+## [0.1.0-alpha.11](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.10...v0.1.0-alpha.11) (2025-11-05)
+
+### 🐛 Bug Fixes
+
+* remove extra function call from useEditor invocations ([1066078](https://github.com/versa-stack/v-craft/commit/10660780351ccee38343c13bf014a3780dfc71ef))
+
 ## [0.1.0-alpha.10](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.9...v0.1.0-alpha.10) (2025-11-05)
 
 ### ✨ Features
