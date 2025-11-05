@@ -1,3 +1,9 @@
+## [0.1.0-alpha.13](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.12...v0.1.0-alpha.13) (2025-11-05)
+
+### 🐛 Bug Fixes
+
+* correct stylesheet link attributes in VitePress build ([0c7d0fd](https://github.com/versa-stack/v-craft/commit/0c7d0fd081dc75b211b79fc465bf3e082aa43577))
+
 ## [0.1.0-alpha.12](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.11...v0.1.0-alpha.12) (2025-11-05)
 
 ### 🐛 Bug Fixes
