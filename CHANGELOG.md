@@ -1,3 +1,9 @@
+## [0.1.0-alpha.9](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.8...v0.1.0-alpha.9) (2025-11-05)
+
+### 🐛 Bug Fixes
+
+* remove unnecessary double invocation of useEditor composable ([27627aa](https://github.com/versa-stack/v-craft/commit/27627aaaebe88c8abe4e82f219f7cec73ab04ef8))
+
 ## [0.1.0-alpha.8](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.7...v0.1.0-alpha.8) (2025-06-18)
 
 ### ✨ Features
