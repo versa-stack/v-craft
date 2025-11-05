@@ -1,3 +1,9 @@
+## [0.1.0-alpha.10](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.9...v0.1.0-alpha.10) (2025-11-05)
+
+### ✨ Features
+
+* add trailing slash to PUBLIC_BASE path in docs workflow ([0c15bbf](https://github.com/versa-stack/v-craft/commit/0c15bbf218431b00d507c05152639e6303957dba))
+
 ## [0.1.0-alpha.9](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.8...v0.1.0-alpha.9) (2025-11-05)
 
 ### 🐛 Bug Fixes

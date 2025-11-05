@@ -2,7 +2,7 @@
   "name": "@versa-stack/v-craft",
   "license": "MIT",
   "description": "Vue3 UI builder kit.",
-  "version": "0.1.0-alpha.9",
+  "version": "0.1.0-alpha.10",
   "scripts": {
     "build-raw": "vite build",
     "build": "rimraf dist && vite build",
