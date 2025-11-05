@@ -22,7 +22,7 @@ describe("useEditor", () => {
   });
 
   it("should initialize with empty state", () => {
-    const store = useEditor()();
+    const store = useEditor();
     expect(store.nodeMap.size).toBe(0);
     expect(store.rootNodes).toEqual([]);
     expect(store.selectedUuid).toBeNull();
@@ -32,7 +32,7 @@ describe("useEditor", () => {
   });
 
   it("should set and clear nodes", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const rootNode = createTestNode({ componentName: "CraftCanvas" });
     const childNode = createTestNode({ parentUuid: rootNode.uuid });
     rootNode.children = [childNode];
@@ -47,7 +47,7 @@ describe("useEditor", () => {
   });
 
   it("should toggle node visibility", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const testNode = createTestNode();
 
     store.setNodes([testNode]);
@@ -58,7 +58,7 @@ describe("useEditor", () => {
   });
 
   it("should update node props", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const testNode = createTestNode({ props: { foo: "bar" } });
 
     store.setNodes([testNode]);
@@ -69,7 +69,7 @@ describe("useEditor", () => {
   });
 
   it("should select and drag nodes", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const testNode = createTestNode();
 
     store.selectNode(testNode);
@@ -80,7 +80,7 @@ describe("useEditor", () => {
   });
 
   it("should remove nodes", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const parentNode = createTestNode({ componentName: "CraftCanvas" });
     const childNode = createTestNode({ parentUuid: parentNode.uuid });
     parentNode.children = [childNode];
@@ -93,7 +93,7 @@ describe("useEditor", () => {
   });
 
   it("should append nodes", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const resolver = new CraftNodeResolver<any>();
     store.setResolver(resolver);
 
@@ -109,7 +109,7 @@ describe("useEditor", () => {
   });
 
   it("should prepend nodes", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const resolver = new CraftNodeResolver<any>();
     store.setResolver(resolver);
 
@@ -129,7 +129,7 @@ describe("useEditor", () => {
   });
 
   it("should insert nodes before and after", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const resolver = new CraftNodeResolver<any>();
     store.setResolver(resolver);
 
@@ -154,14 +154,14 @@ describe("useEditor", () => {
   });
 
   it("should handle events context", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const context = { foo: "bar" };
     store.setEventsContext(context);
     expect(store.eventsContext).toEqual(context);
   });
 
   it("should return correct getters", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const rootNode = createTestNode({ componentName: "CraftCanvas" });
     const childNode = createTestNode({ parentUuid: rootNode.uuid });
     rootNode.children = [childNode];
@@ -177,7 +177,7 @@ describe("useEditor", () => {
   });
 
   it("should ensure nodeTree always represents the actual state of nodeMap", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const resolver = new CraftNodeResolver<any>();
     store.setResolver(resolver);
 
@@ -229,7 +229,7 @@ describe("useEditor", () => {
   });
 
   it("should add new nodes to nodeMap when appending", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const resolver = new CraftNodeResolver<any>();
     store.setResolver(resolver);
 
@@ -246,7 +246,7 @@ describe("useEditor", () => {
   });
 
   it("should add new nodes to nodeMap when prepending", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const resolver = new CraftNodeResolver<any>();
     store.setResolver(resolver);
 
@@ -263,7 +263,7 @@ describe("useEditor", () => {
   });
 
   it("should add new nodes to nodeMap when inserting before", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const resolver = new CraftNodeResolver<any>();
     store.setResolver(resolver);
 
@@ -280,7 +280,7 @@ describe("useEditor", () => {
   });
 
   it("should add new nodes to nodeMap when inserting after", () => {
-    const store = useEditor()();
+    const store = useEditor();
     const resolver = new CraftNodeResolver<any>();
     store.setResolver(resolver);
 

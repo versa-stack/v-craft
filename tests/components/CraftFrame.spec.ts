@@ -38,7 +38,7 @@ describe("CraftFrame", () => {
   };
 
   it("renders CraftNodeViewer for each node in the editor", async () => {
-    const editor = useEditor()();
+    const editor = useEditor();
     editor.setNodes([
       {
         uuid: "1",
@@ -75,7 +75,7 @@ describe("CraftFrame", () => {
 
     await nextTick();
 
-    const editor = useEditor()();
+    const editor = useEditor();
     expect(editor.nodeMap).toHaveLength(2);
     expect(
       wrapper.findAllComponents({ name: "CraftNodeViewer" })
@@ -83,7 +83,7 @@ describe("CraftFrame", () => {
   });
 
   it("does not create nodes from slot when editor already has nodes", async () => {
-    const editor = useEditor()();
+    const editor = useEditor();
     editor.setNodes([
       {
         uuid: "1",
@@ -112,7 +112,7 @@ describe("CraftFrame", () => {
   });
 
   it("renders Indicator when not viewOnly and editor is enabled", async () => {
-    const editor = useEditor()();
+    const editor = useEditor();
     editor.enable();
 
     const wrapper = createWrapper();
@@ -122,7 +122,7 @@ describe("CraftFrame", () => {
   });
 
   it("does not render Indicator when viewOnly", async () => {
-    const editor = useEditor()();
+    const editor = useEditor();
     editor.enable();
 
     const wrapper = createWrapper({ viewOnly: true });
@@ -132,7 +132,7 @@ describe("CraftFrame", () => {
   });
 
   it("does not render Indicator when editor is disabled", async () => {
-    const editor = useEditor()();
+    const editor = useEditor();
     editor.disable();
 
     const wrapper = createWrapper();

@@ -97,7 +97,7 @@ describe("CraftNodeViewer", () => {
 
   it("renders the correct component tree based on craftNode", async () => {
     const craftNode = ref(createCanvas([createSimpleText()]));
-    const editor = useEditor()();
+    const editor = useEditor();
     editor.enable();
 
     const resolver = ref(
