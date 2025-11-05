@@ -59,7 +59,7 @@ jobs:
 
       - name: Build with VitePress
         env:
-          PUBLIC_BASE: /v-craft/${{ steps.branch-name.outputs.current_branch }}
+          PUBLIC_BASE: /v-craft/${{ steps.branch-name.outputs.current_branch }}/
         run: npm run docs:build
 
       - name: Prepare artifact
