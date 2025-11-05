@@ -1,3 +1,9 @@
+## [0.1.0-alpha.12](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.11...v0.1.0-alpha.12) (2025-11-05)
+
+### 🐛 Bug Fixes
+
+* resolve stylesheet preload issue in VitePress build ([179e96f](https://github.com/versa-stack/v-craft/commit/179e96fa7b8312431a72b3f6445808700f146819))
+
 ## [0.1.0-alpha.11](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.10...v0.1.0-alpha.11) (2025-11-05)
 
 ### 🐛 Bug Fixes
