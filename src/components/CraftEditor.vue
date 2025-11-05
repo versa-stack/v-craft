@@ -49,7 +49,7 @@ const emit = defineEmits<{
   (e: "nodeDragEnd"): void;
 }>();
 
-const editor = useEditor<T>()();
+const editor = useEditor();
 
 const { getDraggedNode } = storeToRefs(editor);
 

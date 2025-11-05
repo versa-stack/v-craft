@@ -85,7 +85,7 @@ import { onBeforeMount, ref, watch } from "vue";
 import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
 
-const editor = useEditor()();
+const editor = useEditor();
 
 onBeforeMount(() => {
   if (!editor.hasNodes) {

@@ -25,7 +25,7 @@ import { resolverMap } from "./resolvermap";
 import { onBeforeMount, ref, watch } from "vue";
 import cssUrl from "../../../.vitepress/theme/frame.css?url";
 
-const editor = useEditor()();
+const editor = useEditor();
 
 onBeforeMount(() => {
   if (!editor.hasNodes) {

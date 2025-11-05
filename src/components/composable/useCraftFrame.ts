@@ -17,7 +17,7 @@ import { useEditor } from "../../store/editor";
 export const useCraftFrame = <T extends object>(
   resolverMap?: CraftNodeResolverMap<T>
 ) => {
-  const editor = useEditor<T>()();
+  const editor = useEditor();
   const { hasNodes } = storeToRefs(editor);
   const resolver = resolverMap
     ? ref(new CraftNodeResolver(resolverMap))

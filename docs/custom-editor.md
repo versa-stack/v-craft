@@ -10,7 +10,7 @@ import { watch, ref, onMounted } from "vue"
 import {storeToRefs} from "pinia"
 
 const nodeTreeJson = ref("")
-const editor = useEditor()();
+const editor = useEditor();
 const { nodeMap } = storeToRefs(editor);
 
 onMounted(() => {

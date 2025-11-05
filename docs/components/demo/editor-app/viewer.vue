@@ -6,6 +6,6 @@
 <script lang="ts" setup>
 import { useEditor } from "@versa-stack/v-craft";
 import { resolverMap } from "./resolvermap";
-const editor = useEditor()();
+const editor = useEditor();
 editor.disable();
 </script>

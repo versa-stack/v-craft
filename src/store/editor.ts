@@ -12,25 +12,21 @@ import {
 } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 
-export type EditorState<T extends object> = {
+export type EditorState = {
   nodeMap: Map<string, CraftNode>;
   rootNodes: string[];
   selectedUuid: string | null;
   draggedNode: CraftNode | null;
   enabled: boolean;
   nodeRefsRecord: Record<string, HTMLElement>;
-  resolver: CraftNodeResolver<T> | null;
+  resolver: CraftNodeResolver<FormKitSchemaFormKit> | null;
   eventsContext: Record<string, any>;
   nodeDataMap: Record<string, CraftNodeDatasource | null>;
   draggingDisabled: boolean;
 };
 
-export type EditorStoreInstanceType<T extends object = FormKitSchemaFormKit> =
-  ReturnType<ReturnType<typeof useEditor<T>>>;
-
-export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
-  defineStore("editor", {
-    state: (): EditorState<T> => ({
+export const useEditor = defineStore("editor", {
+    state: (): EditorState => ({
       nodeMap: new Map(),
       rootNodes: [],
       selectedUuid: null,
@@ -68,7 +64,7 @@ export const useEditor = <T extends object = FormKitSchemaFormKit>() =>
         this.draggingDisabled = false;
       },
 
-      setResolver(resolver: CraftNodeResolver<T>) {
+      setResolver(resolver: CraftNodeResolver<FormKitSchemaFormKit>) {
         this.resolver = resolver;
       },
 
