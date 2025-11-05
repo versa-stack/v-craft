@@ -21,8 +21,8 @@ export default defineConfig({
         } else if (file.endsWith('.html')) {
           let content = fs.readFileSync(filePath, 'utf-8');
           content = content.replace(
-            /rel="preload stylesheet"/g,
-            'rel="stylesheet"'
+            /<link rel="preload stylesheet"([^>]*) as="style">/g,
+            '<link rel="stylesheet"$1>'
           );
           fs.writeFileSync(filePath, content, 'utf-8');
         }
