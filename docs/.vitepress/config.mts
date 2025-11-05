@@ -2,11 +2,36 @@ import { defineConfig } from "vitepress";
 import path from "path";
 import tailwindcss from "@tailwindcss/postcss";
 import autoprefixer from "autoprefixer";
+import fs from "fs";
 
 export default defineConfig({
   title: "versa-stack/v-craft",
   base: process.env.PUBLIC_BASE || "/",
   description: "An attempt to deliver a Vue.js 3 page editor library.",
+
+  async buildEnd(siteConfig) {
+    const distPath = path.resolve(__dirname, 'dist');
+    const fixHtmlFiles = (dir: string) => {
+      const files = fs.readdirSync(dir);
+      files.forEach(file => {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+        if (stat.isDirectory()) {
+          fixHtmlFiles(filePath);
+        } else if (file.endsWith('.html')) {
+          let content = fs.readFileSync(filePath, 'utf-8');
+          content = content.replace(
+            /rel="preload stylesheet"/g,
+            'rel="stylesheet"'
+          );
+          fs.writeFileSync(filePath, content, 'utf-8');
+        }
+      });
+    };
+    if (fs.existsSync(distPath)) {
+      fixHtmlFiles(distPath);
+    }
+  },
 
   themeConfig: {
     aside: true,
