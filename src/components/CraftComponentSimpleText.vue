@@ -44,7 +44,7 @@ const emit = defineEmits<{
 const isEditing = ref(false);
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 const originalValue = ref("");
-const editor = useEditor()();
+const editor = useEditor();
 const { enabled } = storeToRefs(editor);
 const { craftNode } = useCraftNode();
 

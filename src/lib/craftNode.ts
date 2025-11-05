@@ -43,7 +43,7 @@ export const isVisible = (craftNode: CraftNode) =>
 
 export const craftNodeInCanvas = <T extends object>(craftNode: CraftNode) => {
   let node = craftNode;
-  const editor = useEditor<T>()();
+  const editor = useEditor();
 
   while (node.parentUuid) {
     node = editor.nodeMap.get(node.parentUuid) as CraftNode;
@@ -73,7 +73,7 @@ export const craftNodeIsAncestorOf = <T extends object>(
   craftNode: CraftNode,
   descendant: CraftNode
 ) => {
-  const editor = useEditor<T>()();
+  const editor = useEditor();
   let currentNode = descendant;
 
   while (currentNode?.parentUuid) {
@@ -114,7 +114,7 @@ export const craftNodeCanBeChildOf = <T extends object>(
   const sourceNodeRules = resolvedSource?.rules || {};
 
   if (craftNode.parentUuid) {
-    const editor = useEditor<T>()();
+    const editor = useEditor();
     const parent = editor.nodeMap.get(craftNode.parentUuid) as CraftNode;
 
     const rules = resolver.resolve(resolveNodeName<T>(parent))?.rules || {};
@@ -156,7 +156,7 @@ export const craftNodeCanBeSiblingOf = <T extends object>(
   targetNode: CraftNode,
   resolver: CraftNodeResolver<T>
 ) => {
-  const editor = useEditor<T>()();
+  const editor = useEditor();
   if (targetNode === craftNode) {
     return false;
   }

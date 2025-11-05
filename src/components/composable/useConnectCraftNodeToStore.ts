@@ -14,7 +14,7 @@ export default <T extends object>(
   isDraggable: Ref<boolean>;
   isSelected: Ref<boolean>;
 } => {
-  const editor = useEditor<T>()();
+  const editor = useEditor();
   const { enabled, selectedUuid, draggingDisabled } = storeToRefs(editor);
 
   watchEffect(() => {

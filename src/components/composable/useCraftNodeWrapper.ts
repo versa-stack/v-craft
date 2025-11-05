@@ -6,7 +6,7 @@ import { CraftNode } from "../../lib/craftNode";
 export const useCraftNodeWrapper = <T extends object>(
   craftNode: Ref<CraftNode>
 ) => {
-  const editor = useEditor<T>()();
+  const editor = useEditor();
   const { enabled } = storeToRefs(editor);
 
   const visible = computed(() => craftNode.value?.visible !== false);

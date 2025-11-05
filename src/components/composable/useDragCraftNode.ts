@@ -16,7 +16,7 @@ export default <T extends object>(
   handleDrop: (e: MouseEvent) => void;
   handleDragEnd: () => void;
 } => {
-  const editor = useEditor<T>()();
+  const editor = useEditor();
   const indicator = useIndicator();
 
   const handleDragStart = (e) => {
