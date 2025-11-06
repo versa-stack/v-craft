@@ -1,3 +1,9 @@
+## [0.1.0-alpha.19](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.18...v0.1.0-alpha.19) (2025-11-06)
+
+### 🐛 Bug Fixes
+
+* use style.css with full Tailwind CSS for production builds ([ae8392b](https://github.com/versa-stack/v-craft/commit/ae8392b57a5e327b18d0ad1b14e9de2fbe83a8a6))
+
 ## [0.1.0-alpha.18](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.17...v0.1.0-alpha.18) (2025-11-06)
 
 ### 🐛 Bug Fixes
