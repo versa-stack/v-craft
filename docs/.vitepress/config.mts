@@ -57,13 +57,5 @@ export default defineConfig({
     ssr: {
       noExternal: ["@formkit/vue"],
     },
-    build: {
-      cssCodeSplit: true,
-      rollupOptions: {
-        input: {
-          frame: path.resolve(__dirname, "./theme/frame.css"),
-        },
-      },
-    },
   },
 });
