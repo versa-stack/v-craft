@@ -1,19 +1,19 @@
+import type { Theme } from "vitepress";
 import { defaultConfig, plugin } from "@formkit/vue";
 import { VCraft } from "@versa-stack/v-craft";
 import { createPinia } from "pinia";
 import DefaultTheme from "vitepress/theme";
 import DemoContainer from "../components/DemoContainer.vue";
 import { rootClasses } from "../../formkit.theme";
-
+import "./style.css";
 import "./custom.css";
+import "./frame.css";
 
 const pinia = createPinia();
 
-export default {
-  ...DefaultTheme,
+const theme: Theme = {
+  extends: DefaultTheme,
   enhanceApp({ app }) {
-    app.config.debug = true;
-    app.config.devtools = true;
     app.use(pinia);
     app.use(VCraft);
     app.use(
@@ -27,3 +27,5 @@ export default {
     app.component("DemoContainer", DemoContainer);
   },
 };
+
+export default theme;

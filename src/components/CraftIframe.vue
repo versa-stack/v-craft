@@ -53,6 +53,8 @@ const iframeBody = ref();
 const observer = ref<MutationObserver>();
 const resizeObserver = ref<ResizeObserver>();
 const { width, height } = toRefs(props);
+let lastHeight = 0;
+let updateScheduled = false;
 
 const onLoad = () => {
   nextTick(() => {
@@ -111,7 +113,11 @@ const setupAutoResize = () => {
 
   iframeRef.value.style.width = "100%";
 
-  observer.value = new MutationObserver(updateIframeHeight);
+  // Use a simpler approach - only observe content changes, not layout changes
+  observer.value = new MutationObserver(() => {
+    // Debounce updates to prevent loops
+    setTimeout(updateIframeHeight, 100);
+  });
   observer.value.observe(iframeWindow.document.body, {
     childList: true,
     subtree: true,
@@ -119,30 +125,46 @@ const setupAutoResize = () => {
     characterData: true,
   });
 
-  resizeObserver.value = new ResizeObserver(updateIframeHeight);
-  resizeObserver.value.observe(iframeWindow.document.body);
+  // Only observe once and disconnect to prevent loops
+  const initialResizeObserver = new ResizeObserver(() => {
+    updateIframeHeight();
+    initialResizeObserver.disconnect();
+  });
+  initialResizeObserver.observe(iframeWindow.document.documentElement);
 
   updateIframeHeight();
 };
 
 const updateIframeHeight = () => {
+  if (updateScheduled) return;
+  
+  updateScheduled = true;
   nextTick(() => {
     const iframeDocument = iframeRef.value?.contentWindow?.document;
-    if (!iframeDocument) return;
+    if (!iframeDocument) {
+      updateScheduled = false;
+      return;
+    }
 
     const body = iframeDocument.body;
     const html = iframeDocument.documentElement;
 
-    const _height = Math.min(
+    // Get the actual content height without iframe padding
+    const contentHeight = Math.max(
       body.scrollHeight,
       body.offsetHeight,
       html.scrollHeight,
       html.offsetHeight
     );
 
-    if (iframeRef.value) {
-      iframeRef.value.style.height = `calc(${_height}px + 1.75rem)`;
+    // Add small padding to prevent scrollbars, but keep it minimal
+    const paddedHeight = contentHeight + 8;
+    if (iframeRef.value && Math.abs(paddedHeight - lastHeight) > 1) {
+      lastHeight = paddedHeight;
+      iframeRef.value.style.height = `${paddedHeight}px`;
     }
+    
+    updateScheduled = false;
   });
 };
 

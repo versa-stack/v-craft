@@ -1,5 +1,8 @@
 module.exports = {
-  content: ["./.vitepress/**/*.{js,ts,vue}", "./**/*.md", "./formkit.theme.ts"],
+  content: [
+    ".vitepress/**/*.{js,ts,vue}",
+    "**/*.md"
+  ],
   theme: {
     extend: {},
   },

@@ -4,10 +4,78 @@ Think of components as LEGO blocks. Each component is a piece you can use to bui
 
 ## What is a Component?
 
-A component in v-craft is a Vue.js component that can be dragged, dropped, and configured in the page editor. It has:
+A component in v-craft is a **regular Vue.js component** that can be dragged, dropped, and configured in the page editor. It has:
 - **A visual representation** (what users see)
 - **Configurable properties** (settings users can change)
 - **A blueprint** (tells the editor how to use it)
+
+**Important**: Your Vue components **don't need any special wrapping** - they work exactly like normal Vue components!
+
+## Understanding CraftCanvas: Container Magic
+
+**CraftCanvas is NOT for wrapping your Vue components** - it's only used in **blueprints** for components that should accept child components.
+
+### When to Use CraftCanvas
+
+**Use CraftCanvas in blueprints when:**
+- You want users to be able to drop components inside this component
+- Your component has a `<slot>` that should accept child components
+
+**Don't use CraftCanvas when:**
+- Your component is a simple element (button, image, text)
+- Your component doesn't need to contain other components
+
+### How It Works
+
+**Your Vue Component (no changes needed):**
+```vue
+<!-- ContainerComponent.vue -->
+<template>
+  <div class="container" :style="{ backgroundColor: bgColor, padding: padding + 'px' }">
+    <!-- This slot will receive user-dropped components -->
+    <slot></slot>
+  </div>
+</template>
+
+<script setup lang="ts">
+interface Props {
+  bgColor: string
+  padding: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  bgColor: '#f8f9fa',
+  padding: 20
+})
+</script>
+```
+
+**Blueprint (where CraftCanvas is used):**
+```typescript
+const ContainerBlueprint = {
+  label: "Container",
+  componentName: "CraftCanvas",  // Only here in the blueprint!
+  props: {
+    componentName: "ContainerComponent", // Your actual component
+    bgColor: "#f8f9fa",
+    padding: 20
+  },
+  children: [] // Always empty - CraftCanvas handles children
+}
+```
+
+**Simple Component (no CraftCanvas needed):**
+```typescript
+const ButtonBlueprint = {
+  label: "Button",
+  componentName: "MyButton",  // Direct reference to your component
+  props: {
+    text: "Click me",
+    color: "#007bff"
+  },
+  children: []
+}
+```
 
 ## Creating Your First Component
 
@@ -175,45 +243,45 @@ const props = defineProps({
 | `Array` | List of items | `["red", "blue", "green"]` |
 | `Object` | Complex settings | `{ color: "red", size: "large" }` |
 
-### Making Properties Editable
+### Properties Are Automatically Detected
 
-```vue
-<script setup>
-// These will automatically appear in the editor's property panel
-const props = defineProps({
+**Important:** You don't need to do anything special to make properties editable. v-craft automatically detects properties defined with TypeScript's `defineProps` and makes them available in the editor's property panel.
+
+```typescript
+<script setup lang="ts">
+interface Props {
   // Text input
-  heading: {
-    type: String,
-    default: 'Section Heading'
-  },
+  heading: string
   
   // Color picker
-  backgroundColor: {
-    type: String,
-    default: '#ffffff'
-  },
+  backgroundColor: string
   
   // Number input with slider
-  padding: {
-    type: Number,
-    default: 20
-  },
+  padding: number
   
   // Checkbox
-  showBorder: {
-    type: Boolean,
-    default: true
-  },
+  showBorder: boolean
   
   // Select dropdown
-  alignment: {
-    type: String,
-    default: 'left',
-    validator: (value) => ['left', 'center', 'right'].includes(value)
-  }
+  alignment: 'left' | 'center' | 'right'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  heading: 'Section Heading',
+  backgroundColor: '#ffffff',
+  padding: 20,
+  showBorder: true,
+  alignment: 'left'
 })
 </script>
 ```
+
+The editor automatically creates appropriate input controls based on your TypeScript types:
+- `string` → Text input or color picker (if property name includes 'color')
+- `number` → Number input with optional slider
+- `boolean` → Checkbox toggle
+- `string` with union types → Dropdown select
+- Arrays and objects → Advanced editors
 
 ## Common Component Patterns
 

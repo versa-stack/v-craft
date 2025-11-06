@@ -22,7 +22,7 @@ defineOptions({
   name: "CraftEditorPanelLayers",
 });
 
-const editor = useEditor<T>()();
+const editor = useEditor<T>();
 const { nodeTree } = storeToRefs(editor);
 
 const layerClick = (craftNode: CraftNode) => {

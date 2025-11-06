@@ -29,7 +29,7 @@ defineProps<{
   blueprints: BlueprintsLibrary;
 }>();
 
-const editor = useEditor<T>()();
+const editor = useEditor<T>();
 const deselectNodes = () => {
   editor.selectNode(null);
 };

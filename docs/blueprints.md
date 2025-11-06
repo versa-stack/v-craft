@@ -2,9 +2,24 @@
 
 Think of blueprints as recipes that tell v-craft how to use your components. Just like a recipe tells you what ingredients you need and how to combine them, a blueprint tells the editor what your component is called, what settings it has, and how to create it.
 
-## What is a Blueprint?
+## What Are Blueprints?
 
-A blueprint is a simple JavaScript object that describes your component to v-craft. It answers these questions:
+Blueprints are like **recipes** for your components. They tell the editor:
+- What components are available
+- What they look like
+- What settings they have
+- How they behave
+
+**🔑 Key Concept: CraftCanvas**
+`CraftCanvas` is a special component used **only in blueprints** for components that should accept child components. It:
+- Renders your actual component
+- Enables drag-and-drop of child components into slots
+- Provides container functionality automatically
+
+**Simple components** (buttons, images, text) use their component name directly in blueprints.
+**Container components** (layouts, cards, sections) use `CraftCanvas` with their component name as a prop.
+
+Think of blueprints as the bridge between your Vue components and the visual editor. A blueprint is a simple JavaScript object that describes your component to v-craft. It answers these questions:
 - **What is it called?** (the label users see)
 - **What component should be created?** (the actual Vue component)
 - **What are the default settings?** (the starting values)
@@ -21,7 +36,7 @@ const simpleTextBlueprint = {
   props: {
     text: "Hello World!"         // Default text
   },
-  children: []                   // No children allowed
+  children: []                   // Empty component tree (no nested components)
 }
 ```
 
@@ -31,12 +46,19 @@ That's it! This creates a draggable text block.
 
 ### Step 1: Create the Blueprint File
 
-Create a file called `my-blueprints.js`:
+Create a file called `my-blueprints.ts`:
 
-```javascript
-// my-blueprints.js
+```typescript
+// my-blueprints.ts
 
-export const myBlueprints = {
+export interface Blueprint {
+  label: string
+  componentName: string
+  props: Record<string, any>
+  children: Blueprint[]
+}
+
+export const myBlueprints: Record<string, Blueprint> = {
   // This is your blueprint for a Hero Section
   HeroSection: {
     label: "Hero Section",
@@ -48,7 +70,7 @@ export const myBlueprints = {
       backgroundColor: "#6366f1",
       textColor: "#ffffff"
     },
-    children: [] // This component can't have children
+    children: [] // Single component, no nested structure
   },
 
   // This is your blueprint for a Card
@@ -61,14 +83,14 @@ export const myBlueprints = {
       imageUrl: "https://via.placeholder.com/300x200",
       buttonText: "Learn More"
     },
-    children: [] // This card can't have children inside it
+    children: [] // Single component, no nested structure
   }
 }
 ```
 
 ### Step 2: Use Your Blueprints in the Editor
 
-```javascript
+```typescript
 import { myBlueprints } from './my-blueprints'
 
 const editorConfig = {
@@ -116,8 +138,8 @@ const myBlueprint = {
     imageUrl: "https://example.com/image.jpg"
   },
   
-  // 4. CHILDREN - Can this hold other components?
-  children: [] // Empty array = no children allowed
+  // 4. CHILDREN - Component tree structure
+  children: [] // Empty array = single component with no nested components
 }
 ```
 
@@ -125,7 +147,7 @@ const myBlueprint = {
 
 ### 1. Simple Text Component
 
-```javascript
+```typescript
 const TextBlock = {
   label: "Text Block",
   componentName: "TextBlock",
@@ -141,7 +163,7 @@ const TextBlock = {
 
 ### 2. Button Component
 
-```javascript
+```typescript
 const Button = {
   label: "Button",
   componentName: "ActionButton",
@@ -158,7 +180,7 @@ const Button = {
 
 ### 3. Image Component
 
-```javascript
+```typescript
 const Image = {
   label: "Image",
   componentName: "DisplayImage",
@@ -173,22 +195,53 @@ const Image = {
 }
 ```
 
-### 4. Container Component (Can Hold Children)
+### 4. Container Component (Accepts User-Dropped Children)
 
-```javascript
+For components that should accept child components (like layouts, cards with content areas, etc.), use `CraftCanvas` in the blueprint:
+
+**Your Vue Component (unchanged):**
+```vue
+<!-- ContainerBox.vue -->
+<template>
+  <div class="container" :style="{ backgroundColor: bgColor, padding: padding + 'px' }">
+    <!-- This slot receives user-dropped components -->
+    <slot></slot>
+  </div>
+</template>
+
+<script setup lang="ts">
+interface Props {
+  bgColor: string
+  padding: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  bgColor: '#f8f9fa',
+  padding: 20
+})
+</script>
+```
+
+**Blueprint (using CraftCanvas for container behavior):**
+```typescript
 const Container = {
   label: "Container Box",
-  componentName: "ContainerBox",
+  componentName: "CraftCanvas",  // Use CraftCanvas for container behavior
   props: {
-    backgroundColor: "#f8f9fa",
+    componentName: "ContainerBox", // Your actual component name
+    bgColor: "#f8f9fa",
     padding: 20,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#dee2e6"
   },
-  children: [] // This allows child components!
+  children: [] // Always empty - CraftCanvas handles user-dropped children
 }
 ```
+
+**Key Difference:**
+- **Simple components**: Use `componentName: "YourComponent"` directly
+- **Container components**: Use `componentName: "CraftCanvas"` with `props.componentName: "YourComponent"`
 
 ### 5. Advanced Component with Many Settings
 
@@ -362,6 +415,190 @@ console.log('Testing HeroSection blueprint:', {
 })
 ```
 
+## How Blueprints and Resolvers Work Together
+
+### The Two-Layer System
+
+Your implementation uses a **two-layer system** where blueprints and resolvers work together to create containers:
+
+1. **Blueprints** define what appears in the editor sidebar
+2. **Resolvers** define the actual components and their editable properties
+
+### Real Example: HTML DIV Container
+
+Looking at your actual code, here's how a `<div>` becomes a container:
+
+**Layer 1: Resolver (defines the actual component)**
+```typescript
+// resolvermap.ts - defines what a <div> is
+const resolveHtmlElements = (elements: string[]) => {
+  const mapped: Record<string, any> = {};
+  
+  elements.forEach((element) => {
+    mapped[element] = {
+      componentName: element,  // "div" - the actual HTML element
+      eventsSchema: {
+        // Form configuration for event handlers
+        $el: "div",
+        children: [
+          {
+            $formkit: "textarea",
+            name: "click",
+            label: "onClick",
+          },
+        ],
+      },
+      propsSchema: [
+        {
+          $formkit: "text",
+          label: "CSS Class(es)",
+          name: "class",
+        },
+      ],
+    };
+  });
+  return mapped;
+};
+```
+
+**Layer 2: Blueprint (defines what users see in editor)**
+```typescript
+// blueprints.ts - creates the draggable blueprint
+const createHtmlElementBlueprints = () => {
+  const resolverMap: CraftNodeResolverMap<any> = htmlResolvers;
+  const blueprints: Blueprints<any> = {};
+
+  Object.entries(resolverMap).forEach(([key, value]) => {
+    blueprints[key] = {
+      label: `HTML <${value.componentName}>`,
+      componentName: "CraftCanvas",  // The magic wrapper
+      props: {
+        ...value.defaultProps,
+        componentName: value.componentName, // "div" gets passed as prop
+      },
+      children: [], // Empty because CraftCanvas handles children
+    };
+  });
+  return blueprints;
+};
+```
+
+### The Container Magic: How It Actually Works
+
+When a user drags a "HTML `<div>`" from the sidebar:
+
+1. **Blueprint creates**: A `CraftCanvas` component with `componentName="div"`
+2. **CraftCanvas renders**: The actual `<div>` element (from resolver)
+3. **Container behavior**: `CraftCanvas` automatically enables drop zones
+4. **Child components**: Users can now drag components into the div
+
+### Why This Pattern Works
+
+**The separation of concerns:**
+- **Resolvers** define the actual component behavior and properties
+- **Blueprints** define how components appear in the editor
+- **CraftCanvas** provides the container functionality
+
+This means:
+- Any HTML element can become a container without changing its code
+- The same component can have different editor representations
+- Container behavior is added by CraftCanvas, not the component itself
+
+## How Containers Actually Work: The CraftCanvas Pattern
+
+Looking at your actual implementation, containers work through a specific pattern using `CraftCanvas` as a wrapper component. Here's how it works:
+
+### The Container Pattern
+
+**In your resolvermap.ts:**
+```typescript
+// Defines the actual HTML element component
+const resolveHtmlElements = (elements: string[]) => {
+  const mapped: Record<string, any> = {};
+  
+  elements.forEach((element) => {
+    mapped[element] = {
+      componentName: element,  // This is the actual HTML element name
+      eventsSchema: { ... },
+      propsSchema: [ ... ],
+    };
+  });
+  return mapped;
+};
+```
+
+**In your blueprints.ts:**
+```typescript
+// Creates container blueprints that use CraftCanvas as wrapper
+const createHtmlElementBlueprints = () => {
+  const resolverMap: CraftNodeResolverMap<any> = htmlResolvers;
+  const blueprints: Blueprints<any> = {};
+
+  Object.entries(resolverMap).forEach(([key, value]) => {
+    blueprints[key] = {
+      label: `HTML <${value.componentName}>`,
+      componentName: "CraftCanvas",  // This is the key!
+      props: {
+        ...value.defaultProps,
+        componentName: value.componentName, // Pass the actual element name
+      },
+      children: [], // Always empty - CraftCanvas handles children
+    };
+  });
+  return blueprints;
+};
+```
+
+### How It Works
+
+1. **CraftCanvas Component**: A special wrapper component that enables container behavior
+2. **componentName prop**: Tells CraftCanvas which actual component to render
+3. **children: []**: Always empty in blueprints - CraftCanvas manages child components automatically
+4. **User-dropped children**: Handled by CraftCanvas, not the blueprint
+
+### Creating Your Own Container
+
+To create a container component that accepts user-dropped children:
+
+**Step 1: Create the wrapper blueprint**
+```typescript
+const MyContainer = {
+  label: "My Container",
+  componentName: "CraftCanvas", // Always use CraftCanvas
+  props: {
+    componentName: "MyActualContainer", // Your actual component
+    backgroundColor: "#f8f9fa",
+    padding: 20
+  },
+  children: [] // Always empty
+}
+```
+
+**Step 2: Create the actual component**
+```vue
+<!-- MyActualContainer.vue -->
+<template>
+  <div :style="{ backgroundColor, padding: padding + 'px' }">
+    <!-- This slot receives user-dropped components -->
+    <slot></slot>
+  </div>
+</template>
+
+<script setup lang="ts">
+interface Props {
+  backgroundColor: string
+  padding: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  backgroundColor: '#f8f9fa',
+  padding: 20
+})
+</script>
+```
+
+**Key Insight**: The blueprint defines the **wrapper** (CraftCanvas), while the resolver defines the **actual component** that gets rendered inside. This separation allows any component to become a container without modifying its code.
+
 ## Blueprint Generator Function
 
 Make your life easier with this helper:
@@ -369,11 +606,11 @@ Make your life easier with this helper:
 ```javascript
 // blueprint-generator.js
 
-export const createBlueprint = (name, label, props, allowsChildren = false) => ({
+export const createBlueprint = (name, label, props, hasChildren = false) => ({
   label,
   componentName: name,
   props: props || {},
-  children: allowsChildren ? [] : []
+  children: hasChildren ? [] : []
 })
 
 // Usage:
@@ -385,7 +622,7 @@ const Button = createBlueprint('ActionButton', 'Click Button', {
 const Container = createBlueprint('ContainerBox', 'Box Container', {
   padding: 20,
   background: '#f8f9fa'
-}, true) // true = allows children
+}, true) // true = includes children array for component tree
 ```
 
 ## Next Steps

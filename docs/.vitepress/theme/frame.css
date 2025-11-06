@@ -1,4 +1,7 @@
-@import "tailwindcss";
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 h1 {
   font-size: 2rem;

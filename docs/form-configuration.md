@@ -8,6 +8,9 @@ Form configuration is how you tell v-craft what settings users can change for yo
 
 Without form configuration, users would have to edit code to change text colors or button labels. With it, they just click and type!
 
+**🎯 Built on FormKit**
+v-craft uses [FormKit](https://formkit.com/) schemas for form configuration. This means you get access to FormKit's powerful form system, validation, and field types. See the [FormKit documentation](https://formkit.com/inputs) for complete field type reference and advanced features.
+
 ## The Simple Way: Automatic Form Generation
 
 Good news! v-craft can automatically create forms based on your component's props. But we can make it even better with custom configuration.
@@ -193,6 +196,8 @@ export const heroSectionSchema = {
 
 ## Form Field Types Explained
 
+All form configurations use [FormKit schemas](https://formkit.com/inputs). Here are the most common field types you'll use:
+
 ### Text Fields
 
 ```javascript
@@ -311,6 +316,11 @@ export const heroSectionSchema = {
   }
 }
 ```
+
+**📚 See Also:**
+- [FormKit Input Documentation](https://formkit.com/inputs) - Complete list of all available input types
+- [FormKit Validation](https://formkit.com/essentials/validation) - Advanced validation options
+- [FormKit Conditional Logic](https://formkit.com/essentials/conditional-logic) - Show/hide fields based on other values
 
 ## Real-World Examples
 

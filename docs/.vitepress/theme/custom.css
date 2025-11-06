@@ -1,13 +1,29 @@
+/* stylelint-disable at-rule-no-unknown */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.Layout.no-aside #VPContent.VPContent.has-sidebar
-{
-  padding-right: 0;
+/* Ensure Tailwind styles are properly included */
+@layer base {
+  :root {
+    --vp-nav-bg-color: #ffffff;
+  }
 }
 
+@layer components {
+  .Layout.no-aside #VPContent.VPContent.has-sidebar {
+    padding-right: 0;
+  }
 
-.Layout.no-aside .VPNav .content {
-  background-color: var(--vp-nav-bg-color);
+  .Layout.no-aside .VPNav .content {
+    background-color: var(--vp-nav-bg-color);
+  }
+
+  .v-craft-frame {
+    width: 100%;
+  }
+
+  .v-craft-panel-center {
+    margin: auto 1em;
+  }
 }

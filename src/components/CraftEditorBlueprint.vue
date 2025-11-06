@@ -12,7 +12,7 @@ import { CraftNode } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
 import { useIndicator } from "../store/indicator";
 
-const editor = useEditor<T>()();
+const editor = useEditor<T>();
 const indicator = useIndicator();
 
 defineOptions({

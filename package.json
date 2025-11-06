@@ -7,7 +7,7 @@
     "build-raw": "vite build",
     "build": "rimraf dist && vite build",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "docs:build": "vitepress build docs && node scripts/inject-tailwind-css.js",
     "docs:serve": "vitepress serve docs",
     "watch:build": "nodemon -e ts -e vue -x \"npm run build\"",
     "docs:preview": "vitepress preview docs",
