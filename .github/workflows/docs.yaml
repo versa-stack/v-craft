@@ -60,7 +60,7 @@ jobs:
 
       - name: Build with VitePress
         env:
-          PUBLIC_BASE: /v-craft/
+          PUBLIC_BASE: /
         run: npm run docs:build
 
       - name: Upload artifact

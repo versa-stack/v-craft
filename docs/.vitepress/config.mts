@@ -41,7 +41,7 @@ export default defineConfig({
     nav: [
       {
         text: "Versions",
-        items: [{ text: "develop", link: `${process.env.PUBLIC_BASE ?? "/"}` }],
+        items: [{ text: "develop", link: "/" }],
       },
     ],
     sidebar: [
