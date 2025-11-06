@@ -1,3 +1,9 @@
+## [0.1.0-alpha.15](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.14...v0.1.0-alpha.15) (2025-11-06)
+
+### 🐛 Bug Fixes
+
+* correct base path for GitHub Pages deployment ([ca72c7c](https://github.com/versa-stack/v-craft/commit/ca72c7c12769a8b42d0a7f209e57568d1fc412bd))
+
 ## [0.1.0-alpha.14](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.13...v0.1.0-alpha.14) (2025-11-06)
 
 ### 🐛 Bug Fixes
