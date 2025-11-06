@@ -1,3 +1,9 @@
+## [0.1.0-alpha.18](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.17...v0.1.0-alpha.18) (2025-11-06)
+
+### 🐛 Bug Fixes
+
+* restore buildEnd hook to fix VitePress stylesheet loading issue ([a108df0](https://github.com/versa-stack/v-craft/commit/a108df0bcb3ea2a3a3cdbf336e2270d6966fb4a2))
+
 ## [0.1.0-alpha.17](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.16...v0.1.0-alpha.17) (2025-11-06)
 
 ### 🐛 Bug Fixes
