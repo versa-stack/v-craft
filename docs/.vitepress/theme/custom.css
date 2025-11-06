@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss/tailwind.css";
 
 .Layout.no-aside #VPContent.VPContent.has-sidebar
 {
