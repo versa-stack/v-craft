@@ -1,3 +1,9 @@
+## [0.1.0-alpha.16](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.15...v0.1.0-alpha.16) (2025-11-06)
+
+### 🐛 Bug Fixes
+
+* correct Tailwind CSS v4 import syntax ([0864cc7](https://github.com/versa-stack/v-craft/commit/0864cc76b464bf42dff762cc12a0c0caf7a62868))
+
 ## [0.1.0-alpha.15](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.14...v0.1.0-alpha.15) (2025-11-06)
 
 ### 🐛 Bug Fixes
