@@ -1,3 +1,10 @@
+## [0.1.0-alpha.17](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.16...v0.1.0-alpha.17) (2025-11-06)
+
+### 🐛 Bug Fixes
+
+* correct Tailwind CSS v4 import syntax ([267710f](https://github.com/versa-stack/v-craft/commit/267710f86ef70c3e9b4ee5c90eb6b984276095d3))
+* use traditional Tailwind CSS directives for VitePress compatibility ([d593855](https://github.com/versa-stack/v-craft/commit/d5938554917fc7de288dec07ce6158d4ec97e885))
+
 ## [0.1.0-alpha.16](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.15...v0.1.0-alpha.16) (2025-11-06)
 
 ### 🐛 Bug Fixes
