@@ -1,3 +1,9 @@
+## [0.1.0-alpha.14](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.13...v0.1.0-alpha.14) (2025-11-06)
+
+### 🐛 Bug Fixes
+
+* deploy docs to /v-craft/ root without branch subfolder ([7e7fca4](https://github.com/versa-stack/v-craft/commit/7e7fca4e8cea12cc22098e462c457f668920c311))
+
 ## [0.1.0-alpha.13](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.12...v0.1.0-alpha.13) (2025-11-05)
 
 ### 🐛 Bug Fixes
