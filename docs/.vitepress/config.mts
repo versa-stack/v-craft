@@ -9,6 +9,29 @@ export default defineConfig({
   base: process.env.PUBLIC_BASE || "/",
   description: "An attempt to deliver a Vue.js 3 page editor library.",
 
+  async buildEnd(siteConfig) {
+    const distPath = path.resolve(__dirname, 'dist');
+    const fixHtmlFiles = (dir: string) => {
+      const files = fs.readdirSync(dir);
+      files.forEach(file => {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+        if (stat.isDirectory()) {
+          fixHtmlFiles(filePath);
+        } else if (file.endsWith('.html')) {
+          let content = fs.readFileSync(filePath, 'utf-8');
+          content = content.replace(
+            /<link rel="preload stylesheet"([^>]*) as="style">/g,
+            '<link rel="stylesheet"$1>'
+          );
+          fs.writeFileSync(filePath, content, 'utf-8');
+        }
+      });
+    };
+    if (fs.existsSync(distPath)) {
+      fixHtmlFiles(distPath);
+    }
+  },
 
   themeConfig: {
     aside: true,
