@@ -12,7 +12,7 @@ import {
 } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 
-export type EditorState = {
+export interface EditorState {
   nodeMap: Map<string, CraftNode>;
   rootNodes: string[];
   selectedUuid: string | null;
