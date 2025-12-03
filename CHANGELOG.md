@@ -1,3 +1,9 @@
+## [0.1.0-alpha.21](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.20...v0.1.0-alpha.21) (2025-12-03)
+
+### 🐛 Bug Fixes
+
+* replace watchEffect with onMounted and watch in useConnectCraftNodeToStore ([ff03154](https://github.com/versa-stack/v-craft/commit/ff03154343dfb5bc0b554d074dfbcde11b4c6660))
+
 ## [0.1.0-alpha.20](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.19...v0.1.0-alpha.20) (2025-12-03)
 
 ### 🐛 Bug Fixes
