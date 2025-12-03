@@ -1,3 +1,9 @@
+## [0.1.0-alpha.20](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.19...v0.1.0-alpha.20) (2025-12-03)
+
+### 🐛 Bug Fixes
+
+* remove redundant watch on hasNodes in useCraftFrame ([b670d4e](https://github.com/versa-stack/v-craft/commit/b670d4eea541f3e070e90a860169de45a71c90f9))
+
 ## [0.1.0-alpha.19](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.18...v0.1.0-alpha.19) (2025-11-06)
 
 ### 🐛 Bug Fixes
