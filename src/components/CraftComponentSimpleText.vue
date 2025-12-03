@@ -111,7 +111,7 @@ watch(enabled, (newValue) => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .pre-wrap {
   white-space: pre-wrap;
 }
