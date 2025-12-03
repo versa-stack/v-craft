@@ -1,3 +1,9 @@
+## [0.1.0-alpha.22](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.21...v0.1.0-alpha.22) (2025-12-03)
+
+### 🐛 Bug Fixes
+
+* improve CSS handling and optimize reactivity in editor components ([a4bb9fc](https://github.com/versa-stack/v-craft/commit/a4bb9fc120d550ea6008cca150c445682dca8b92))
+
 ## [0.1.0-alpha.21](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.20...v0.1.0-alpha.21) (2025-12-03)
 
 ### 🐛 Bug Fixes
