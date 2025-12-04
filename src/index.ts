@@ -7,6 +7,7 @@ export * from "./lib/craftNode";
 export * from "./lib/CraftNodeResolver";
 export * from "./lib/mapData";
 export * from "./lib/model";
+export * from "./lib/renderCraftNodes";
 export * from "./resolvers/default";
 export { useEditor } from "./store/editor";
 export type { EditorState, EditorStoreInstanceType } from "./store/editor";

@@ -29,6 +29,7 @@ export default defineConfig({
       { text: "Getting Started", link: "/getting-started" },
       { text: "Editor", link: "/editor" },
       { text: "Viewer", link: "/viewer" },
+      { text: "Static Renderer", link: "/static-renderer" },
       { text: "Components", link: "/components" },
       { text: "Blueprints", link: "/blueprints" },
       { text: "Form Configuration", link: "/form-configuration" },
