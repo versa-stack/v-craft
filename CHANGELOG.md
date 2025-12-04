@@ -1,3 +1,9 @@
+## [0.1.0-alpha.23](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.22...v0.1.0-alpha.23) (2025-12-04)
+
+### 🐛 Bug Fixes
+
+* simplify blueprintsWithDefaults to use map instead of forEach ([3fd60fb](https://github.com/versa-stack/v-craft/commit/3fd60fbc208fcad4a32511d186fd7298b66ee8fd))
+
 ## [0.1.0-alpha.22](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.21...v0.1.0-alpha.22) (2025-12-03)
 
 ### 🐛 Bug Fixes
