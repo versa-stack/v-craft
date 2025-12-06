@@ -12,6 +12,8 @@ import {
 } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 
+export type EditorStoreInstanceType = ReturnType<typeof useEditor>;
+
 export interface EditorState {
   nodeMap: Map<string, CraftNode>;
   rootNodes: string[];
