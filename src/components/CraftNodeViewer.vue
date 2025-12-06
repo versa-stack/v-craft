@@ -6,20 +6,22 @@
     v-bind="nodeProps"
     v-on="eventHandlers"
   >
-    <template v-if="!data?.type">
-      <CraftNodeViewer
-        v-for="childNode in craftNode.children"
-        :key="childNode.uuid"
-        :craftNode="childNode"
-      />
-    </template>
+    <template v-if="!isVoidElement">
+      <template v-if="!data?.type">
+        <CraftNodeViewer
+          v-for="childNode in craftNode.children"
+          :key="childNode.uuid"
+          :craftNode="childNode"
+        />
+      </template>
 
-    <template v-else>
-      <CraftNodeViewer
-        v-for="item in computedChildren"
-        :key="item.key"
-        :craftNode="item.craftNode"
-      />
+      <template v-else>
+        <CraftNodeViewer
+          v-for="item in computedChildren"
+          :key="item.key"
+          :craftNode="item.craftNode"
+        />
+      </template>
     </template>
   </component>
 </template>
@@ -30,6 +32,11 @@ import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
 import { useCraftNodeWrapper } from "./composable/useCraftNodeWrapper";
+
+const VOID_ELEMENTS = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+  'link', 'meta', 'source', 'track', 'wbr'
+]);
 
 defineOptions({
   name: "CraftNodeViewer",
@@ -43,6 +50,11 @@ const { editor, visible } = useCraftNodeWrapper(craftNode);
 const { resolvedNode, defaultProps, resolver } = useResolveCraftNode(craftNode);
 
 provide("resolver", resolver);
+
+const isVoidElement = computed(() => {
+  const componentName = resolvedNode.value?.componentName?.toLowerCase();
+  return componentName ? VOID_ELEMENTS.has(componentName) : false;
+});
 
 const nodeProps = computed(() => ({
   ...defaultProps.value,

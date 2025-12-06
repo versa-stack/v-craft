@@ -23,14 +23,9 @@ import { CraftEditorConfig, useEditor } from "@versa-stack/v-craft";
 import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
 import { onBeforeMount, ref, watch } from "vue";
-import { withBase } from "vitepress";
-import frameCssUrlRaw from "../../../.vitepress/theme/frame.css?url";
-import styleCssUrlRaw from "../../../.vitepress/theme/style.css?url";
-import vCraftCssUrlRaw from "../../../.vitepress/theme/v-craft.css?url";
-
-const frameCssUrl = withBase(frameCssUrlRaw);
-const styleCssUrl = withBase(styleCssUrlRaw);
-const vCraftCssUrl = withBase(vCraftCssUrlRaw);
+import frameCssUrl from "../../../.vitepress/theme/frame.css?url";
+import styleCssUrl from "../../../.vitepress/theme/style.css?url";
+import vCraftCssUrl from "../../../.vitepress/theme/v-craft.css?url";
 
 const editor = useEditor();
 
