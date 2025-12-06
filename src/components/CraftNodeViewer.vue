@@ -42,10 +42,10 @@ const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
 const { resolvedNode, defaultProps, resolver } = useResolveCraftNode(craftNode);
 
-if (resolver.value) provide("resolver", resolver);
+provide("resolver", resolver);
 
 const nodeProps = computed(() => ({
-  ...defaultProps,
+  ...defaultProps.value,
   ...craftNode.value?.props,
 }));
 
