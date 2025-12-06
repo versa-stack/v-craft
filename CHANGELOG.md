@@ -1,3 +1,9 @@
+## [0.1.0-alpha.26](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.25...v0.1.0-alpha.26) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* improve CraftCanvas component resolution and remove unnecessary resolver configuration ([7dde064](https://github.com/versa-stack/v-craft/commit/7dde064e601f75f28422e38302ea1151ed828ad0))
+
 ## [0.1.0-alpha.25](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.24...v0.1.0-alpha.25) (2025-12-06)
 
 ### 🐛 Bug Fixes
