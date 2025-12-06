@@ -92,8 +92,3 @@ const emit = defineEmits<{
 const { editor } = useCraftFrame<T>(props.resolverMap);
 const { nodeTree, hasNodes, enabled } = storeToRefs(editor);
 </script>
-<style>
-.vue3-iframe iframe body {
-  padding: 10px;
-}
-</style>

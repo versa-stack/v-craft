@@ -9,9 +9,12 @@ export default defineConfig({
       exclude: [
         'docs/**',
         'tests/**',
+        'scripts/**',
+        'src/index.ts',
         '*.config.{js,ts}',
         '**/node_modules/**',
         '**/dist/**',
+        ''
       ],
     },
   },

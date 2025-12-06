@@ -113,9 +113,7 @@ const setupAutoResize = () => {
 
   iframeRef.value.style.width = "100%";
 
-  // Use a simpler approach - only observe content changes, not layout changes
   observer.value = new MutationObserver(() => {
-    // Debounce updates to prevent loops
     setTimeout(updateIframeHeight, 100);
   });
   observer.value.observe(iframeWindow.document.body, {
@@ -125,7 +123,6 @@ const setupAutoResize = () => {
     characterData: true,
   });
 
-  // Only observe once and disconnect to prevent loops
   const initialResizeObserver = new ResizeObserver(() => {
     updateIframeHeight();
     initialResizeObserver.disconnect();
@@ -149,7 +146,6 @@ const updateIframeHeight = () => {
     const body = iframeDocument.body;
     const html = iframeDocument.documentElement;
 
-    // Get the actual content height without iframe padding
     const contentHeight = Math.max(
       body.scrollHeight,
       body.offsetHeight,
@@ -157,7 +153,6 @@ const updateIframeHeight = () => {
       html.offsetHeight
     );
 
-    // Add small padding to prevent scrollbars, but keep it minimal
     const paddedHeight = contentHeight + 8;
     if (iframeRef.value && Math.abs(paddedHeight - lastHeight) > 1) {
       lastHeight = paddedHeight;
@@ -214,3 +209,9 @@ onUnmounted(() => {
   resizeObserver.value?.disconnect();
 });
 </script>
+
+<style>
+.vue3-iframe iframe body {
+  padding: 10px;
+}
+</style>

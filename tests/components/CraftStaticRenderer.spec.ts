@@ -1,16 +1,21 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it, vi } from "vitest";
-import { h, defineComponent } from "vue";
+import { createPinia, setActivePinia } from "pinia";
+import { v4 as uuidv4 } from "uuid";
+import { beforeEach, describe, expect, it } from "vitest";
+import { h, defineComponent, nextTick } from "vue";
+import CraftCanvas from "../../src/components/CraftCanvas.vue";
+import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
+import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
 import CraftStaticRenderer from "../../src/components/CraftStaticRenderer.vue";
-import { CraftNode, CraftNodeDatasource } from "../../src/lib/craftNode";
+import { CraftNode } from "../../src/lib/craftNode";
 import { CraftNodeResolverMap } from "../../src/lib/CraftNodeResolver";
+import { defaultResolvers } from "../../src/resolvers/default";
 
 const TestComponent = defineComponent({
   name: "TestComponent",
   props: {
     text: { type: String, default: "" },
   },
-  emits: ["click"],
   setup(props, { slots }) {
     return () => h("div", { class: "test-component" }, [props.text, slots.default?.()]);
   },
@@ -23,15 +28,11 @@ const TestContainer = defineComponent({
   },
 });
 
-const ClickableComponent = defineComponent({
-  name: "ClickableComponent",
-  emits: ["click"],
-  setup(_, { emit }) {
-    return () => h("button", { class: "clickable", onClick: () => emit("click") }, "Click me");
-  },
-});
-
 describe("CraftStaticRenderer", () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+  });
+
   const resolverMap: CraftNodeResolverMap<any> = {
     TestComponent: {
       componentName: "TestComponent",
@@ -40,30 +41,27 @@ describe("CraftStaticRenderer", () => {
     TestContainer: {
       componentName: "TestContainer",
     },
-    ClickableComponent: {
-      componentName: "ClickableComponent",
+    CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
+    CraftCanvas: defaultResolvers.CraftCanvas,
+    div: {
+      componentName: "div",
     },
   };
 
-  const createWrapper = (
-    nodes: CraftNode[],
-    options: {
-      nodeDataMap?: Record<string, CraftNodeDatasource | null>;
-      eventsContext?: Record<string, any>;
-    } = {}
-  ) => {
+  const createWrapper = (nodes: CraftNode[]) => {
     return mount(CraftStaticRenderer, {
       props: {
         nodes,
         resolverMap,
-        ...options,
       },
       global: {
         components: {
           TestComponent,
           TestContainer,
-          ClickableComponent,
           CraftStaticRenderer,
+          CraftNodeViewer,
+          CraftComponentSimpleText,
+          CraftCanvas,
         },
       },
     });
@@ -72,7 +70,7 @@ describe("CraftStaticRenderer", () => {
   it("renders a single node", () => {
     const nodes: CraftNode[] = [
       {
-        uuid: "1",
+        uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Hello" },
         children: [],
@@ -87,13 +85,13 @@ describe("CraftStaticRenderer", () => {
   it("renders multiple nodes", () => {
     const nodes: CraftNode[] = [
       {
-        uuid: "1",
+        uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "First" },
         children: [],
       },
       {
-        uuid: "2",
+        uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Second" },
         children: [],
@@ -110,12 +108,12 @@ describe("CraftStaticRenderer", () => {
   it("renders nested children", () => {
     const nodes: CraftNode[] = [
       {
-        uuid: "1",
+        uuid: uuidv4(),
         componentName: "TestContainer",
         props: {},
         children: [
           {
-            uuid: "2",
+            uuid: uuidv4(),
             componentName: "TestComponent",
             props: { text: "Nested" },
             children: [],
@@ -133,21 +131,21 @@ describe("CraftStaticRenderer", () => {
   it("applies default props from resolver", () => {
     const nodes: CraftNode[] = [
       {
-        uuid: "1",
-        componentName: "TestComponent",
-        props: {},
+        uuid: uuidv4(),
+        componentName: "CraftComponentSimpleText",
+        props: { componentName: "span" },
         children: [],
       },
     ];
 
     const wrapper = createWrapper(nodes);
-    expect(wrapper.text()).toContain("default");
+    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
   });
 
   it("overrides default props with node props", () => {
     const nodes: CraftNode[] = [
       {
-        uuid: "1",
+        uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "override" },
         children: [],
@@ -167,14 +165,14 @@ describe("CraftStaticRenderer", () => {
   it("respects node visibility", () => {
     const nodes: CraftNode[] = [
       {
-        uuid: "1",
+        uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Visible" },
         children: [],
         visible: true,
       },
       {
-        uuid: "2",
+        uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Hidden" },
         children: [],
@@ -187,83 +185,104 @@ describe("CraftStaticRenderer", () => {
     expect(wrapper.text()).not.toContain("Hidden");
   });
 
-  it("executes event handlers from events context", async () => {
-    const clickHandler = vi.fn();
+  it("renders CraftNodeViewer for each node", () => {
     const nodes: CraftNode[] = [
       {
-        uuid: "1",
-        componentName: "ClickableComponent",
-        props: {},
+        uuid: uuidv4(),
+        componentName: "TestComponent",
+        props: { text: "First" },
         children: [],
-        events: {
-          click: "ctx.onClick()",
-        },
+      },
+      {
+        uuid: uuidv4(),
+        componentName: "TestComponent",
+        props: { text: "Second" },
+        children: [],
       },
     ];
 
-    const wrapper = createWrapper(nodes, {
-      eventsContext: { onClick: clickHandler },
+    const wrapper = createWrapper(nodes);
+    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(2);
+  });
+
+  it("provides resolver to child components", () => {
+    const nodes: CraftNode[] = [
+      {
+        uuid: uuidv4(),
+        componentName: "CraftCanvas",
+        props: { componentName: "div" },
+        children: [
+          {
+            uuid: uuidv4(),
+            componentName: "CraftComponentSimpleText",
+            props: { content: "Canvas Child", componentName: "span" },
+            children: [],
+          },
+        ],
+      },
+    ];
+
+    const wrapper = createWrapper(nodes);
+    expect(wrapper.findComponent({ name: "CraftCanvas" }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
+    expect(wrapper.text()).toContain("Canvas Child");
+  });
+
+  it("renders deeply nested node tree", () => {
+    const nodes: CraftNode[] = [
+      {
+        uuid: uuidv4(),
+        componentName: "TestContainer",
+        props: {},
+        children: [
+          {
+            uuid: uuidv4(),
+            componentName: "TestContainer",
+            props: {},
+            children: [
+              {
+                uuid: uuidv4(),
+                componentName: "TestComponent",
+                props: { text: "Deep" },
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const wrapper = createWrapper(nodes);
+    expect(wrapper.findAll(".test-container")).toHaveLength(2);
+    expect(wrapper.find(".test-container .test-container .test-component").exists()).toBe(true);
+    expect(wrapper.text()).toContain("Deep");
+  });
+
+  it("updates when nodes prop changes", async () => {
+    const nodes: CraftNode[] = [
+      {
+        uuid: uuidv4(),
+        componentName: "TestComponent",
+        props: { text: "Initial" },
+        children: [],
+      },
+    ];
+
+    const wrapper = createWrapper(nodes);
+    expect(wrapper.text()).toContain("Initial");
+
+    await wrapper.setProps({
+      nodes: [
+        {
+          uuid: uuidv4(),
+          componentName: "TestComponent",
+          props: { text: "Updated" },
+          children: [],
+        },
+      ],
     });
 
-    await wrapper.find(".clickable").trigger("click");
-    expect(clickHandler).toHaveBeenCalled();
-  });
-
-  it("renders data source with single type", () => {
-    const nodes: CraftNode[] = [
-      {
-        uuid: "parent",
-        componentName: "TestContainer",
-        props: {},
-        children: [
-          {
-            uuid: "child",
-            componentName: "TestComponent",
-            props: { text: "base" },
-            children: [],
-          },
-        ],
-      },
-    ];
-
-    const nodeDataMap: Record<string, CraftNodeDatasource> = {
-      parent: {
-        type: "single",
-        item: { text: "from-data" },
-      },
-    };
-
-    const wrapper = createWrapper(nodes, { nodeDataMap });
-    expect(wrapper.text()).toContain("from-data");
-  });
-
-  it("renders data source with list type", () => {
-    const nodes: CraftNode[] = [
-      {
-        uuid: "parent",
-        componentName: "TestContainer",
-        props: {},
-        children: [
-          {
-            uuid: "child",
-            componentName: "TestComponent",
-            props: {},
-            children: [],
-          },
-        ],
-      },
-    ];
-
-    const nodeDataMap: Record<string, CraftNodeDatasource> = {
-      parent: {
-        type: "list",
-        list: [{ text: "Item 1" }, { text: "Item 2" }, { text: "Item 3" }],
-      },
-    };
-
-    const wrapper = createWrapper(nodes, { nodeDataMap });
-    expect(wrapper.text()).toContain("Item 1");
-    expect(wrapper.text()).toContain("Item 2");
-    expect(wrapper.text()).toContain("Item 3");
+    await nextTick();
+    expect(wrapper.text()).toContain("Updated");
   });
 });
