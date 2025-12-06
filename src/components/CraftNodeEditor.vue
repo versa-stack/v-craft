@@ -110,7 +110,7 @@ const generateColorFromUUID = (uuid: string): string => {
 const nodeColor = computed(() => generateColorFromUUID(craftNode.value.uuid));
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @use "../assets/craftNodeEditor";
 
 .v-craft-node::before {

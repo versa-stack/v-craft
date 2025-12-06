@@ -1,4 +1,5 @@
 import type { FormKitSchemaFormKit } from "@formkit/core";
+import { markRaw } from "vue";
 import { CraftNode, craftNodeIsCanvas, CraftNodeRules } from "./craftNode";
 
 export type CraftNodeComponentMap<T extends object> = {
@@ -19,6 +20,7 @@ export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
 
   constructor(resolverMap: Record<string, CraftNodeComponentMap<T>> = {}) {
     this.setResolverMap(resolverMap);
+    return markRaw(this) as this;
   }
 
   setResolverMap(resolverMap: Record<string, CraftNodeComponentMap<T>>) {

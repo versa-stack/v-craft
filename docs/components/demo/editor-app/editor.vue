@@ -3,7 +3,7 @@
     :config="config"
     :inheritStyles="true"
     :useIframe="true"
-    :iFrameStyleSheets="[cssUrl]"
+    :iFrameStyleSheets="[frameCssUrl, styleCssUrl, vCraftCssUrl]"
   >
     <CraftCanvas componentName="div" />
   </CraftEditor>
@@ -23,7 +23,14 @@ import { CraftEditorConfig, useEditor } from "@versa-stack/v-craft";
 import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
 import { onBeforeMount, ref, watch } from "vue";
-import cssUrl from "../../../.vitepress/theme/frame.css?url";
+import { withBase } from "vitepress";
+import frameCssUrlRaw from "../../../.vitepress/theme/frame.css?url";
+import styleCssUrlRaw from "../../../.vitepress/theme/style.css?url";
+import vCraftCssUrlRaw from "../../../.vitepress/theme/v-craft.css?url";
+
+const frameCssUrl = withBase(frameCssUrlRaw);
+const styleCssUrl = withBase(styleCssUrlRaw);
+const vCraftCssUrl = withBase(vCraftCssUrlRaw);
 
 const editor = useEditor();
 

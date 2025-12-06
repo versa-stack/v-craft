@@ -32,7 +32,7 @@ const getIndicatorStyle = () => {
   --v-craft-indicator-z-index: 10000;
 }
 </style>
-<style lang="scss" scoped>
+<style lang="scss">
 .v-craft-indicator {
   position: fixed;
   background-color: var(--v-craft-indicator-bg-allowed);

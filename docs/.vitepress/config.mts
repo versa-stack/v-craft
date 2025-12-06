@@ -3,10 +3,12 @@ import path from "path";
 import tailwindcss from "@tailwindcss/postcss";
 import autoprefixer from "autoprefixer";
 
+const base = process.env.PUBLIC_BASE || "/";
+
 export default defineConfig({
   title: "versa-stack/v-craft",
   description: "An attempt to deliver a Vue.js 3 page editor library.",
-  base: "/",
+  base,
   srcDir: ".",
   outDir: ".vitepress/dist",
   cacheDir: ".vitepress/cache",
@@ -27,6 +29,7 @@ export default defineConfig({
       { text: "Getting Started", link: "/getting-started" },
       { text: "Editor", link: "/editor" },
       { text: "Viewer", link: "/viewer" },
+      { text: "Static Renderer", link: "/static-renderer" },
       { text: "Components", link: "/components" },
       { text: "Blueprints", link: "/blueprints" },
       { text: "Form Configuration", link: "/form-configuration" },

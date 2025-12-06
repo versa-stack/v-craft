@@ -1,5 +1,5 @@
 import { storeToRefs } from "pinia";
-import { ComponentPublicInstance, computed, Ref, watchEffect } from "vue";
+import { ComponentPublicInstance, computed, onMounted, Ref, watch } from "vue";
 import { CraftNode, craftNodeIsDraggable } from "../../lib/craftNode";
 import { useEditor } from "../../store/editor";
 
@@ -17,11 +17,17 @@ export default <T extends object>(
   const editor = useEditor();
   const { enabled, selectedUuid, draggingDisabled } = storeToRefs(editor);
 
-  watchEffect(() => {
-    if (nodeRef?.value?.$el) {
-      editor.setNodeRef(craftNode, nodeRef.value.$el);
+  let lastEl: HTMLElement | null = null;
+  const updateNodeRef = () => {
+    const el = nodeRef?.value?.$el;
+    if (el && el !== lastEl) {
+      lastEl = el;
+      editor.setNodeRef(craftNode, el);
     }
-  });
+  };
+
+  onMounted(updateNodeRef);
+  watch(nodeRef, updateNodeRef, { flush: "post" });
 
   const isSelected = computed<boolean>(
     () => selectedUuid.value === craftNode.uuid

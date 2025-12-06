@@ -75,13 +75,6 @@ export const useCraftFrame = <T extends object>(
   onMounted(mountNodes);
 
   watch(
-    () => hasNodes.value,
-    () => {
-      mountNodes();
-    }
-  );
-
-  watch(
     () => resolver?.value,
     (res) => {
       if (!res) {

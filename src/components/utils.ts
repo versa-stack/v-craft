@@ -6,13 +6,12 @@ export const blueprintsWithDefaults = <T extends object>(
   group: BlueprintGroup,
   resolver: CraftNodeResolver<T>
 ) => {
-  const returnVal: any[] = [];
-  Object.keys(group.blueprints).forEach((key) => {
+  return Object.keys(group.blueprints).map((key) => {
     const blueprint = group.blueprints[key];
     const defaultProps = resolver.getDefaultProps(blueprint as CraftNode);
-    blueprint.props = { ...defaultProps, ...blueprint.props };
-    returnVal.push(blueprint);
+    return {
+      ...blueprint,
+      props: { ...defaultProps, ...blueprint.props },
+    };
   });
-
-  return returnVal;
 };

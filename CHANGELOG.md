@@ -1,3 +1,33 @@
+## [0.1.0-alpha.24](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.23...v0.1.0-alpha.24) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* export EditorStoreInstanceType for type inference ([14d3573](https://github.com/versa-stack/v-craft/commit/14d357303c16e4debe1b4e51bd580df458d05c4b))
+
+## [0.1.0-alpha.23](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.22...v0.1.0-alpha.23) (2025-12-04)
+
+### 🐛 Bug Fixes
+
+* simplify blueprintsWithDefaults to use map instead of forEach ([3fd60fb](https://github.com/versa-stack/v-craft/commit/3fd60fbc208fcad4a32511d186fd7298b66ee8fd))
+
+## [0.1.0-alpha.22](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.21...v0.1.0-alpha.22) (2025-12-03)
+
+### 🐛 Bug Fixes
+
+* improve CSS handling and optimize reactivity in editor components ([a4bb9fc](https://github.com/versa-stack/v-craft/commit/a4bb9fc120d550ea6008cca150c445682dca8b92))
+
+## [0.1.0-alpha.21](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.20...v0.1.0-alpha.21) (2025-12-03)
+
+### 🐛 Bug Fixes
+
+* replace watchEffect with onMounted and watch in useConnectCraftNodeToStore ([ff03154](https://github.com/versa-stack/v-craft/commit/ff03154343dfb5bc0b554d074dfbcde11b4c6660))
+
+## [0.1.0-alpha.20](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.19...v0.1.0-alpha.20) (2025-12-03)
+
+### 🐛 Bug Fixes
+
+* remove redundant watch on hasNodes in useCraftFrame ([b670d4e](https://github.com/versa-stack/v-craft/commit/b670d4eea541f3e070e90a860169de45a71c90f9))
+
 ## [0.1.0-alpha.19](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.18...v0.1.0-alpha.19) (2025-11-06)
 
 ### 🐛 Bug Fixes

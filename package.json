@@ -2,12 +2,12 @@
   "name": "@versa-stack/v-craft",
   "license": "MIT",
   "description": "Vue3 UI builder kit.",
-  "version": "0.1.0-alpha.19",
+  "version": "0.1.0-alpha.24",
   "scripts": {
     "build-raw": "vite build",
     "build": "rimraf dist && vite build",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs && node scripts/inject-tailwind-css.js",
+    "docs:build": "npm run build && cp dist/v-craft.css docs/.vitepress/theme/ && vitepress build docs && node scripts/inject-tailwind-css.js",
     "docs:serve": "vitepress serve docs",
     "watch:build": "nodemon -e ts -e vue -x \"npm run build\"",
     "docs:preview": "vitepress preview docs",
@@ -70,5 +70,6 @@
       "import": "./dist/v-craft.es.js"
     },
     "./dist/v-craft.css": "./dist/v-craft.css"
-  }
+  },
+  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a"
 }

@@ -16,6 +16,7 @@ import CraftFrame from "./CraftFrame.vue";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
 import CraftNodeViewer from "./CraftNodeViewer.vue";
 import CraftIframe from "./CraftIframe.vue";
+import CraftStaticRenderer from "./CraftStaticRenderer.vue";
 
 import * as Utils from "./utils";
 
@@ -37,6 +38,7 @@ export {
   CraftIframe,
   CraftNodeEditor,
   CraftNodeViewer,
+  CraftStaticRenderer,
   Utils,
 };
 
