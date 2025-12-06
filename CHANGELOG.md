@@ -1,3 +1,9 @@
+## [0.1.0-alpha.27](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.26...v0.1.0-alpha.27) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* prevent rendering children for void HTML elements and remove withBase wrapper from CSS imports ([479187f](https://github.com/versa-stack/v-craft/commit/479187f081f557f3b812e741d9a52d3cedbcdafa))
+
 ## [0.1.0-alpha.26](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.25...v0.1.0-alpha.26) (2025-12-06)
 
 ### 🐛 Bug Fixes
