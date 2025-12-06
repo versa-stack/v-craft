@@ -1,3 +1,9 @@
+## [0.1.0-alpha.24](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.23...v0.1.0-alpha.24) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* export EditorStoreInstanceType for type inference ([14d3573](https://github.com/versa-stack/v-craft/commit/14d357303c16e4debe1b4e51bd580df458d05c4b))
+
 ## [0.1.0-alpha.23](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.22...v0.1.0-alpha.23) (2025-12-04)
 
 ### 🐛 Bug Fixes
