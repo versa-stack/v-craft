@@ -1,3 +1,9 @@
+## [0.1.0-alpha.25](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.24...v0.1.0-alpha.25) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* refactor CraftStaticRenderer to use CraftNodeViewer component ([b736f22](https://github.com/versa-stack/v-craft/commit/b736f22d619319b00e826eb39965c2848d4f2975))
+
 ## [0.1.0-alpha.24](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.23...v0.1.0-alpha.24) (2025-12-06)
 
 ### 🐛 Bug Fixes
