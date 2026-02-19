@@ -43,9 +43,6 @@ describe("CraftStaticRenderer", () => {
     },
     CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
     CraftCanvas: defaultResolvers.CraftCanvas,
-    div: {
-      componentName: "div",
-    },
   };
 
   const createWrapper = (nodes: CraftNode[]) => {
@@ -284,5 +281,125 @@ describe("CraftStaticRenderer", () => {
 
     await nextTick();
     expect(wrapper.text()).toContain("Updated");
+  });
+
+  it("renders CraftCanvas with nested children without resolver warning", () => {
+    const nodes: CraftNode[] = [
+      {
+        uuid: uuidv4(),
+        componentName: "CraftCanvas",
+        props: { componentName: "div" },
+        children: [
+          {
+            uuid: uuidv4(),
+            componentName: "CraftCanvas",
+            props: { componentName: "header" },
+            children: [
+              {
+                uuid: uuidv4(),
+                componentName: "CraftComponentSimpleText",
+                props: { content: "Home", componentName: "h1" },
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const wrapper = createWrapper(nodes);
+    expect(wrapper.findAllComponents({ name: "CraftCanvas" })).toHaveLength(2);
+    expect(wrapper.find("header").exists()).toBe(true);
+    expect(wrapper.text()).toContain("Home");
+  });
+
+  it("generates complete HTML for SSR with full component tree", async () => {
+    const nodes: CraftNode[] = [
+      {
+        uuid: "root",
+        componentName: "CraftCanvas",
+        props: { componentName: "div", class: "container" },
+        children: [
+          {
+            uuid: "header",
+            componentName: "CraftCanvas",
+            props: { componentName: "header", class: "bg-black" },
+            children: [
+              {
+                uuid: "nav",
+                componentName: "CraftCanvas",
+                props: { componentName: "nav" },
+                children: [
+                  {
+                    uuid: "title",
+                    componentName: "CraftComponentSimpleText",
+                    props: { content: "Site Title", componentName: "h1" },
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            uuid: "main",
+            componentName: "CraftCanvas",
+            props: { componentName: "main" },
+            children: [
+              {
+                uuid: "section",
+                componentName: "CraftCanvas",
+                props: { componentName: "section" },
+                children: [
+                  {
+                    uuid: "article",
+                    componentName: "CraftCanvas",
+                    props: { componentName: "article" },
+                    children: [
+                      {
+                        uuid: "paragraph",
+                        componentName: "CraftComponentSimpleText",
+                        props: { content: "Article content here", componentName: "p" },
+                        children: [],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            uuid: "footer",
+            componentName: "CraftCanvas",
+            props: { componentName: "footer" },
+            children: [
+              {
+                uuid: "copyright",
+                componentName: "CraftComponentSimpleText",
+                props: { content: "© 2025", componentName: "span" },
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const wrapper = createWrapper(nodes);
+    const html = wrapper.html();
+
+    expect(html).toContain('<div class="container">');
+    expect(html).toContain('<header class="bg-black">');
+    expect(html).toContain("<nav>");
+    expect(html).toContain("<main>");
+    expect(html).toContain("<section>");
+    expect(html).toContain("<article>");
+    expect(html).toContain("<footer>");
+
+    expect(wrapper.find("div.container > header.bg-black > nav > h1").exists()).toBe(true);
+    expect(wrapper.find("div.container > header.bg-black > nav > h1").text()).toBe("Site Title");
+    expect(wrapper.find("div.container > main > section > article > p").exists()).toBe(true);
+    expect(wrapper.find("div.container > main > section > article > p").text()).toBe("Article content here");
+    expect(wrapper.find("div.container > footer > span").exists()).toBe(true);
+    expect(wrapper.find("div.container > footer > span").text()).toBe("© 2025");
   });
 });

@@ -1,3 +1,21 @@
+## [0.1.0-alpha.27](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.26...v0.1.0-alpha.27) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* prevent rendering children for void HTML elements and remove withBase wrapper from CSS imports ([479187f](https://github.com/versa-stack/v-craft/commit/479187f081f557f3b812e741d9a52d3cedbcdafa))
+
+## [0.1.0-alpha.26](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.25...v0.1.0-alpha.26) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* improve CraftCanvas component resolution and remove unnecessary resolver configuration ([7dde064](https://github.com/versa-stack/v-craft/commit/7dde064e601f75f28422e38302ea1151ed828ad0))
+
+## [0.1.0-alpha.25](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.24...v0.1.0-alpha.25) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* refactor CraftStaticRenderer to use CraftNodeViewer component ([b736f22](https://github.com/versa-stack/v-craft/commit/b736f22d619319b00e826eb39965c2848d4f2975))
+
 ## [0.1.0-alpha.24](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.23...v0.1.0-alpha.24) (2025-12-06)
 
 ### 🐛 Bug Fixes

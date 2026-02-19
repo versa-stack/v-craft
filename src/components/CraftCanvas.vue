@@ -1,7 +1,7 @@
 <template>
   <component
-    v-if="resolved && resolved.componentName"
-    :is="resolved.componentName"
+    v-if="componentToRender"
+    :is="componentToRender"
     v-bind="filteredAttrs"
   >
     <template v-for="(_, name) in slots" :key="name" #[name]="slotData">
@@ -33,6 +33,7 @@ const props = defineProps<{
 
 const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver");
 const resolved = computed(() => resolver?.value.resolve(props.componentName));
+const componentToRender = computed(() => resolved.value?.componentName || props.componentName);
 
 const filteredAttrs = computed(() => {
   const { children, ...rest } = attrs;
