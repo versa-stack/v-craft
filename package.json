@@ -16,7 +16,6 @@
   },
   "type": "module",
   "dependencies": {
-    "cue-ts": "github:llbbl/cue-ts",
     "jsonpath-plus": "^10.4.0",
     "lodash-es": "^4.17.21"
   },

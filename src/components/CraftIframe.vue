@@ -147,7 +147,6 @@ const updateIframeHeight = () => {
     const html = iframeDocument.documentElement;
 
     const contentHeight = Math.max(
-      150,
       body.scrollHeight,
       body.offsetHeight,
       html.scrollHeight,
@@ -156,7 +155,19 @@ const updateIframeHeight = () => {
 
     if (iframeRef.value && Math.abs(contentHeight - lastHeight) > 1) {
       lastHeight = contentHeight;
-      iframeRef.value.style.height = `${contentHeight}px`;
+      
+      const iframeParent = iframeRef.value.parentElement;
+      let availableHeight = contentHeight;
+      
+      if (iframeParent) {
+        const parentHeight = iframeParent.clientHeight;
+        const iframeTop = iframeRef.value.offsetTop;
+        availableHeight = parentHeight - iframeTop;
+      }
+      
+      const finalHeight = Math.max(contentHeight, availableHeight);
+      
+      iframeRef.value.style.height = `${finalHeight}px`;
     }
     
     updateScheduled = false;
