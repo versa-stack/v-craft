@@ -59,7 +59,7 @@ import { computed, inject, type ComputedRef } from "vue";
 import CoreResolver from "../lib/CraftNodeResolver";
 import { useEditor } from "../store/editor";
 
-const editor = useEditor<T>();
+const editor = useEditor();
 const { selectedNode } = storeToRefs(editor);
 const resolver = inject<ComputedRef<CoreResolver<T>>>("resolver");
 

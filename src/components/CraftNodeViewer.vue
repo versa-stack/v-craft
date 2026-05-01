@@ -26,7 +26,7 @@
   </component>
 </template>
 
-<script lang="ts" setup generic="T extends object">
+<script lang="ts" setup>
 import { computed, onMounted, provide, ref, toRef } from "vue";
 import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
@@ -71,7 +71,7 @@ const computedChildren = computed(() =>
 
 const nodeRef = ref<HTMLElement | null>(null);
 
-const { eventHandlers } = useCraftNodeEvents<T>(
+const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   editor as any,
   editor.eventsContext

@@ -55,7 +55,7 @@ const isVisible = computed(
 );
 
 const emit = defineEmits(["layer-click"]);
-const editor = useEditor<T>();
+const editor = useEditor();
 const { selectedNode } = storeToRefs(editor);
 
 const componentName = computed(() => resolveNodeName(craftNode.value));

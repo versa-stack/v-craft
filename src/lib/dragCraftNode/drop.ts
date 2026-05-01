@@ -12,7 +12,7 @@ import CraftNodeResolver from "../CraftNodeResolver";
 import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
 
 export type DragCraftNodeContext<T extends object> = {
-  editor: EditorStoreInstanceType<T>;
+  editor: EditorStoreInstanceType;
   indicator: IndicatorStoreType;
   craftNode: Ref<CraftNode>;
   resolver: CraftNodeResolver<T>;

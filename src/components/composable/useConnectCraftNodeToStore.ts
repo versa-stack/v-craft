@@ -3,7 +3,7 @@ import { ComponentPublicInstance, computed, onMounted, Ref, watch } from "vue";
 import { CraftNode, craftNodeIsDraggable } from "../../lib/craftNode";
 import { useEditor } from "../../store/editor";
 
-export default <T extends object>(
+export default (
   craftNode: CraftNode,
   nodeRef: Ref<
     ComponentPublicInstance<HTMLElement> | null,

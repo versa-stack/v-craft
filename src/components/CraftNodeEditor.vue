@@ -44,7 +44,7 @@
   </component>
 </template>
 
-<script setup lang="ts" generic="T extends object">
+<script setup lang="ts">
 import { ComponentPublicInstance, computed, provide, ref, toRef } from "vue";
 import {
   CraftNode,
@@ -74,7 +74,7 @@ if (resolver.value) provide("resolver", resolver);
 const nodeRef = ref<ComponentPublicInstance<HTMLElement> | null>(null);
 const craftNodeData = computed(() => editor.nodeDataMap[craftNode.value.uuid]);
 
-const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore<T>(
+const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
   craftNode.value,
   nodeRef
 );
@@ -82,7 +82,7 @@ const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore<T>(
 const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
   useDragCraftNode(craftNode, nodeRef, resolver.value);
 
-const { eventHandlers } = useCraftNodeEvents<T>(
+const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   editor as any,
   editor.eventsContext

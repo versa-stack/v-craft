@@ -24,7 +24,7 @@ export const useCraftFrame = <T extends object>(
     : inject<ComputedRef<CraftNodeResolver<T>>>("resolver");
 
   if (resolver?.value) {
-    editor.setResolver(resolver.value);
+    editor.setResolver(resolver.value as any);
   }
 
   if (resolverMap) {
@@ -81,7 +81,7 @@ export const useCraftFrame = <T extends object>(
         return;
       }
 
-      editor.setResolver(res);
+      editor.setResolver(res as any);
     }
   );
 

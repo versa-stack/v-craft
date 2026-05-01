@@ -3,9 +3,9 @@ import { CraftNode } from "../../lib/craftNode";
 import { computed } from "vue";
 import { EditorStoreInstanceType } from "../../store/editor";
 
-export const useCraftNodeEvents = <T extends object>(
+export const useCraftNodeEvents = (
   craftNode: Ref<CraftNode>,
-  editor: EditorStoreInstanceType<T>,
+  editor: EditorStoreInstanceType,
   ctx: Record<string, any>
 ) => {
   const eventHandlersMap = new Map();
