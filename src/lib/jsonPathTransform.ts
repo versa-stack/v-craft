@@ -1,4 +1,4 @@
-import * as jp from "jsonpath";
+import { JSONPath } from "jsonpath-plus";
 
 const walk = (
   data: Record<string, any>,
@@ -34,7 +34,7 @@ const seekSingle = (
     return result;
   }
 
-  const seek = jp.query(data, pathStr) || [];
+  const seek = JSONPath({ path: pathStr, json: data }) || [];
 
   result[key] = seek.length ? seek[0] : undefined;
   return result;
@@ -48,7 +48,7 @@ const seekArray = (
 ) => {
   const subpath = pathArr[1];
   const path = pathArr[0];
-  const seek = jp.query(data, path) || [];
+  const seek = JSONPath({ path, json: data }) || [];
 
   if (seek.length && subpath) {
     result = result[key] = [];

@@ -1,4 +1,4 @@
-import * as jp from "jsonpath";
+import { JSONPath } from "jsonpath-plus";
 import { setValueByPath } from "./setValueByPath";
 import { CraftDataWrapperPropMap, CraftDataPatch } from "./model";
 import { CraftNodeDatasource } from "./craftNode";
@@ -30,15 +30,15 @@ export const mapData = <
 
     const value =
       patch.type === "single"
-        ? jp.value(patchSource, patch.fromPath)
-        : jp.query(patchSource, patch.fromPath);
+        ? JSONPath({ path: patch.fromPath, json: patchSource, resultType: "value" })
+        : JSONPath({ path: patch.fromPath, json: patchSource });
     return value ?? patch.defaultValue ?? null;
   };
 
   const rootData =
     mapConfig.type === "single"
-      ? jp.value(data, mapConfig.fromPath)
-      : jp.query(data, mapConfig.fromPath);
+      ? JSONPath({ path: mapConfig.fromPath, json: data, resultType: "value" })
+      : JSONPath({ path: mapConfig.fromPath, json: data });
 
   if (mapConfig.type === "single") {
     //@ts-ignore
