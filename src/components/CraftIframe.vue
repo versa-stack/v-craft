@@ -147,16 +147,16 @@ const updateIframeHeight = () => {
     const html = iframeDocument.documentElement;
 
     const contentHeight = Math.max(
+      150,
       body.scrollHeight,
       body.offsetHeight,
       html.scrollHeight,
       html.offsetHeight
     );
 
-    const paddedHeight = contentHeight + 8;
-    if (iframeRef.value && Math.abs(paddedHeight - lastHeight) > 1) {
-      lastHeight = paddedHeight;
-      iframeRef.value.style.height = `${paddedHeight}px`;
+    if (iframeRef.value && Math.abs(contentHeight - lastHeight) > 1) {
+      lastHeight = contentHeight;
+      iframeRef.value.style.height = `${contentHeight}px`;
     }
     
     updateScheduled = false;

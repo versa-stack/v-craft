@@ -5,7 +5,7 @@
       @iframe-load="onIframeLoad"
       :inheritStyles="inheritStyles"
       :styles="[
-        'body{margin:0;padding: 3px; width: calc(100% - 2px);}',
+        'body{margin:0;padding: 3px; width: calc(100% - 6px);}',
         ...iFrameStyles,
       ]"
       :iframe-style="iFrameStyle"
