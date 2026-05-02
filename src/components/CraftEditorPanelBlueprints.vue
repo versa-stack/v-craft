@@ -1,6 +1,6 @@
 <template>
-  <div class="v-craft-panel v-craft-blueprints-panel">
-    <h3 class="v-craft-title">blueprints</h3>
+  <div class="v-craft-panel v-craft-panel-blueprints">
+    <div class="v-craft-title">Blueprints</div>
     <div class="v-craft-panel-content">
       <CraftEditorBlueprintsList :blueprints="blueprints" />
     </div>
@@ -16,6 +16,10 @@ defineProps<{
 defineEmits<{
   (event: "close", ...args: any[]): void;
 }>();
+
+defineOptions({
+  name: "CraftEditorPanelBlueprints",
+});
 </script>
 <style lang="scss" scoped>
 .v-craft-blueprints-panel {

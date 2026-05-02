@@ -34,7 +34,7 @@ const layerClick = (craftNode: CraftNode) => {
 @use "../assets/mixins" as *;
 
 .v-craft-panel.v-craft-layers-panel {
-  padding: 10px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   height: auto;
@@ -46,7 +46,7 @@ const layerClick = (craftNode: CraftNode) => {
   @include v-craft-scrollable;
   max-height: 300px;
   overflow-y: auto;
-  margin-top: 10px;
+  margin-top: 0.75rem;
 }
 
 ul.v-craft-node-layers {
