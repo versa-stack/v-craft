@@ -92,10 +92,6 @@
   border: 2px dashed var(--node-color, var(--v-craft-blue));
 }
 
-.v-craft-node.v-craft-canvas:first-child {
-  border: none !important;
-}
-
 .v-craft-node.v-craft-canvas .v-craft-drop-text {
   border: 2px dashed var(--v-craft-gray-medium);
   color: var(--v-craft-text-color);

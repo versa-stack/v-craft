@@ -32,13 +32,10 @@ function injectTailwindCSS() {
       }
       cssFile = largestFile;
     } else {
-      console.log("No CSS files found");
       return;
     }
 
     const cssLink = `    <link rel="stylesheet" href="${base}assets/${cssFile}">`;
-    console.log(`Using CSS file: ${cssFile}`);
-
     function walkDir(dir) {
       const files = fs.readdirSync(dir);
       for (const file of files) {

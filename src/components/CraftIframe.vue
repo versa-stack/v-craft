@@ -1,5 +1,5 @@
 <template>
-  <div v-show="$slots.default">
+  <div v-show="$slots.default" :class="{ 'h-full': isAutoHeight }">
     <iframe
       id="v-craft-iframe"
       ref="iframeRef"
@@ -22,6 +22,7 @@ import {
   toRef,
   toRefs,
   watch,
+  computed,
 } from "vue";
 
 const props = withDefaults(
@@ -52,7 +53,9 @@ const hasLoad = ref(false);
 const iframeBody = ref();
 const observer = ref<MutationObserver>();
 const resizeObserver = ref<ResizeObserver>();
-const { width, height } = toRefs(props);
+const { height, width } = toRefs(props);
+
+const isAutoHeight = computed(() => height.value === 'auto');
 let lastHeight = 0;
 let updateScheduled = false;
 
@@ -112,6 +115,7 @@ const setupAutoResize = () => {
   }
 
   iframeRef.value.style.width = "100%";
+  iframeRef.value.style.height = "100%";
 
   observer.value = new MutationObserver(() => {
     setTimeout(updateIframeHeight, 100);
@@ -143,30 +147,30 @@ const updateIframeHeight = () => {
       return;
     }
 
+    const iframeParent = iframeRef.value?.parentElement;
+    let availableHeight = 0;
+    
+    if (iframeParent) {
+      const parentHeight = iframeParent.clientHeight;
+      const iframeTop = iframeRef.value?.offsetTop || 0;
+      availableHeight = parentHeight - iframeTop;
+    }
+
     const body = iframeDocument.body;
     const html = iframeDocument.documentElement;
 
     const contentHeight = Math.max(
+      150,
       body.scrollHeight,
       body.offsetHeight,
       html.scrollHeight,
       html.offsetHeight
     );
 
-    if (iframeRef.value && Math.abs(contentHeight - lastHeight) > 1) {
-      lastHeight = contentHeight;
-      
-      const iframeParent = iframeRef.value.parentElement;
-      let availableHeight = contentHeight;
-      
-      if (iframeParent) {
-        const parentHeight = iframeParent.clientHeight;
-        const iframeTop = iframeRef.value.offsetTop;
-        availableHeight = parentHeight - iframeTop;
-      }
-      
-      const finalHeight = Math.max(contentHeight, availableHeight);
-      
+    const finalHeight = Math.max(contentHeight, availableHeight);
+
+    if (iframeRef.value && Math.abs(finalHeight - lastHeight) > 1) {
+      lastHeight = finalHeight;
       iframeRef.value.style.height = `${finalHeight}px`;
     }
     
