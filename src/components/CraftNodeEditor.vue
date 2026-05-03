@@ -120,7 +120,7 @@ const generateColorFromUUID = (uuid: string): string => {
 const nodeColor = computed(() => generateColorFromUUID(craftNode.value.uuid));
 
 const availableSlots = computed(() => {
-  const slots = [];
+  const slots: string[] = [];
   const resolved = resolver?.value?.resolveNode?.(craftNode.value);
   const resolverSlots = resolved?.slots;
   if (resolverSlots && resolverSlots.length > 0) {
