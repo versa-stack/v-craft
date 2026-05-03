@@ -26,7 +26,7 @@ export type BlueprintsMetadata = {
 
 export type Blueprints = Record<string, Blueprint>;
 
-export type Blueprint = Omit<CraftNode, "parent" | "uuid" | "children"> & {
+export type Blueprint = Omit<CraftNode, "parentUuid" | "uuid" | "slots"> & {
   label?: string;
   children: Blueprint[];
 };

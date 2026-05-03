@@ -18,15 +18,17 @@
     </div>
     <ul
       class="v-craft-node-layers nested-layers"
-      v-if="craftNode.children?.length"
+      v-if="craftNode.slots && Object.keys(craftNode.slots).length > 0"
     >
-      <CraftEditorPanelNodeLayer
-        v-for="(n, index) in craftNode.children"
-        :key="index"
-        :craftNode="n"
-        @layer-click="(node) => emit('layer-click', node)"
-        :visible="isVisible"
-      />
+      <template v-for="(slotChildren, slotName) in craftNode.slots" :key="slotName">
+        <CraftEditorPanelNodeLayer
+          v-for="(n, index) in slotChildren"
+          :key="`${slotName}-${index}`"
+          :craftNode="n"
+          @layer-click="(node) => emit('layer-click', node)"
+          :visible="isVisible"
+        />
+      </template>
     </ul>
   </li>
 </template>

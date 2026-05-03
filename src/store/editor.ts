@@ -78,14 +78,20 @@ export const useEditor = defineStore("editor", {
         const node = this.nodeMap.get(craftNode.uuid);
         if (node) {
           node.visible = !isVisible(node);
-          if (node.children) {
+          if (node.slots) {
             const setVisibility = (n: CraftNode) => {
               n.visible = node.visible;
-              n.children?.map(setVisibility);
+              if (n.slots) {
+                Object.values(n.slots).forEach((slotChildren) => {
+                  slotChildren.forEach((child) => setVisibility(child));
+                });
+              }
               this.nodeMap.set(n.uuid, n);
               return n;
             };
-            node.children.map(setVisibility);
+            Object.values(node.slots).forEach((slotChildren) => {
+              slotChildren.forEach((child) => setVisibility(child));
+            });
           }
           this.nodeMap.set(node.uuid, node);
         }
@@ -117,15 +123,22 @@ export const useEditor = defineStore("editor", {
         this.rootNodes = [];
 
         const addNode = (node: CraftNode) => {
-          this.nodeMap.set(node.uuid, { ...node, children: [] });
+          this.nodeMap.set(node.uuid, { ...node, slots: {} });
           if (!node.parentUuid) {
             this.rootNodes.push(node.uuid);
           }
-          (node.children || []).forEach((child) => {
-            child.parentUuid = node.uuid;
-            addNode(child);
-            this.nodeMap.get(node.uuid)!.children.push(child);
-          });
+          if (node.slots) {
+            Object.entries(node.slots).forEach(([slotName, slotChildren]) => {
+              slotChildren.forEach((child) => {
+                child.parentUuid = node.uuid;
+                addNode(child);
+                if (!this.nodeMap.get(node.uuid)!.slots[slotName]) {
+                  this.nodeMap.get(node.uuid)!.slots[slotName] = [];
+                }
+                this.nodeMap.get(node.uuid)!.slots[slotName].push(child);
+              });
+            });
+          }
         };
 
         nodes.forEach(addNode);
@@ -140,7 +153,11 @@ export const useEditor = defineStore("editor", {
           this.rootNodes.push(uuid);
         }
 
-        node.children?.forEach((child) => this.addNodeRecursively(child, uuid));
+        if (node.slots) {
+          Object.values(node.slots).forEach((slotChildren) => {
+            slotChildren.forEach((child) => this.addNodeRecursively(child, uuid));
+          });
+        }
       },
 
       selectNode(craftNode: CraftNode | null) {
@@ -158,11 +175,15 @@ export const useEditor = defineStore("editor", {
         }
 
         const removeDescendants = (node: CraftNode) => {
-          node.children?.forEach((child) => {
-            this.nodeMap.delete(child.uuid);
-            delete this.nodeRefsRecord[child.uuid];
-            removeDescendants(child);
-          });
+          if (node.slots) {
+            Object.values(node.slots).forEach((slotChildren) => {
+              slotChildren.forEach((child) => {
+                this.nodeMap.delete(child.uuid);
+                delete this.nodeRefsRecord[child.uuid];
+                removeDescendants(child);
+              });
+            });
+          }
         };
 
         removeDescendants(craftNode);
@@ -181,10 +202,12 @@ export const useEditor = defineStore("editor", {
         if (!parentUuid) return craftNode;
 
         const parent = this.nodeMap.get(parentUuid);
-        if (parent) {
-          parent.children = parent.children?.filter(
-            (child) => child.uuid !== craftNode.uuid
-          );
+        if (parent && parent.slots) {
+          Object.entries(parent.slots).forEach(([slotName, slotChildren]) => {
+            parent.slots[slotName] = slotChildren.filter(
+              (child) => child.uuid !== craftNode.uuid
+            );
+          });
         }
 
         craftNode.parentUuid = null;
@@ -194,10 +217,14 @@ export const useEditor = defineStore("editor", {
 
       addNodeAndChildrenToMap(node: CraftNode) {
         this.nodeMap.set(node.uuid, node);
-        node.children?.forEach((child) => this.addNodeAndChildrenToMap(child));
+        if (node.slots) {
+          Object.values(node.slots).forEach((slotChildren) => {
+            slotChildren.forEach((child) => this.addNodeAndChildrenToMap(child));
+          });
+        }
       },
 
-      appendNodeTo(node: CraftNode, targetNode: CraftNode) {
+      appendNodeTo(node: CraftNode, targetNode: CraftNode, slotName: string = 'default') {
         if (!this.resolver) throw new Error("Resolver is not set.");
 
         if (!craftNodeCanBeChildOf(node, targetNode, this.resolver)) {
@@ -214,15 +241,20 @@ export const useEditor = defineStore("editor", {
         const targetParent = this.nodeMap.get(targetNode.uuid);
 
         if (targetParent) {
-          targetParent.children = targetParent.children || [];
-          targetParent.children.push(node);
+          if (!targetParent.slots) {
+            targetParent.slots = {};
+          }
+          if (!targetParent.slots[slotName]) {
+            targetParent.slots[slotName] = [];
+          }
+          targetParent.slots[slotName].push(node);
           this.nodeMap.set(targetParent.uuid, targetParent);
         }
 
         this.addNodeAndChildrenToMap(node);
       },
 
-      prependNodeTo(node: CraftNode, targetNode: CraftNode) {
+      prependNodeTo(node: CraftNode, targetNode: CraftNode, slotName: string = 'default') {
         if (!this.resolver) throw new Error("Resolver is not set");
 
         if (!craftNodeCanBeChildOf(node, targetNode, this.resolver)) {
@@ -239,15 +271,20 @@ export const useEditor = defineStore("editor", {
         const targetParent = this.nodeMap.get(targetNode.uuid);
 
         if (targetParent) {
-          targetParent.children = targetParent.children || [];
-          targetParent.children.unshift(node);
+          if (!targetParent.slots) {
+            targetParent.slots = {};
+          }
+          if (!targetParent.slots[slotName]) {
+            targetParent.slots[slotName] = [];
+          }
+          targetParent.slots[slotName].unshift(node);
           this.nodeMap.set(targetParent.uuid, targetParent);
         }
 
         this.addNodeAndChildrenToMap(node);
       },
 
-      insertNodeBefore(node: CraftNode, targetNode: CraftNode) {
+      insertNodeBefore(node: CraftNode, targetNode: CraftNode, slotName?: string) {
         if (!this.resolver) throw new Error("Resolver is not set");
 
         if (!craftNodeCanBeSiblingOf(node, targetNode, this.resolver)) {
@@ -262,20 +299,27 @@ export const useEditor = defineStore("editor", {
 
         const parent = this.nodeMap.get(parentUuid);
 
-        if (parent) {
-          const index =
-            parent.children?.findIndex((n) => n.uuid === targetNode.uuid) ?? -1;
+        if (parent && parent.slots) {
+          const targetSlotName = slotName || Object.keys(parent.slots).find((key) =>
+            parent.slots[key].some((n) => n.uuid === targetNode.uuid)
+          );
 
-          if (index !== -1) {
-            parent.children?.splice(index, 0, node);
-            node.parentUuid = parentUuid;
-            this.nodeMap.set(parent.uuid, parent);
-            this.addNodeAndChildrenToMap(node);
+          if (targetSlotName && parent.slots[targetSlotName]) {
+            const index = parent.slots[targetSlotName].findIndex(
+              (n) => n.uuid === targetNode.uuid
+            );
+
+            if (index !== -1) {
+              parent.slots[targetSlotName].splice(index, 0, node);
+              node.parentUuid = parentUuid;
+              this.nodeMap.set(parent.uuid, parent);
+              this.addNodeAndChildrenToMap(node);
+            }
           }
         }
       },
 
-      insertNodeAfter(node: CraftNode, targetNode: CraftNode) {
+      insertNodeAfter(node: CraftNode, targetNode: CraftNode, slotName?: string) {
         if (!this.resolver) throw new Error("Resolver is not set");
 
         if (!craftNodeCanBeSiblingOf(node, targetNode, this.resolver)) {
@@ -290,15 +334,22 @@ export const useEditor = defineStore("editor", {
 
         const parent = this.nodeMap.get(parentUuid);
 
-        if (parent) {
-          const index =
-            parent.children?.findIndex((n) => n.uuid === targetNode.uuid) ?? -1;
+        if (parent && parent.slots) {
+          const targetSlotName = slotName || Object.keys(parent.slots).find((key) =>
+            parent.slots[key].some((n) => n.uuid === targetNode.uuid)
+          );
 
-          if (index !== -1) {
-            parent.children?.splice(index + 1, 0, node);
-            node.parentUuid = parentUuid;
-            this.nodeMap.set(parent.uuid, parent);
-            this.addNodeAndChildrenToMap(node);
+          if (targetSlotName && parent.slots[targetSlotName]) {
+            const index = parent.slots[targetSlotName].findIndex(
+              (n) => n.uuid === targetNode.uuid
+            );
+
+            if (index !== -1) {
+              parent.slots[targetSlotName].splice(index + 1, 0, node);
+              node.parentUuid = parentUuid;
+              this.nodeMap.set(parent.uuid, parent);
+              this.addNodeAndChildrenToMap(node);
+            }
           }
         }
       },
@@ -329,11 +380,16 @@ export const useEditor = defineStore("editor", {
             throw new Error(`Node with UUID ${nodeUuid} not found`);
           }
 
+          const slots: Record<string, CraftNode[]> = {};
+          if (node.slots) {
+            Object.entries(node.slots).forEach(([slotName, slotChildren]) => {
+              slots[slotName] = slotChildren.map((child) => buildTree(child.uuid));
+            });
+          }
+
           return {
             ...node,
-            children: (node.children || []).map((child) =>
-              buildTree(child.uuid)
-            ),
+            slots,
           };
         };
 

@@ -18,6 +18,7 @@
   transition: border-color var(--v-craft-transition-duration) ease-in-out,
     box-shadow var(--v-craft-transition-duration) ease-in-out;
   pointer-events: none;
+  z-index: 10;
 }
 
 .v-craft-node::before {
@@ -98,6 +99,32 @@
   padding: 1.25em;
   width: 100%;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 60px;
+  box-sizing: border-box;
+  pointer-events: auto;
+  position: relative;
+  margin: 4px 0;
+}
+
+.v-craft-node.v-craft-canvas .v-craft-slot-name {
+  position: absolute;
+  bottom: 4px;
+  left: 8px;
+  font-weight: normal;
+  font-size: 0.75em;
+  color: var(--v-craft-gray-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.v-craft-node.v-craft-canvas .v-craft-drop-text-label {
+  font-size: 0.85em;
+  color: var(--v-craft-gray-medium);
 }
 
 .v-craft-node.v-craft-canvas.v-craft-other-node-dragged {

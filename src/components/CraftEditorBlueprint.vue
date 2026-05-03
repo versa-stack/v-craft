@@ -24,6 +24,9 @@ const props = defineProps<{
 }>();
 
 const handleDragStart = (e: MouseEvent) => {
+  console.log('CraftEditorBlueprint - dragging node:', props.craftNode);
+  console.log('CraftEditorBlueprint - node.componentName:', props.craftNode.componentName);
+  console.log('CraftEditorBlueprint - node.props:', props.craftNode.props);
   editor.dragNode(props.craftNode);
 };
 

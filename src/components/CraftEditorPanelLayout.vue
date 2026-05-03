@@ -37,33 +37,18 @@ const deselectNodes = () => {
 <style lang="scss" scoped>
 .v-craft-panel-manager {
   .v-craft-panel {
-    padding: 1rem;
+    padding: 0.75em;
     margin-bottom: 1.25em;
-    box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
-    border-radius: 0.75rem;
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-  }
-
-  .dark .v-craft-panel {
-    background: #1e293b;
-    border-color: #334155;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.034), 0 4px 4px rgba(0, 0, 0, 0.048),
+      0 6px 6px rgba(0, 0, 0, 0.06), 0 8px 8px rgba(0, 0, 0, 0.072),
+      0 10px 10px rgba(0, 0, 0, 0.086), 0 15px 15px rgba(0, 0, 0, 0.12);
+    border-radius: 3px;
   }
 
   :deep(.v-craft-panel .v-craft-title) {
     margin: 0px;
-    padding: 0.75rem 0;
-    border-bottom: 2px solid #e2e8f0;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    font-size: 0.875rem;
-    color: #1e293b;
-  }
-
-  .dark :deep(.v-craft-panel .v-craft-title) {
-    border-color: #334155;
-    color: #f1f5f9;
+    padding: 0.125em;
+    border-bottom: 1px solid var(--v-craft-gray-medium);
   }
 }
 </style>

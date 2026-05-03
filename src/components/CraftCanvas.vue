@@ -2,20 +2,15 @@
   <component
     v-if="componentToRender"
     :is="componentToRender"
-    v-bind="filteredAttrs"
+    v-bind="attrs"
   >
-    <template v-for="(_, name) in slots" :key="name" #[name]="slotData">
-      <slot :name="name" />
-    </template>
-    <template v-if="$attrs.children">
-      <slot v-for="(child, index) in $attrs.children" :key="index">
-        {{ child }}
-      </slot>
+    <template v-for="(_, name) in slots" :key="name" #[name]="slotProps">
+      <slot :name="name" v-bind="slotProps || {}" />
     </template>
   </component>
 </template>
 
-<script setup lang="ts" generic="T extends object">
+<script setup lang="ts">
 import { computed, inject, useAttrs, useSlots } from "vue";
 import type { ComputedRef } from "vue";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
@@ -31,12 +26,7 @@ const props = defineProps<{
   componentName: string;
 }>();
 
-const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver");
+const resolver = inject<ComputedRef<CraftNodeResolver>>("resolver");
 const resolved = computed(() => resolver?.value.resolve(props.componentName));
 const componentToRender = computed(() => resolved.value?.componentName || props.componentName);
-
-const filteredAttrs = computed(() => {
-  const { children, ...rest } = attrs;
-  return rest;
-});
 </script>

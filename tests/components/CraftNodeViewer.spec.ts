@@ -24,7 +24,7 @@ const createSimpleText = (
       content,
       componentName,
     },
-    children: [],
+    slots: {},
     uuid: uuidv4(),
   };
 };
@@ -37,7 +37,9 @@ const createCanvas = <T extends object = FormKitSchemaFormKit>(
     props: {
       componentName: "div"
     },
-    children,
+    slots: {
+      default: children,
+    },
     uuid: uuidv4(),
   };
 };
@@ -143,7 +145,7 @@ describe("CraftNodeViewer", () => {
     ).toBe("h1");
     expect(wrapper.text()).toContain("Hello World");
 
-    craftNode.value.children[0].props.componentName = "p";
+    craftNode.value.slots.default[0].props.componentName = "p";
     await nextTick();
 
     expect(

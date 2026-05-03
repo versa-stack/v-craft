@@ -6,18 +6,17 @@
     v-bind="nodeProps"
     v-on="eventHandlers"
   >
-    <template v-if="!isVoidElement">
+    <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
       <template v-if="!data?.type">
         <CraftNodeViewer
-          v-for="childNode in craftNode.children"
+          v-for="childNode in slotNodes[slotName]"
           :key="childNode.uuid"
           :craftNode="childNode"
         />
       </template>
-
       <template v-else>
         <CraftNodeViewer
-          v-for="item in computedChildren"
+          v-for="item in computedChildren(slotNodes[slotName], slotName)"
           :key="item.key"
           :craftNode="item.craftNode"
         />
@@ -28,19 +27,16 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, provide, ref, toRef } from "vue";
-import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
+import { CraftNode, CraftNodeDatasource, craftNodeIsCanvas } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
 import { useCraftNodeWrapper } from "./composable/useCraftNodeWrapper";
-
-const VOID_ELEMENTS = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-  'link', 'meta', 'source', 'track', 'wbr'
-]);
+import CraftNodeViewer from "./CraftNodeViewer.vue";
 
 defineOptions({
   name: "CraftNodeViewer",
 });
+
 const props = defineProps<{
   craftNode: CraftNode;
 }>();
@@ -51,11 +47,6 @@ const { resolvedNode, defaultProps, resolver } = useResolveCraftNode(craftNode);
 
 provide("resolver", resolver);
 
-const isVoidElement = computed(() => {
-  const componentName = resolvedNode.value?.componentName?.toLowerCase();
-  return componentName ? VOID_ELEMENTS.has(componentName) : false;
-});
-
 const nodeProps = computed(() => ({
   ...defaultProps.value,
   ...craftNode.value?.props,
@@ -65,9 +56,29 @@ const data = computed(() => {
   return editor.nodeDataMap[craftNode.value.uuid];
 });
 
-const computedChildren = computed(() =>
-  data.value ? computeDataNodes(data.value, craftNode.value.children) : []
-);
+const slotNodes = computed(() => {
+  return craftNode.value.slots || {};
+});
+
+const isCanvas = computed(() => craftNodeIsCanvas(craftNode.value));
+
+const availableSlots = computed(() => {
+  const slots: string[] = [];
+  const resolved = resolver?.value?.resolveNode?.(craftNode.value);
+  const resolverSlots = resolved?.slots;
+  if (resolverSlots && resolverSlots.length > 0) {
+    slots.push(...resolverSlots);
+  } else {
+    slots.push('default');
+  }
+  return slots;
+});
+
+const computedChildren = (children: CraftNode[], slotName: string) => {
+  if (!data.value) return [];
+  if (data.value.slotName && data.value.slotName !== slotName) return [];
+  return computeDataNodes(data.value, children);
+};
 
 const nodeRef = ref<HTMLElement | null>(null);
 

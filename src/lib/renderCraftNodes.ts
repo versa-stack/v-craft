@@ -37,12 +37,15 @@ function buildEventHandlers(
 
 function computeDataChildren(
   node: CraftNode,
-  data: CraftNodeDatasource
+  data: CraftNodeDatasource,
+  slotName: string = 'default'
 ): CraftNode[] {
-  if (!node.children) return [];
+  if (!node.slots || !node.slots[slotName]) return [];
+
+  const children = node.slots[slotName];
 
   if (data.type === "single") {
-    return node.children.map((child) => ({
+    return children.map((child) => ({
       ...child,
       uuid: `${child.uuid}-single`,
       props: { ...child.props, ...(data.item || {}) },
@@ -50,7 +53,7 @@ function computeDataChildren(
   }
 
   if (data.type === "list" && data.list) {
-    return node.children.flatMap((child) =>
+    return children.flatMap((child) =>
       data.list!.map((item, index) => ({
         ...child,
         uuid: `${child.uuid}-data-${index}`,
@@ -88,12 +91,13 @@ export function renderCraftNodeToVNode<T extends object>(
   let children: VNode[] | undefined;
 
   if (nodeData?.type) {
-    const dataChildren = computeDataChildren(node, nodeData);
+    const dataChildren = computeDataChildren(node, nodeData, nodeData.slotName || 'default');
     children = dataChildren
       .map((child) => renderCraftNodeToVNode(child, resolver, componentRegistry, nodeDataMap, eventsContext))
       .filter((v): v is VNode => v !== null);
-  } else if (node.children?.length) {
-    children = node.children
+  } else if (node.slots) {
+    children = Object.values(node.slots)
+      .flat()
       .map((child) => renderCraftNodeToVNode(child, resolver, componentRegistry, nodeDataMap, eventsContext))
       .filter((v): v is VNode => v !== null);
   }

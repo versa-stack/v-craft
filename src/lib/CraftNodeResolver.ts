@@ -8,6 +8,7 @@ export type CraftNodeComponentMap<T extends object> = {
   eventsSchema?: T;
   defaultProps?: Record<string, any>;
   rules?: CraftNodeRules;
+  slots?: string[];
 };
 
 export type CraftNodeResolverMap<T extends object> = Record<
@@ -25,7 +26,7 @@ export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
 
   setResolverMap(resolverMap: Record<string, CraftNodeComponentMap<T>>) {
     this.resolverMap = {};
-    Object.entries(resolverMap).forEach(([key, value]) => {
+    Object.entries(resolverMap).forEach(([_, value]) => {
       this.resolverMap[value.componentName] = value;
     });
   }
@@ -39,11 +40,10 @@ export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
   }
 
   resolveNode(craftNode: CraftNode): CraftNodeComponentMap<T> {
-    if (craftNodeIsCanvas(craftNode)) {
-      return this.resolve(craftNode.props.componentName);
-    }
-
-    return this.resolve(craftNode.componentName);
+    const result = craftNodeIsCanvas(craftNode)
+      ? this.resolve(craftNode.props.componentName)
+      : this.resolve(craftNode.componentName);
+    return result;
   }
 
   getSchema(craftNode: CraftNode): Record<string, any> {

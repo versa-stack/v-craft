@@ -13,7 +13,7 @@ describe("useEditor", () => {
   const createTestNode = (
     overrides: Partial<CraftNode<any>> = {}
   ): CraftNode<any> => ({
-    children: [],
+    slots: {},
     componentName: "TestComponent",
     props: {},
     uuid: uuidv4(),
@@ -35,7 +35,7 @@ describe("useEditor", () => {
     const store = useEditor();
     const rootNode = createTestNode({ componentName: "CraftCanvas" });
     const childNode = createTestNode({ parentUuid: rootNode.uuid });
-    rootNode.children = [childNode];
+    rootNode.slots = { default: [childNode] };
 
     store.setNodes([rootNode]);
     expect(store.nodeMap.size).toBe(2);
@@ -83,13 +83,13 @@ describe("useEditor", () => {
     const store = useEditor();
     const parentNode = createTestNode({ componentName: "CraftCanvas" });
     const childNode = createTestNode({ parentUuid: parentNode.uuid });
-    parentNode.children = [childNode];
+    parentNode.slots = { default: [childNode] };
 
     store.setNodes([parentNode]);
     store.removeNode(childNode);
 
     expect(store.nodeMap.has(childNode.uuid)).toBe(false);
-    expect(store.nodeMap.get(parentNode.uuid)?.children).toEqual([]);
+    expect(store.nodeMap.get(parentNode.uuid)?.slots.default).toEqual([]);
   });
 
   it("should append nodes", () => {
@@ -104,7 +104,7 @@ describe("useEditor", () => {
     store.appendNodeTo(childNode, parentNode);
 
     const updatedParent = store.nodeMap.get(parentNode.uuid);
-    expect(updatedParent?.children[0].uuid).toBe(childNode.uuid);
+    expect(updatedParent?.slots.default[0].uuid).toBe(childNode.uuid);
     expect(store.nodeMap.get(childNode.uuid)?.parentUuid).toBe(parentNode.uuid);
   });
 
@@ -115,14 +115,14 @@ describe("useEditor", () => {
 
     const parentNode = createTestNode({ componentName: "CraftCanvas" });
     const existingChild = createTestNode({ parentUuid: parentNode.uuid });
-    parentNode.children = [existingChild];
+    parentNode.slots = { default: [existingChild] };
     const newChild = createTestNode();
 
     store.setNodes([parentNode, existingChild]);
     store.prependNodeTo(newChild, parentNode);
 
     const updatedParent = store.nodeMap.get(parentNode.uuid);
-    expect(updatedParent?.children.map((c) => c.uuid)).toEqual([
+    expect(updatedParent?.slots.default.map((c) => c.uuid)).toEqual([
       newChild.uuid,
       existingChild.uuid,
     ]);
@@ -136,20 +136,20 @@ describe("useEditor", () => {
     const parentNode = createTestNode({ componentName: "CraftCanvas" });
     const child1 = createTestNode({ parentUuid: parentNode.uuid });
     const child2 = createTestNode({ parentUuid: parentNode.uuid });
-    parentNode.children = [child1, child2];
+    parentNode.slots = { default: [child1, child2] };
     const newNode = createTestNode();
 
     store.setNodes([parentNode, child1, child2]);
 
     store.insertNodeBefore(newNode, child2);
     expect(
-      store.nodeMap.get(parentNode.uuid)?.children.map((c) => c.uuid)
+      store.nodeMap.get(parentNode.uuid)?.slots.default.map((c) => c.uuid)
     ).toEqual([child1.uuid, newNode.uuid, child2.uuid]);
 
     const anotherNode = createTestNode();
     store.insertNodeAfter(anotherNode, child2);
     expect(
-      store.nodeMap.get(parentNode.uuid)?.children.map((c) => c.uuid)
+      store.nodeMap.get(parentNode.uuid)?.slots.default.map((c) => c.uuid)
     ).toEqual([child1.uuid, newNode.uuid, child2.uuid, anotherNode.uuid]);
   });
 
@@ -164,7 +164,7 @@ describe("useEditor", () => {
     const store = useEditor();
     const rootNode = createTestNode({ componentName: "CraftCanvas" });
     const childNode = createTestNode({ parentUuid: rootNode.uuid });
-    rootNode.children = [childNode];
+    rootNode.slots = { default: [childNode] };
 
     store.setNodes([rootNode]);
     store.selectNode(childNode);
@@ -173,7 +173,7 @@ describe("useEditor", () => {
     expect(store.selectedNode?.uuid).toBe(childNode.uuid);
     expect(store.allNodes.length).toBe(2);
     expect(store.nodeTree.length).toBe(1);
-    expect(store.nodeTree[0].children.length).toBe(1);
+    expect(store.nodeTree[0].slots.default.length).toBe(1);
   });
 
   it("should ensure nodeTree always represents the actual state of nodeMap", () => {
@@ -185,8 +185,8 @@ describe("useEditor", () => {
     const child1 = createTestNode({ parentUuid: rootNode.uuid });
     const child2 = createTestNode({ parentUuid: rootNode.uuid });
     const grandchild1 = createTestNode({ parentUuid: child1.uuid });
-    rootNode.children = [child1, child2];
-    child1.children = [grandchild1];
+    rootNode.slots = { default: [child1, child2] };
+    child1.slots = { default: [grandchild1] };
 
     store.setNodes([rootNode]);
 
@@ -194,7 +194,7 @@ describe("useEditor", () => {
       const flattenTree = (nodes: CraftNode<any>[]): string[] => {
         return nodes.flatMap((node) => [
           node.uuid,
-          ...flattenTree(node.children || []),
+          ...Object.values(node.slots || {}).flat().flatMap((child) => flattenTree([child])),
         ]);
       };
 
@@ -223,8 +223,8 @@ describe("useEditor", () => {
     verifyNodeTreeConsistency("toggling newChild visibility");
 
     expect(store.nodeTree.length).toBe(1); // Root node
-    expect(store.nodeTree[0].children.length).toBe(3); // grandchild1, child1, newChild
-    expect(store.nodeTree[0].children[1].children.length).toBe(0); // child1 no longer has children
+    expect(store.nodeTree[0].slots.default.length).toBe(3); // grandchild1, child1, newChild
+    expect(store.nodeTree[0].slots.default[1].slots.default.length).toBe(0); // child1 no longer has children
     expect(store.nodeMap.size).toBe(4); // root, grandchild1, child1, newChild
   });
 
@@ -240,7 +240,7 @@ describe("useEditor", () => {
     store.appendNodeTo(newChildNode, parentNode);
 
     expect(store.nodeMap.has(newChildNode.uuid)).toBe(true);
-    expect(store.nodeMap.get(parentNode.uuid)?.children).toContainEqual(
+    expect(store.nodeMap.get(parentNode.uuid)?.slots.default).toContainEqual(
       newChildNode
     );
   });
@@ -257,7 +257,7 @@ describe("useEditor", () => {
     store.prependNodeTo(newChildNode, parentNode);
 
     expect(store.nodeMap.has(newChildNode.uuid)).toBe(true);
-    expect(store.nodeMap.get(parentNode.uuid)?.children[0]).toEqual(
+    expect(store.nodeMap.get(parentNode.uuid)?.slots.default[0]).toEqual(
       newChildNode
     );
   });
@@ -269,14 +269,14 @@ describe("useEditor", () => {
 
     const parentNode = createTestNode({ componentName: "CraftCanvas" });
     const existingChild = createTestNode({ parentUuid: parentNode.uuid });
-    parentNode.children = [existingChild];
+    parentNode.slots = { default: [existingChild] };
     const newNode = createTestNode(); // This node is not in the nodeMap yet
 
     store.setNodes([parentNode, existingChild]);
     store.insertNodeBefore(newNode, existingChild);
 
     expect(store.nodeMap.has(newNode.uuid)).toBe(true);
-    expect(store.nodeMap.get(parentNode.uuid)?.children[0]).toEqual(newNode);
+    expect(store.nodeMap.get(parentNode.uuid)?.slots.default[0]).toEqual(newNode);
   });
 
   it("should add new nodes to nodeMap when inserting after", () => {
@@ -286,13 +286,13 @@ describe("useEditor", () => {
 
     const parentNode = createTestNode({ componentName: "CraftCanvas" });
     const existingChild = createTestNode({ parentUuid: parentNode.uuid });
-    parentNode.children = [existingChild];
+    parentNode.slots = { default: [existingChild] };
     const newNode = createTestNode(); // This node is not in the nodeMap yet
 
     store.setNodes([parentNode, existingChild]);
     store.insertNodeAfter(newNode, existingChild);
 
     expect(store.nodeMap.has(newNode.uuid)).toBe(true);
-    expect(store.nodeMap.get(parentNode.uuid)?.children[1]).toEqual(newNode);
+    expect(store.nodeMap.get(parentNode.uuid)?.slots.default[1]).toEqual(newNode);
   });
 });

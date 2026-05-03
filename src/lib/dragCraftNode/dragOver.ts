@@ -32,6 +32,17 @@ const handleCanvasDragOver = <T extends object>(
 ) => {
   if (!editor.draggedNode) return;
 
+  // Check if hovering over a slot placeholder
+  const target = e.target as HTMLElement;
+  const slotPlaceholder = target.closest('.v-craft-drop-text');
+  
+  if (slotPlaceholder) {
+    const cannotBeChild = !craftNodeCanBeChildOf(editor.draggedNode, craftNode.value, resolver);
+    indicator.setIsForbidden(cannotBeChild);
+    indicator.pointInside(slotPlaceholder as HTMLElement);
+    return;
+  }
+
   if (mouseOnEdge(e, el)) {
     handleElementDragOver(e, el, { editor, indicator, craftNode, resolver });
     return;

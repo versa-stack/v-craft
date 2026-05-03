@@ -1,4 +1,4 @@
-import { Ref } from "vue";
+import { Ref, ref } from "vue";
 import { EditorStoreInstanceType } from "../../store/editor";
 import { IndicatorStoreType } from "../../store/indicator";
 import {
@@ -41,7 +41,7 @@ const handleElementDrop = <T extends object>(
     return context.craftNode.value;
   }
 
-  const sibling = parent.children.find(
+  const sibling = Object.values(parent.slots || {}).flat().find(
     (c) => c.uuid === context.craftNode.value.uuid
   );
   if (!sibling) {
@@ -67,8 +67,29 @@ const handleCanvasDrop = <T extends object>(
   draggedNode: CraftNode,
   context: DragCraftNodeContext<T>
 ) => {
-  if (mouseOnEdge(e, el)) {
-    return handleElementDrop(e, el, draggedNode, context);
+  const { editor, resolver, craftNode } = context;
+  const target = e.target as HTMLElement;
+  const targetNode = editor.nodeMap.get(target.id);
+  if (targetNode && craftNodeIsCanvas(targetNode)) {
+    handleCanvasDrop(e, el, draggedNode, { ...context, craftNode: ref(targetNode) });
+    return context.craftNode.value;
+  }
+  const slotPlaceholder = target.closest('.v-craft-drop-text');
+  let slotName = 'default';
+  
+  if (slotPlaceholder) {
+    const slotNameAttr = slotPlaceholder.getAttribute('data-slot-name');
+    if (slotNameAttr) {
+      slotName = slotNameAttr;
+    }
+  } else {
+    if (mouseOnEdge(e, el)) {
+      return handleElementDrop(e, el, draggedNode, context);
+    }
+
+    const targetSlots = context.craftNode.value.slots || {};
+    const slotNames = Object.keys(targetSlots);
+    slotName = slotNames.length > 0 ? slotNames[0] : 'default';
   }
 
   if (
@@ -82,9 +103,9 @@ const handleCanvasDrop = <T extends object>(
   }
 
   if (mouseOnTopHalf(e, el)) {
-    context.editor.prependNodeTo(draggedNode, context.craftNode.value);
+    context.editor.prependNodeTo(draggedNode, context.craftNode.value, slotName);
   } else {
-    context.editor.appendNodeTo(draggedNode, context.craftNode.value);
+    context.editor.appendNodeTo(draggedNode, context.craftNode.value, slotName);
   }
 
   return context.craftNode.value;

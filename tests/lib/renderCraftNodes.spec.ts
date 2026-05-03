@@ -29,7 +29,7 @@ describe("renderCraftNodes", () => {
         uuid: "1",
         componentName: "TestComponent",
         props: { text: "Hello" },
-        children: [],
+        slots: {},
       };
 
       const resolver = new CraftNodeResolver(resolverMap);
@@ -46,7 +46,7 @@ describe("renderCraftNodes", () => {
         uuid: "1",
         componentName: "TestComponent",
         props: {},
-        children: [],
+        slots: {},
       };
 
       const resolver = new CraftNodeResolver(resolverMap);
@@ -61,7 +61,7 @@ describe("renderCraftNodes", () => {
         uuid: "1",
         componentName: "TestComponent",
         props: { text: "override" },
-        children: [],
+        slots: {},
       };
 
       const resolver = new CraftNodeResolver(resolverMap);
@@ -76,14 +76,16 @@ describe("renderCraftNodes", () => {
         uuid: "1",
         componentName: "TestComponent",
         props: {},
-        children: [
-          {
-            uuid: "2",
-            componentName: "TestComponent",
-            props: { text: "child" },
-            children: [],
-          },
-        ],
+        slots: {
+          default: [
+            {
+              uuid: "2",
+              componentName: "TestComponent",
+              props: { text: "child" },
+              slots: {},
+            },
+          ],
+        },
       };
 
       const resolver = new CraftNodeResolver(resolverMap);
@@ -99,7 +101,7 @@ describe("renderCraftNodes", () => {
         uuid: "1",
         componentName: "TestComponent",
         props: {},
-        children: [],
+        slots: {},
         visible: false,
       };
 
@@ -117,13 +119,13 @@ describe("renderCraftNodes", () => {
           uuid: "1",
           componentName: "TestComponent",
           props: { text: "First" },
-          children: [],
+          slots: {},
         },
         {
           uuid: "2",
           componentName: "TestComponent",
           props: { text: "Second" },
-          children: [],
+          slots: {},
         },
       ];
 

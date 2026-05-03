@@ -11,7 +11,8 @@
     "docs:serve": "vitepress serve docs",
     "watch:build": "nodemon -e ts -e vue -x \"npm run build\"",
     "docs:preview": "vitepress preview docs",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:coverage": "vitest run --coverage  --reporter=junit --outputFile=test-report.junit.xml"
   },
   "type": "module",

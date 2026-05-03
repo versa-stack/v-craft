@@ -70,7 +70,7 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Hello" },
-        children: [],
+        slots: {},
       },
     ];
 
@@ -85,13 +85,13 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "First" },
-        children: [],
+        slots: {},
       },
       {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Second" },
-        children: [],
+        slots: {},
       },
     ];
 
@@ -108,14 +108,16 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "TestContainer",
         props: {},
-        children: [
-          {
-            uuid: uuidv4(),
-            componentName: "TestComponent",
-            props: { text: "Nested" },
-            children: [],
-          },
-        ],
+        slots: {
+          default: [
+            {
+              uuid: uuidv4(),
+              componentName: "TestComponent",
+              props: { text: "Nested" },
+              slots: {},
+            },
+          ],
+        },
       },
     ];
 
@@ -131,7 +133,7 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "CraftComponentSimpleText",
         props: { componentName: "span" },
-        children: [],
+        slots: {},
       },
     ];
 
@@ -145,7 +147,7 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "override" },
-        children: [],
+        slots: {},
       },
     ];
 
@@ -165,14 +167,14 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Visible" },
-        children: [],
+        slots: {},
         visible: true,
       },
       {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Hidden" },
-        children: [],
+        slots: {},
         visible: false,
       },
     ];
@@ -188,13 +190,13 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "First" },
-        children: [],
+        slots: {},
       },
       {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Second" },
-        children: [],
+        slots: {},
       },
     ];
 
@@ -208,14 +210,16 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "CraftCanvas",
         props: { componentName: "div" },
-        children: [
-          {
-            uuid: uuidv4(),
-            componentName: "CraftComponentSimpleText",
-            props: { content: "Canvas Child", componentName: "span" },
-            children: [],
-          },
-        ],
+        slots: {
+          default: [
+            {
+              uuid: uuidv4(),
+              componentName: "CraftComponentSimpleText",
+              props: { content: "Canvas Child", componentName: "span" },
+              slots: {},
+            },
+          ],
+        },
       },
     ];
 
@@ -231,21 +235,25 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "TestContainer",
         props: {},
-        children: [
-          {
-            uuid: uuidv4(),
-            componentName: "TestContainer",
-            props: {},
-            children: [
-              {
-                uuid: uuidv4(),
-                componentName: "TestComponent",
-                props: { text: "Deep" },
-                children: [],
+        slots: {
+          default: [
+            {
+              uuid: uuidv4(),
+              componentName: "TestContainer",
+              props: {},
+              slots: {
+                default: [
+                  {
+                    uuid: uuidv4(),
+                    componentName: "TestComponent",
+                    props: { text: "Deep" },
+                    slots: {},
+                  },
+                ],
               },
-            ],
-          },
-        ],
+            },
+          ],
+        },
       },
     ];
 
@@ -261,7 +269,7 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "TestComponent",
         props: { text: "Initial" },
-        children: [],
+        slots: {},
       },
     ];
 
@@ -274,7 +282,7 @@ describe("CraftStaticRenderer", () => {
           uuid: uuidv4(),
           componentName: "TestComponent",
           props: { text: "Updated" },
-          children: [],
+          slots: {},
         },
       ],
     });
@@ -289,21 +297,25 @@ describe("CraftStaticRenderer", () => {
         uuid: uuidv4(),
         componentName: "CraftCanvas",
         props: { componentName: "div" },
-        children: [
-          {
-            uuid: uuidv4(),
-            componentName: "CraftCanvas",
-            props: { componentName: "header" },
-            children: [
-              {
-                uuid: uuidv4(),
-                componentName: "CraftComponentSimpleText",
-                props: { content: "Home", componentName: "h1" },
-                children: [],
+        slots: {
+          default: [
+            {
+              uuid: uuidv4(),
+              componentName: "CraftCanvas",
+              props: { componentName: "header" },
+              slots: {
+                default: [
+                  {
+                    uuid: uuidv4(),
+                    componentName: "CraftComponentSimpleText",
+                    props: { content: "Home", componentName: "h1" },
+                    slots: {},
+                  },
+                ],
               },
-            ],
-          },
-        ],
+            },
+          ],
+        },
       },
     ];
 
@@ -319,68 +331,82 @@ describe("CraftStaticRenderer", () => {
         uuid: "root",
         componentName: "CraftCanvas",
         props: { componentName: "div", class: "container" },
-        children: [
-          {
-            uuid: "header",
-            componentName: "CraftCanvas",
-            props: { componentName: "header", class: "bg-black" },
-            children: [
-              {
-                uuid: "nav",
-                componentName: "CraftCanvas",
-                props: { componentName: "nav" },
-                children: [
+        slots: {
+          default: [
+            {
+              uuid: "header",
+              componentName: "CraftCanvas",
+              props: { componentName: "header", class: "bg-black" },
+              slots: {
+                default: [
                   {
-                    uuid: "title",
-                    componentName: "CraftComponentSimpleText",
-                    props: { content: "Site Title", componentName: "h1" },
-                    children: [],
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            uuid: "main",
-            componentName: "CraftCanvas",
-            props: { componentName: "main" },
-            children: [
-              {
-                uuid: "section",
-                componentName: "CraftCanvas",
-                props: { componentName: "section" },
-                children: [
-                  {
-                    uuid: "article",
+                    uuid: "nav",
                     componentName: "CraftCanvas",
-                    props: { componentName: "article" },
-                    children: [
-                      {
-                        uuid: "paragraph",
-                        componentName: "CraftComponentSimpleText",
-                        props: { content: "Article content here", componentName: "p" },
-                        children: [],
-                      },
-                    ],
+                    props: { componentName: "nav" },
+                    slots: {
+                      default: [
+                        {
+                          uuid: "title",
+                          componentName: "CraftComponentSimpleText",
+                          props: { content: "Site Title", componentName: "h1" },
+                          slots: {},
+                        },
+                      ],
+                    },
                   },
                 ],
               },
-            ],
-          },
-          {
-            uuid: "footer",
-            componentName: "CraftCanvas",
-            props: { componentName: "footer" },
-            children: [
-              {
-                uuid: "copyright",
-                componentName: "CraftComponentSimpleText",
-                props: { content: "© 2025", componentName: "span" },
-                children: [],
+            },
+            {
+              uuid: "main",
+              componentName: "CraftCanvas",
+              props: { componentName: "main" },
+              slots: {
+                default: [
+                  {
+                    uuid: "section",
+                    componentName: "CraftCanvas",
+                    props: { componentName: "section" },
+                    slots: {
+                      default: [
+                        {
+                          uuid: "article",
+                          componentName: "CraftCanvas",
+                          props: { componentName: "article" },
+                          slots: {
+                            default: [
+                              {
+                                uuid: "paragraph",
+                                componentName: "CraftComponentSimpleText",
+                                props: { content: "Article content here", componentName: "p" },
+                                slots: {},
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
               },
-            ],
-          },
-        ],
+            },
+            {
+              uuid: "footer",
+              componentName: "CraftCanvas",
+              props: { componentName: "footer" },
+              slots: {
+                default: [
+                  {
+                    uuid: "copyright",
+                    componentName: "CraftComponentSimpleText",
+                    props: { content: "© 2025", componentName: "span" },
+                    slots: {},
+                  },
+                ],
+              },
+            },
+          ],
+        },
       },
     ];
 

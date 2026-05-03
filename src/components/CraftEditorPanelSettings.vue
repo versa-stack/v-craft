@@ -32,7 +32,7 @@
             @update:props="handlePropsUpdate"
           />
         </div>
-        <div v-if="eventsSchema" class="v-craft-settings">
+        <div v-if="eventsSchema && selectedNode" class="v-craft-settings">
           <CraftEditorPanelNodeEventsSettings
             :craftNode="selectedNode"
             :schema="eventsSchema"
@@ -109,30 +109,4 @@ const handleEventsUpdate = (newEvents: Record<string, any>) => {
 </script>
 
 <style lang="scss" scoped>
-.v-craft-settings-panel {
-  padding: 1rem;
-
-  h4 {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    font-weight: 600;
-    color: rgb(var(--ui-text-muted));
-    margin-bottom: 0.75rem;
-    letter-spacing: 0.05em;
-  }
-
-  .v-craft-delete {
-    background: rgb(var(--ui-error) / 0.1);
-    color: rgb(var(--ui-error));
-    border: 1px solid rgb(var(--ui-error) / 0.3);
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &:hover {
-      background: rgb(var(--ui-error) / 0.2);
-    }
-  }
-}
 </style>

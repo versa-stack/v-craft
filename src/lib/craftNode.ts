@@ -22,7 +22,7 @@ export type CraftNodeRules = {
 };
 
 export type CraftNode = {
-  children: CraftNode[];
+  slots: Record<string, CraftNode[]>;
   componentName: string;
   parentUuid?: string | null;
   props: any;
@@ -36,6 +36,7 @@ export type CraftNodeDatasource = {
   item?: Record<string, any>;
   list?: Record<string, any>[];
   type: "single" | "list";
+  slotName?: string;
 };
 
 export const isVisible = (craftNode: CraftNode) =>
@@ -179,23 +180,23 @@ export const buildCraftNodeTree = <T extends object>(
     craftNode.uuid = uuidv4();
   }
 
-  if (!craftNode.children) {
+  if (!craftNode.slots) {
     return craftNode;
   }
 
-  craftNode.children.map((cn) => {
-    if (!cn.uuid) {
-      cn.uuid = uuidv4();
-    }
-    if (cn.parentUuid !== craftNode.uuid) {
-      cn.parentUuid = craftNode.uuid;
-    }
+  Object.values(craftNode.slots).forEach((slotChildren) => {
+    slotChildren.forEach((cn) => {
+      if (!cn.uuid) {
+        cn.uuid = uuidv4();
+      }
+      if (cn.parentUuid !== craftNode.uuid) {
+        cn.parentUuid = craftNode.uuid;
+      }
 
-    if (cn.children) {
-      cn.children.map((cnc) => buildCraftNodeTree(cnc));
-    }
+      buildCraftNodeTree(cn);
 
-    return cn;
+      return cn;
+    });
   });
 
   return craftNode;

@@ -28,18 +28,25 @@ const createNodeFromVNode = <T extends object>(
   const craftNode: CraftNode = {
     componentName,
     props,
-    children: [],
+    slots: {},
     parentUuid: parentNode?.uuid ?? null,
     uuid: uuidv4(),
   };
 
-  const vnodeChildren = vNode.children
-    ? vNode.children.default
-      ? vNode.children.default()
-      : vNode.children
-    : null;
-
-  craftNode.children = createChildren<T>(resolver, vnodeChildren, craftNode);
+  if (vNode.children) {
+    if (typeof vNode.children === 'object' && !Array.isArray(vNode.children)) {
+      Object.entries(vNode.children).forEach(([slotName, slotFn]) => {
+        if (typeof slotFn === 'function') {
+          const slotChildren = slotFn();
+          if (slotChildren) {
+            craftNode.slots[slotName] = createChildren<T>(resolver, slotChildren, craftNode);
+          }
+        }
+      });
+    } else if (Array.isArray(vNode.children)) {
+      craftNode.slots.default = createChildren<T>(resolver, vNode.children, craftNode);
+    }
+  }
 
   return craftNode;
 };

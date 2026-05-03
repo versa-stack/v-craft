@@ -15,6 +15,7 @@
         :useIframe="useIframe"
         :inheritStyles="inheritStyles"
         :iFrameStyleSheets="iFrameStyleSheets"
+        :resolverMap="config.resolverMap"
       >
         <slot />
       </CraftFrame>
