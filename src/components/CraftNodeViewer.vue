@@ -7,19 +7,21 @@
     v-on="eventHandlers"
   >
     <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
-      <template v-if="!data?.type">
-        <CraftNodeViewer
-          v-for="childNode in slotNodes[slotName]"
-          :key="childNode.uuid"
-          :craftNode="childNode"
-        />
-      </template>
-      <template v-else>
-        <CraftNodeViewer
-          v-for="item in computedChildren(slotNodes[slotName], slotName)"
-          :key="item.key"
-          :craftNode="item.craftNode"
-        />
+      <template v-if="shouldRenderSlots">
+        <template v-if="!data?.type">
+          <CraftNodeViewer
+            v-for="childNode in slotNodes[slotName]"
+            :key="childNode.uuid"
+            :craftNode="childNode"
+          />
+        </template>
+        <template v-else>
+          <CraftNodeViewer
+            v-for="item in computedChildren(slotNodes[slotName], slotName)"
+            :key="item.key"
+            :craftNode="item.craftNode"
+          />
+        </template>
       </template>
     </template>
   </component>
@@ -72,6 +74,11 @@ const availableSlots = computed(() => {
     slots.push('default');
   }
   return slots;
+});
+
+const shouldRenderSlots = computed(() => {
+  if (isCanvas.value) return true;
+  return Object.values(slotNodes.value).some(children => children.length > 0);
 });
 
 const computedChildren = (children: CraftNode[], slotName: string) => {

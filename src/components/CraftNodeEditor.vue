@@ -34,18 +34,20 @@
         <span class="v-craft-drop-text-label">Drop a component here</span>
         <span class="v-craft-slot-name">{{ slotName }}</span>
       </div>
-      <template v-if="craftNodeData?.type && craftNodeData.slotName === slotName">
-        <CraftNodeViewer
-          v-for="item in computedDataChildren(craftNode.slots?.[slotName] || [], slotName)"
-          :key="item.key"
-          :craftNode="item.craftNode"
+      <template v-if="shouldRenderSlots">
+        <template v-if="craftNodeData?.type && craftNodeData.slotName === slotName">
+          <CraftNodeViewer
+            v-for="item in computedDataChildren(craftNode.slots?.[slotName] || [], slotName)"
+            :key="item.key"
+            :craftNode="item.craftNode"
+          />
+        </template>
+        <CraftNodeEditor
+          v-for="childNode in (craftNode.slots?.[slotName] || [])"
+          :key="childNode.uuid"
+          :craftNode="childNode"
         />
       </template>
-      <CraftNodeEditor
-        v-for="childNode in (craftNode.slots?.[slotName] || [])"
-        :key="childNode.uuid"
-        :craftNode="childNode"
-      />
     </template>
   </component>
 </template>
@@ -129,6 +131,11 @@ const availableSlots = computed(() => {
     slots.push('default');
   }
   return slots;
+});
+
+const shouldRenderSlots = computed(() => {
+  if (craftNodeIsCanvas(craftNode.value)) return true;
+  return Object.values(craftNode.value.slots || {}).some(children => children.length > 0);
 });
 
 const computedDataChildren = (children: CraftNode[], slotName: string) => {

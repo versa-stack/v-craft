@@ -156,4 +156,130 @@ describe("CraftNodeViewer", () => {
         .element.tagName.toLowerCase()
     ).toBe("p");
   });
+
+  it("does not render slot templates for non-canvas nodes with empty slots", () => {
+    const craftNode = ref({
+      componentName: "div",
+      props: {},
+      slots: { default: [] },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        div: { componentName: "div" },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeViewer, {
+      props: {
+        craftNode: craftNode.value,
+      },
+      global: {
+        components: {
+          CraftNodeViewer,
+        },
+        provide: {
+          resolver,
+        },
+      },
+    });
+
+    expect(wrapper.find("div").exists()).toBe(true);
+    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(0);
+  });
+
+  it("renders slot templates for canvas nodes with empty slots", () => {
+    const craftNode = ref(createCanvas([]));
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        CraftCanvas: defaultResolvers.CraftCanvas,
+        div: { componentName: "div" },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeViewer, {
+      props: {
+        craftNode: craftNode.value,
+      },
+      global: {
+        components: {
+          CraftNodeViewer,
+          CraftCanvas,
+        },
+        provide: {
+          resolver,
+        },
+      },
+    });
+
+    expect(wrapper.findComponent({ name: "CraftCanvas" }).exists()).toBe(true);
+  });
+
+  it("renders slot templates for non-canvas nodes with non-empty slots", () => {
+    const craftNode = ref({
+      componentName: "div",
+      props: {},
+      slots: { default: [createSimpleText()] },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        div: { componentName: "div" },
+        CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeViewer, {
+      props: {
+        craftNode: craftNode.value,
+      },
+      global: {
+        components: {
+          CraftNodeViewer,
+          CraftComponentSimpleText,
+        },
+        provide: {
+          resolver,
+        },
+      },
+    });
+
+    expect(wrapper.find("div").exists()).toBe(true);
+    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
+  });
+
+  it("does not render slot templates for void HTML elements with empty slots", () => {
+    const craftNode = ref({
+      componentName: "img",
+      props: { src: "https://example.com/image.jpg", class: "w-full" },
+      slots: { default: [] },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        img: { componentName: "img" },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeViewer, {
+      props: {
+        craftNode: craftNode.value,
+      },
+      global: {
+        components: {
+          CraftNodeViewer,
+        },
+        provide: {
+          resolver,
+        },
+      },
+    });
+
+    expect(wrapper.find("img").exists()).toBe(true);
+    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(0);
+  });
 });
