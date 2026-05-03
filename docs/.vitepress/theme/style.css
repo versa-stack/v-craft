@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "../../formkit.theme.ts";
+@source "../../formkit.config.ts";
 
 /* Custom styles */
 .Layout.no-aside #VPContent.VPContent.has-sidebar {
