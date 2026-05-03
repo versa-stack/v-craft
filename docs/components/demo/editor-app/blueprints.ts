@@ -18,7 +18,6 @@ const createHtmlElementBlueprints = () => {
         ...value.defaultProps,
         componentName: value.componentName,
       },
-      children: [],
     };
   });
 
@@ -34,6 +33,28 @@ export default {
       },
       label: "HTML Elements",
       blueprints: createHtmlElementBlueprints(),
+    },
+    {
+      metadata: {
+        name: "examples",
+      },
+      label: "Examples",
+      blueprints: {
+        CraftContainerExample: {
+          label: "Container (2 Slots)",
+          componentName: "CraftCanvas",
+          props: {
+            componentName: "CraftContainerExample",
+          },
+        },
+        CraftContainerSingleSlot: {
+          label: "Container (1 Slot)",
+          componentName: "CraftCanvas",
+          props: {
+            componentName: "CraftContainerSingleSlot",
+          },
+        },
+      },
     },
   ],
 } as BlueprintsLibrary;

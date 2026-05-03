@@ -10,7 +10,7 @@ A craftNode is like a smart container that knows:
 - What component to render
 - What data to use
 - How to behave
-- How to interact with children
+- How to interact with slots
 
 ### Advanced craftNode Structure
 
@@ -24,7 +24,7 @@ const advancedCraftNode = {
     backgroundImage: 'https://example.com/hero.jpg'
   },
   
-  // Advanced: Data-driven children
+  // Advanced: Data-driven content
   data: [
     {
       id: 1,
@@ -58,10 +58,12 @@ const advancedCraftNode = {
       price: { min: 10, max: 100 }
     }
   },
-  
-  children: [
-    // These will be auto-generated from data + template
-  ]
+
+  slots: {
+    default: [
+      // These will be auto-generated from data + template
+    ]
+  }
 }
 ```
 
@@ -731,6 +733,121 @@ export const masterBlueprints = {
   }
 }
 ```
+
+## Working with Multiple Slots
+
+v-craft supports components with multiple named slots. This allows you to create more complex container components with distinct content areas.
+
+### Example: Container with Header and Body Slots
+
+This documentation includes an example component `CraftContainerExample` that demonstrates multi-slot support. Here's how it's implemented:
+
+**Component (docs/components/CraftContainerExample.vue):**
+```vue
+<template>
+  <div class="border-2 border-gray-300 rounded-lg p-4 my-2 bg-gray-50">
+    <div class="border-b border-gray-300 pb-2 mb-2 font-bold min-h-[20px]">
+      <slot name="header" />
+    </div>
+    <div class="min-h-[40px]">
+      <slot name="body" />
+    </div>
+  </div>
+</template>
+```
+
+This component has two named slots:
+- `header` - For header content
+- `body` - For body content
+
+**Resolver (docs/components/resolver.ts):**
+```typescript
+export const docsResolverMap = {
+  CraftContainerExample: {
+    componentName: "CraftContainerExample",
+    slots: ["header", "body"],  // Declare available slots
+  },
+};
+```
+
+**Blueprint (docs/components/blueprints.ts):**
+```typescript
+export const docsBlueprints = {
+  CraftContainerExample: {
+    label: "Container (2 Slots)",
+    componentName: "CraftCanvas",  // Use CraftCanvas wrapper
+    props: {
+      componentName: "CraftContainerExample",
+    },
+  },
+};
+```
+
+### Declaring Slots
+
+For **multi-slot components**, you must declare the available slots in your resolver:
+
+```typescript
+{
+  MyContainer: {
+    componentName: 'MyContainer',
+    slots: ['header', 'content', 'footer'],  // Declare available slots
+  }
+}
+```
+
+For **single-slot components**, you don't need to declare slots - v-craft automatically defaults to `['default']`.
+
+### How It Works
+
+When you define `slots: ["header", "body"]` in your resolver:
+
+1. The editor renders placeholders for each slot when empty
+2. Users can drop components into specific slots
+3. The drop handler automatically assigns components to the appropriate slot
+
+### Creating Your Own Multi-Slot Components
+
+To create a component with multiple slots:
+
+1. Define named slots in your component template using `<slot name="slotName" />`
+2. Register the component in your resolver map with the `slots` array
+3. Add it to your blueprints using `CraftCanvas` as the wrapper
+
+```javascript
+// Resolver registration with slots
+{
+  MyContainer: {
+    componentName: 'MyContainer',
+    slots: ['header', 'content', 'footer'],  // Define available slots
+  }
+}
+
+// Blueprint using CraftCanvas wrapper
+{
+  MyContainer: {
+    label: "My Container",
+    componentName: "CraftCanvas",
+    props: {
+      componentName: "MyContainer",
+    },
+  }
+}
+```
+
+### Slot Data Binding
+
+When using data-driven content with multi-slot components, you can specify which slot the data should be bound to using the `slotName` property in your node data:
+
+```javascript
+const nodeData = {
+  type: 'list',
+  slotName: 'header', // Binds data to the 'header' slot
+  list: [/* your data items */]
+}
+```
+
+This allows you to have different data sources for different slots within the same container component.
 
 ## Next Steps and Resources
 

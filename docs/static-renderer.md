@@ -63,7 +63,7 @@ const pageContent = [
     uuid: '1',
     componentName: 'MyText',
     props: { content: 'Hello World' },
-    children: []
+    slots: {}
   }
 ]
 </script>
@@ -206,9 +206,9 @@ import { CraftStaticRenderer } from '@versa-stack/v-craft'
 </script>
 ```
 
-## Nested Children
+## Nested Content
 
-The static renderer handles nested children automatically:
+The static renderer handles nested content automatically:
 
 ```ts
 const nodes = [
@@ -216,19 +216,21 @@ const nodes = [
     uuid: '1',
     componentName: 'Container',
     props: { padding: '20px' },
-    children: [
-      {
-        uuid: '2',
-        componentName: 'MyText',
-        props: { content: 'Nested content' },
-        children: []
-      }
-    ]
+    slots: {
+      default: [
+        {
+          uuid: '2',
+          componentName: 'MyText',
+          props: { content: 'Nested content' },
+          slots: {}
+        }
+      ]
+    }
   }
 ]
 ```
 
-Children are passed as default slot content to parent components.
+Content is passed as default slot content to parent components.
 
 ## Event Handlers
 
@@ -258,7 +260,7 @@ const nodes = [
     events: {
       click: 'ctx.showAlert("Button clicked!")'
     },
-    children: []
+    slots: {}
   }
 ]
 </script>
@@ -283,14 +285,16 @@ const nodes = [
     uuid: 'product-list',
     componentName: 'ProductGrid',
     props: {},
-    children: [
-      {
-        uuid: 'product-card',
-        componentName: 'ProductCard',
-        props: { name: '', price: 0 },
-        children: []
-      }
-    ]
+    slots: {
+      default: [
+        {
+          uuid: 'product-card',
+          componentName: 'ProductCard',
+          props: { name: '', price: 0 },
+          slots: {}
+        }
+      ]
+    }
   }
 ]
 
@@ -311,8 +315,8 @@ const nodeDataMap = {
 
 | Type | Description |
 |------|-------------|
-| `single` | Merges `item` props into each child node once |
-| `list` | Repeats children for each item in `list`, merging item props |
+| `single` | Merges `item` props into each node once |
+| `list` | Repeats nodes for each item in `list`, merging item props |
 
 ## Limitations
 

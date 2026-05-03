@@ -83,6 +83,57 @@ Uses semantic-release for automated versioning. This package:
 - Creates GitHub releases
 - Publishes to npm
 
+## Core Data Model
+
+### CraftNode vs Blueprint — Critical Distinction
+
+These are two different types and must NOT be confused:
+
+**Blueprint** — template definition for the editor UI palette
+```typescript
+{
+  label: string;
+  componentName: string;
+  props: Record<string, any>;
+  children: Blueprint[];   // <-- Blueprint uses children
+}
+```
+
+**CraftNode** — runtime instance in the editor state
+```typescript
+{
+  uuid: string;
+  componentName: string;
+  props: Record<string, any>;
+  slots: Record<string, CraftNode[]>;  // <-- CraftNode uses slots
+  parentUuid?: string | null;
+  visible?: boolean;
+  rules?: CraftNodeRules;
+  events?: Record<string, string>;
+}
+```
+
+**Rule**: In all documentation and code examples, CraftNodes always use `slots`, never `children`. Blueprints always use `children`.
+
+### Multi-Slot Support
+
+Components can have multiple named slots. The editor supports this natively:
+
+- `CraftNode.slots` is `Record<string, CraftNode[]>` — keys are slot names (e.g. `"header"`, `"body"`, `"default"`)
+- `CraftNodeDatasource.slotName` controls which slot data binding applies to
+- Drop behavior targets the first existing slot name, falling back to `"default"`
+- `CraftContainerExample.vue` is the reference example for a 2-slot component (`header` + `body`)
+
+### Key Source Files
+
+- `src/lib/craftNode.ts` — `CraftNode` type, `buildCraftNodeTree`, drag/drop rules
+- `src/lib/CraftNodeResolver.ts` — resolver type and base class
+- `src/store/editor.ts` — Pinia store; `appendNodeTo`/`prependNodeTo` accept optional `slotName`
+- `src/lib/dragCraftNode/drop.ts` — drop logic; determines slot from target node's existing slots
+- `src/components/CraftNodeEditor.vue` — renders node tree with slot-aware data binding
+- `src/components/CraftContainerExample.vue` — reference multi-slot component
+- `src/blueprints/default.ts` — default blueprint library
+
 ## Important Notes
 
 1. **CSS Injection**: The `scripts/inject-tailwind-css.js` script is essential for production docs builds. It ensures Tailwind CSS is properly linked in HTML files.

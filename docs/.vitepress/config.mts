@@ -60,5 +60,14 @@ export default defineConfig({
     ssr: {
       noExternal: ["@formkit/vue"],
     },
+    build: {
+      cssCodeSplit: true,
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, "index.html"),
+          frame: path.resolve(__dirname, ".vitepress/theme/frame.css"),
+        },
+      },
+    },
   },
 });

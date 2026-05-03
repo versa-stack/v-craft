@@ -15,7 +15,7 @@ const sampleNodes: CraftNode[] = [
       content: "This content is rendered using CraftStaticRenderer",
       componentName: "h2",
     },
-    children: [],
+    slots: {},
   },
   {
     uuid: "static-2",
@@ -24,7 +24,7 @@ const sampleNodes: CraftNode[] = [
       content: "It works without Pinia and is fully SSR compatible.",
       componentName: "p",
     },
-    children: [],
+    slots: {},
   },
 ];
 </script>
