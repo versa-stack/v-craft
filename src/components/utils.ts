@@ -11,7 +11,6 @@ export const blueprintsWithDefaults = <T extends object>(
     const blueprint = group.blueprints[key];
     const defaultProps = resolver.getDefaultProps({
       ...blueprint,
-      slots: {},
       uuid: uuidv4(),
     } as CraftNode);
     const result = {

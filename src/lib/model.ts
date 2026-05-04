@@ -26,9 +26,9 @@ export type BlueprintsMetadata = {
 
 export type Blueprints = Record<string, Blueprint>;
 
-export type Blueprint = Omit<CraftNode, "parentUuid" | "uuid" | "slots"> & {
+export type Blueprint = Omit<CraftNode, "parentUuid" | "uuid"> & {
   label?: string;
-  children: Blueprint[];
+  slots: Record<string, Blueprint[]>;
 };
 
 export type CraftEditorConfig<T extends object> = {
