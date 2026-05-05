@@ -1,3 +1,16 @@
+## [0.1.0-alpha.28](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.27...v0.1.0-alpha.28) (2026-05-05)
+
+### ✨ Features
+
+* add agent instructions and reorganize FormKit configuration ([217b324](https://github.com/versa-stack/v-craft/commit/217b32409cf78c7cf2dd02f121ffd0e025b60e70))
+* add iframe load event emission and improve static rendering with optional editor support ([8a51b7f](https://github.com/versa-stack/v-craft/commit/8a51b7fa519fd84cd7ff4f54cf5f06a9d7a9eb9b))
+
+### 🐛 Bug Fixes
+
+* adjust iframe width calculation and improve height measurement accuracy ([1ebe42a](https://github.com/versa-stack/v-craft/commit/1ebe42aff7576a56400858dcbf3e3fcce4323ba5))
+* optimize slot rendering to skip empty slots for non-canvas nodes ([11cf9ca](https://github.com/versa-stack/v-craft/commit/11cf9ca682b4520fda0f0055f152fc89ee46b5bf))
+* remove console logs and refactor iframe height calculation logic ([f05d0e0](https://github.com/versa-stack/v-craft/commit/f05d0e088231d48473192cd43ff8fdd5193bc70a))
+
 ## [0.1.0-alpha.27](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.26...v0.1.0-alpha.27) (2025-12-06)
 
 ### 🐛 Bug Fixes
