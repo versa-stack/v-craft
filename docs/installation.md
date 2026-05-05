@@ -18,7 +18,7 @@
 
 3. [Install and configure FormKit](https://formkit.com/getting-started/installation)
 
-4. [Install and configure tailwindcss](https://v2.tailwindcss.com/docs/guides/vue-3-vite#setting-up-tailwind-css)
+4. [Install and configure tailwindcss](https://tailwindcss.com/docs/installation)
 
 ## Setup
 
@@ -32,10 +32,8 @@ Make sure you have also formkit setup properly and added a theme.
 
 ### Include tailwindcss
 
-Create a `custom.css` file and add the following first 3 lines to it if you haven't done that already during the tailwindcss setup.
+Create a `custom.css` file and add the following to it if you haven't done that already during the tailwindcss setup.
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 ```

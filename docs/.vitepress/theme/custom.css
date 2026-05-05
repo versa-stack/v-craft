@@ -1,7 +1,5 @@
 /* stylelint-disable at-rule-no-unknown */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* Ensure Tailwind styles are properly included */
 @layer base {
