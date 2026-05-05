@@ -54,11 +54,15 @@ export const htmlResolvers = {
 export const resolverMap: CraftNodeResolverMap = {
   ...defaultResolvers,
   ...htmlResolvers,
+  
   CraftContainerExample: {
     componentName: "CraftContainerExample",
     slots: ["header", "body"],
   },
   CraftContainerSingleSlot: {
     componentName: "CraftContainerSingleSlot",
+  },
+  CraftCanvas: {
+    componentName: "CraftCanvas",
   },
 };

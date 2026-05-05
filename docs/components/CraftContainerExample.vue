@@ -1,11 +1,11 @@
 <template>
-  <div class="border-2 border-gray-300 rounded-lg p-4 my-2 bg-gray-50 flex flex-col gap-2">
-    <div class="border-b border-gray-300 pb-2 mb-2 font-bold min-h-[20px]">
+  <div class="my-4 flex flex-col gap-6 shadow-md">
+    <header class="border-b border-slate-200 pb-4 mb-4 font-semibold min-h-8">
       <slot name="header" />
-    </div>
-    <div class="min-h-[40px]">
+    </header>
+    <main class="min-h-16">
       <slot name="body" />
-    </div>
+    </main>
   </div>
 </template>
 

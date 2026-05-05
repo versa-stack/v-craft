@@ -266,57 +266,9 @@ const nodes = [
 </script>
 ```
 
-## Data Sources
-
-Bind dynamic data to nodes using `nodeDataMap`:
-
-```vue
-<template>
-  <CraftStaticRenderer
-    :nodes="nodes"
-    :resolver-map="resolverMap"
-    :node-data-map="nodeDataMap"
-  />
-</template>
-
-<script setup>
-const nodes = [
-  {
-    uuid: 'product-list',
-    componentName: 'ProductGrid',
-    props: {},
-    slots: {
-      default: [
-        {
-          uuid: 'product-card',
-          componentName: 'ProductCard',
-          props: { name: '', price: 0 },
-          slots: {}
-        }
-      ]
-    }
-  }
-]
-
-const nodeDataMap = {
-  'product-list': {
-    type: 'list',
-    list: [
-      { name: 'Product A', price: 29.99 },
-      { name: 'Product B', price: 49.99 },
-      { name: 'Product C', price: 19.99 },
-    ]
-  }
-}
-</script>
-```
-
-### Data Source Types
-
-| Type | Description |
-|------|-------------|
-| `single` | Merges `item` props into each node once |
-| `list` | Repeats nodes for each item in `list`, merging item props |
+::: info Data Binding
+For information about binding dynamic data to nodes using `nodeDataMap`, see the [Data Wrappers](./data-wrappers) documentation.
+:::
 
 ## Limitations
 

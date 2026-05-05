@@ -27,28 +27,21 @@ Let's build a weather display that fetches real weather data and creates weather
     <div v-if="loading" class="loading">
       🌤️ Loading weather data...
     </div>
-    
+
     <!-- Show error if something went wrong -->
     <div v-else-if="error" class="error">
       ⚠️ {{ error }}
     </div>
-    
-    <!-- Show weather cards when data is loaded -->
-    <div v-else class="weather-cards">
-      <WeatherCard
-        v-for="(weather, index) in weatherData"
-        :key="index"
-        :city="weather.city"
-        :temperature="weather.temperature"
-        :condition="weather.condition"
-        :icon="weather.icon"
-      />
-    </div>
+
+    <!-- Slot for child components -->
+    <!-- The renderer will duplicate these with data -->
+    <slot></slot>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useEditorStore } from '@versa-stack/v-craft'
 
 // Props that users can configure
 const props = defineProps({
@@ -57,30 +50,34 @@ const props = defineProps({
     type: Array,
     default: () => ['London', 'Paris', 'New York']
   },
-  
+
   // Temperature unit
   unit: {
     type: String,
     default: 'celsius', // or 'fahrenheit'
     validator: (value) => ['celsius', 'fahrenheit'].includes(value)
   },
-  
+
   // API key for weather service
   apiKey: {
     type: String,
     default: ''
   },
-  
+
   // How often to refresh (in minutes)
   refreshInterval: {
     type: Number,
     default: 30
-  }
+  },
+
+  // The CraftNode UUID (injected by renderer)
+  craftNodeUuid: String
 })
 
 const weatherData = ref([])
 const loading = ref(true)
 const error = ref(null)
+const editorStore = useEditorStore()
 
 // Function to fetch weather for one city
 const fetchWeatherForCity = async (city) => {
@@ -124,10 +121,22 @@ const fetchWeatherForCity = async (city) => {
 const fetchWeatherData = async () => {
   loading.value = true
   error.value = null
-  
+
   try {
     const promises = props.cities.map(city => fetchWeatherForCity(city))
-    weatherData.value = await Promise.all(promises)
+    const data = await Promise.all(promises)
+
+    // Store data in the CraftNode's datasource
+    // The renderer will use this to duplicate slot children
+    if (props.craftNodeUuid) {
+      const craftNode = editorStore.nodes[props.craftNodeUuid]
+      if (craftNode) {
+        craftNode.datasource = {
+          type: 'list',
+          list: data
+        }
+      }
+    }
   } catch (err) {
     error.value = 'Failed to load weather data'
     console.error(err)
@@ -139,7 +148,7 @@ const fetchWeatherData = async () => {
 // Fetch data when component mounts
 onMounted(() => {
   fetchWeatherData()
-  
+
   // Set up auto-refresh
   if (props.refreshInterval > 0) {
     setInterval(fetchWeatherData, props.refreshInterval * 60 * 1000)
@@ -269,7 +278,7 @@ export const weatherBlueprints = {
       refreshInterval: 30,
       apiKey: ''
     },
-    children: [] // WeatherWrapper is a data wrapper, not a container
+    slots: {} // WeatherWrapper is a data wrapper, not a container
   },
   
   WeatherCard: {
@@ -283,7 +292,7 @@ export const weatherBlueprints = {
       humidity: 65,
       windSpeed: 12
     },
-    children: []
+    slots: {}
   }
 }
 ```
@@ -692,7 +701,7 @@ export const newsBlueprints = {
       },
       loadingText: '📰 Loading latest news...'
     },
-    children: []
+    slots: {}
   },
   
   NewsCard: {
@@ -704,7 +713,7 @@ export const newsBlueprints = {
       author: 'Anonymous',
       date: '2024-01-01'
     },
-    children: []
+    slots: {}
   }
 }
 ```
@@ -783,6 +792,5 @@ const testimonialsWrapper = {
 ## Next Steps
 
 Now that you understand data wrappers:
-1. Explore [Advanced Usage](./advanced-usage) for complex scenarios
-2. Combine data wrappers with [Form Configuration](./form-configuration)
-3. Create your own data sources and APIs
+1. Explore [Resolvers](./resolvers) for component configuration
+2. Create your own data sources and APIs

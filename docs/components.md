@@ -60,7 +60,7 @@ const ContainerBlueprint = {
     bgColor: "#f8f9fa",
     padding: 20
   },
-  children: [] // Always empty - CraftCanvas handles children
+  //slots: {} // You can add content to slots here 
 }
 ```
 
@@ -73,7 +73,6 @@ const ButtonBlueprint = {
     text: "Click me",
     color: "#007bff"
   },
-  children: []
 }
 ```
 
@@ -169,7 +168,7 @@ export const myComponents = {
       textColor: "#ffffff",
       buttonColor: "#8b5cf6"
     },
-    children: [] // No child components allowed
+    slots: {} // No child components allowed
   }
 }
 ```
@@ -193,14 +192,14 @@ const editorConfig = {
 
 ## Component Types
 
-### 1. Simple Components (No Children)
+### 1. Simple Components (No Slots)
 These are like single LEGO pieces:
 - Text blocks
-- Buttons
 - Images
+- Buttons
 - Icons
 
-### 2. Container Components (Can Have Children)
+### 2. Container Components (Can Have Slots)
 These are like LEGO baseplates:
 - Sections
 - Columns
@@ -388,5 +387,5 @@ import HeroSection from './HeroSection.vue'
 
 Now that you understand components:
 1. Learn about [Blueprints](./blueprints) to register your components
-2. Add [Form Configuration](./form-configuration) for better editing
+2. Add [Resolvers](./resolvers) for better editing
 3. Create [Data Wrappers](./data-wrappers) for dynamic content

@@ -13,7 +13,7 @@ v-craft is a Vue.js 3 library that lets you build drag-and-drop page editors. Th
 Open your terminal and run:
 
 ```bash
-npm install @versa-stack/v-craft
+npm install @versa-stack/v-craft@alpha
 ```
 
 ### Step 2: Import what you need
@@ -122,16 +122,10 @@ const editorConfig = {
 }
 ```
 
-## Common Beginner Mistakes
-
-1. **Forgetting to import components** - Make sure all your components are imported
-2. **Wrong component names** - The `componentName` in blueprints must match your Vue component name
-3. **Missing props** - Always provide default values for your component props
-
 ## Next Steps
 
 Now that you have the basics:
 1. Learn about [Components](./components)
 2. Understand [Blueprints](./blueprints)
-3. Create [Form Configuration](./form-configuration)
+3. Learn about [Resolvers](./resolvers)
 4. Build [Data Wrappers](./data-wrappers)

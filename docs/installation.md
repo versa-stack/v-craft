@@ -2,10 +2,10 @@
 
 ## Pre-requisites
 
-1. First install vue@3.2.0 or earlier (later versions include Pinia 3 which is not yet compatible)
+1. First install Vue 3.5 or later
 
    ```bash
-   npm create vue@3.2.0
+   npm create vue@latest
    ```
    Make sure to accept typescript and the addition of pinia.
 
@@ -34,7 +34,7 @@ The following setup is taken from the vitepress documentation's own `index.ts` f
 The marked lines are the relevant calls to register v-craft into your application.
 Make sure you have also formkit setup properly and added a theme.
 
-<<< @/.vitepress/theme/index.ts{2,6,8,18,19-26}
+<<< @/.vitepress/theme/index.ts{3,6-8,19-28}
 
 ### Include tailwindcss
 

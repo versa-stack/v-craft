@@ -36,7 +36,7 @@ const simpleTextBlueprint = {
   props: {
     text: "Hello World!"         // Default text
   },
-  children: []                   // Empty component tree (no nested components)
+  slots: {}                    // Empty slots (no nested components)
 }
 ```
 
@@ -55,7 +55,7 @@ export interface Blueprint {
   label: string
   componentName: string
   props: Record<string, any>
-  children: Blueprint[]
+  slots: Record<string, Blueprint[]>
 }
 
 export const myBlueprints: Record<string, Blueprint> = {
@@ -70,7 +70,7 @@ export const myBlueprints: Record<string, Blueprint> = {
       backgroundColor: "#6366f1",
       textColor: "#ffffff"
     },
-    children: [] // Single component, no nested structure
+    slots: {} // Single component, no nested structure
   },
 
   // This is your blueprint for a Card
@@ -83,7 +83,7 @@ export const myBlueprints: Record<string, Blueprint> = {
       imageUrl: "https://via.placeholder.com/300x200",
       buttonText: "Learn More"
     },
-    children: [] // Single component, no nested structure
+    slots: {} // Single component, no nested structure
   }
 }
 ```
@@ -138,8 +138,8 @@ const myBlueprint = {
     imageUrl: "https://example.com/image.jpg"
   },
   
-  // 4. CHILDREN - Component tree structure
-  children: [] // Empty array = single component with no nested components
+  // 4. SLOTS - Slot structure for nested components
+  slots: {} // Empty object = single component with no nested components
 }
 ```
 
@@ -157,7 +157,7 @@ const TextBlock = {
     color: "#333333",
     align: "left"
   },
-  children: []
+  slots: {}
 }
 ```
 
@@ -174,7 +174,7 @@ const Button = {
     borderRadius: 4,
     padding: "12px 24px"
   },
-  children: []
+  slots: {}
 }
 ```
 
@@ -191,7 +191,7 @@ const Image = {
     height: 300,
     borderRadius: 0
   },
-  children: []
+  slots: {}
 }
 ```
 
@@ -235,7 +235,7 @@ const Container = {
     borderWidth: 1,
     borderColor: "#dee2e6"
   },
-  children: [] // Always empty - CraftCanvas handles user-dropped children
+  slots: {} // Always empty - CraftCanvas handles user-dropped children
 }
 ```
 
@@ -273,7 +273,7 @@ const Card = {
     padding: 20,
     maxWidth: 300
   },
-  children: [] // This card is self-contained
+  slots: {} // This card is self-contained
 }
 ```
 
@@ -284,17 +284,17 @@ const Card = {
 ```javascript
 const blueprints = {
   // Text components
-  Heading: { label: "Heading", componentName: "Heading", props: {...}, children: [] },
-  Paragraph: { label: "Paragraph", componentName: "Paragraph", props: {...}, children: [] },
+  Heading: { label: "Heading", componentName: "Heading", props: {...}, slots: {} },
+  Paragraph: { label: "Paragraph", componentName: "Paragraph", props: {...}, slots: {} },
   
   // Media components
-  Image: { label: "Image", componentName: "Image", props: {...}, children: [] },
-  Video: { label: "Video", componentName: "Video", props: {...}, children: [] },
+  Image: { label: "Image", componentName: "Image", props: {...}, slots: {} },
+  Video: { label: "Video", componentName: "Video", props: {...}, slots: {} },
   
   // Layout components
-  Container: { label: "Container", componentName: "Container", props: {...}, children: [] },
-  Row: { label: "Row", componentName: "Row", props: {...}, children: [] },
-  Column: { label: "Column", componentName: "Column", props: {...}, children: [] }
+  Container: { label: "Container", componentName: "Container", props: {...}, slots: {} },
+  Row: { label: "Row", componentName: "Row", props: {...}, slots: {} },
+  Column: { label: "Column", componentName: "Column", props: {...}, slots: {} }
 }
 ```
 
@@ -303,13 +303,13 @@ const blueprints = {
 ```javascript
 const blueprints = {
   // Hero section components
-  HeroTitle: { label: "Hero Title", componentName: "HeroTitle", props: {...}, children: [] },
-  HeroSubtitle: { label: "Hero Subtitle", componentName: "HeroSubtitle", props: {...}, children: [] },
-  HeroButton: { label: "Hero Button", componentName: "HeroButton", props: {...}, children: [] },
+  HeroTitle: { label: "Hero Title", componentName: "HeroTitle", props: {...}, slots: {} },
+  HeroSubtitle: { label: "Hero Subtitle", componentName: "HeroSubtitle", props: {...}, slots: {} },
+  HeroButton: { label: "Hero Button", componentName: "HeroButton", props: {...}, slots: {} },
   
   // Feature section components
-  FeatureCard: { label: "Feature Card", componentName: "FeatureCard", props: {...}, children: [] },
-  FeatureGrid: { label: "Feature Grid", componentName: "FeatureGrid", props: {...}, children: [] }
+  FeatureCard: { label: "Feature Card", componentName: "FeatureCard", props: {...}, slots: {} },
+  FeatureGrid: { label: "Feature Grid", componentName: "FeatureGrid", props: {...}, slots: {} }
 }
 ```
 
@@ -324,25 +324,25 @@ const editorConfig = {
       {
         label: "🏠 Landing Page",
         blueprints: [
-          { label: "Hero Section", componentName: "HeroSection", props: {...}, children: [] },
-          { label: "Feature List", componentName: "FeatureList", props: {...}, children: [] },
-          { label: "Call to Action", componentName: "CTA", props: {...}, children: [] }
+          { label: "Hero Section", componentName: "HeroSection", props: {...}, slots: {} },
+          { label: "Feature List", componentName: "FeatureList", props: {...}, slots: {} },
+          { label: "Call to Action", componentName: "CTA", props: {...}, slots: {} }
         ]
       },
       {
         label: "📝 Content",
         blueprints: [
-          { label: "Text Block", componentName: "TextBlock", props: {...}, children: [] },
-          { label: "Image", componentName: "Image", props: {...}, children: [] },
-          { label: "Button", componentName: "Button", props: {...}, children: [] }
+          { label: "Text Block", componentName: "TextBlock", props: {...}, slots: {} },
+          { label: "Image", componentName: "Image", props: {...}, slots: {} },
+          { label: "Button", componentName: "Button", props: {...}, slots: {} }
         ]
       },
       {
         label: "📦 Layout",
         blueprints: [
-          { label: "Container", componentName: "Container", props: {...}, children: [] },
-          { label: "Row", componentName: "Row", props: {...}, children: [] },
-          { label: "Column", componentName: "Column", props: {...}, children: [] }
+          { label: "Container", componentName: "Container", props: {...}, slots: {} },
+          { label: "Row", componentName: "Row", props: {...}, slots: {} },
+          { label: "Column", componentName: "Column", props: {...}, slots: {} }
         ]
       }
     ]
@@ -411,7 +411,7 @@ console.log('Testing HeroSection blueprint:', {
   label: myBlueprints.HeroSection.label,
   componentName: myBlueprints.HeroSection.componentName,
   hasProps: Object.keys(myBlueprints.HeroSection.props).length > 0,
-  canHaveChildren: myBlueprints.HeroSection.children !== undefined
+  canHaveChildren: myBlueprints.HeroSection.slots !== undefined
 })
 ```
 
@@ -476,7 +476,7 @@ const createHtmlElementBlueprints = () => {
         ...value.defaultProps,
         componentName: value.componentName, // "div" gets passed as prop
       },
-      children: [], // Empty because CraftCanvas handles children
+      slots: {}, // Empty because CraftCanvas handles children
     };
   });
   return blueprints;
@@ -542,7 +542,7 @@ const createHtmlElementBlueprints = () => {
         ...value.defaultProps,
         componentName: value.componentName, // Pass the actual element name
       },
-      children: [], // Always empty - CraftCanvas handles children
+      slots: {}, // Always empty - CraftCanvas handles children
     };
   });
   return blueprints;
@@ -553,7 +553,7 @@ const createHtmlElementBlueprints = () => {
 
 1. **CraftCanvas Component**: A special wrapper component that enables container behavior
 2. **componentName prop**: Tells CraftCanvas which actual component to render
-3. **children: []**: Always empty in blueprints - CraftCanvas manages child components automatically
+3. **slots: {}**: Always empty in blueprints - CraftCanvas manages child components automatically
 4. **User-dropped children**: Handled by CraftCanvas, not the blueprint
 
 ### Creating Your Own Container
@@ -570,7 +570,7 @@ const MyContainer = {
     backgroundColor: "#f8f9fa",
     padding: 20
   },
-  children: [] // Always empty
+  slots: {} // Always empty
 }
 ```
 
@@ -610,7 +610,7 @@ export const createBlueprint = (name, label, props, hasChildren = false) => ({
   label,
   componentName: name,
   props: props || {},
-  children: hasChildren ? [] : []
+  slots: hasChildren ? {} : {}
 })
 
 // Usage:
@@ -622,12 +622,11 @@ const Button = createBlueprint('ActionButton', 'Click Button', {
 const Container = createBlueprint('ContainerBox', 'Box Container', {
   padding: 20,
   background: '#f8f9fa'
-}, true) // true = includes children array for component tree
+}, true) // true = includes slots object for component tree
 ```
 
 ## Next Steps
 
 Now that you understand blueprints:
-1. Learn about [Form Configuration](./form-configuration) to make editing easier
+1. Learn about [Resolvers](./resolvers) to make editing easier
 2. Create [Data Wrappers](./data-wrappers) for dynamic content
-3. Explore [Advanced Usage](./advanced-usage) for complex scenarios

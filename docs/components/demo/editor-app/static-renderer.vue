@@ -1,30 +1,10 @@
 <template>
   <div class="content">
-    <CraftStaticRenderer :nodes="sampleNodes" :resolverMap="resolverMap" />
+    <CraftStaticRenderer :nodes="demoContent" :resolverMap="resolverMap" />
   </div>
 </template>
 <script lang="ts" setup>
-import { CraftStaticRenderer, CraftNode } from "@versa-stack/v-craft";
+import { CraftStaticRenderer } from "@versa-stack/v-craft";
 import { resolverMap } from "./resolvermap";
-
-const sampleNodes: CraftNode[] = [
-  {
-    uuid: "static-1",
-    componentName: "CraftComponentSimpleText",
-    props: {
-      content: "This content is rendered using CraftStaticRenderer",
-      componentName: "h2",
-    },
-    slots: {},
-  },
-  {
-    uuid: "static-2",
-    componentName: "CraftComponentSimpleText",
-    props: {
-      content: "It works without Pinia and is fully SSR compatible.",
-      componentName: "p",
-    },
-    slots: {},
-  },
-];
+import { demoContent } from "./demo-content";
 </script>
