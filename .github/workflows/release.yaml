@@ -17,6 +17,7 @@ jobs:
       issues: write
       pull-requests: write
       packages: write
+      id-token: write
 
     steps:
     - uses: actions/checkout@v4
@@ -31,8 +32,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        npm-version: '11.2.0'
-        registry-url: 'https://registry.npmjs.org'
     
     - name: Cache node modules
       uses: actions/cache@v4
@@ -57,8 +56,4 @@ jobs:
     - name: Semantic Release
       env:
         GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: |
-        echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-        npx semantic-release -ci
+      run: npx semantic-release -ci

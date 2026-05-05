@@ -20,12 +20,6 @@
 
 4. [Install and configure tailwindcss](https://v2.tailwindcss.com/docs/guides/vue-3-vite#setting-up-tailwind-css)
 
-5. Make sure you have also all other peerDependencies installed
-
-   ```bash
-   npm i locash-es@4.17.21 uui@10.0.0
-   ```
-
 ## Setup
 
 ### Register v-craft and formkit
@@ -34,7 +28,7 @@ The following setup is taken from the vitepress documentation's own `index.ts` f
 The marked lines are the relevant calls to register v-craft into your application.
 Make sure you have also formkit setup properly and added a theme.
 
-<<< @/.vitepress/theme/index.ts{3,6-8,19-28}
+<<< @/.vitepress/theme/index.ts{3,6-8,19-28,30-31}
 
 ### Include tailwindcss
 

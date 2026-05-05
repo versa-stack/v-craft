@@ -4,7 +4,7 @@ This guide will walk you through the absolute basics of v-craft, step by step. E
 
 ## What is v-craft?
 
-v-craft is a Vue.js 3 library that lets you build drag-and-drop page editors. Think of it like LEGO blocks for web pages - you have different components (blocks) that you can drag, drop, and configure to build complete web pages without writing code.
+v-craft is a Vue.js 3 library that lets you build drag-and-drop page editors. Think of it like LEGO blocks for web pages - you have different components (nodes) that you can drag, drop, and configure to build complete web pages without writing code.
 
 ## Installation (Super Simple)
 
@@ -50,7 +50,7 @@ const editorConfig = {
         label: "Basic Components",
         blueprints: [
           {
-            label: "Text Block",
+            label: "Text Node",
             componentName: "CraftComponentSimpleText",
             props: {
               content: "Hello World!",
