@@ -16,6 +16,7 @@
         :inheritStyles="inheritStyles"
         :iFrameStyleSheets="iFrameStyleSheets"
         :resolverMap="config.resolverMap"
+        @iframe-load="(iframe) => emit('iframeLoad', iframe)"
       >
         <slot />
       </CraftFrame>
@@ -48,6 +49,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: "nodeDragStart", n: CraftNode): void;
   (e: "nodeDragEnd"): void;
+  (e: "iframeLoad", iframe: HTMLIFrameElement): void;
 }>();
 
 const editor = useEditor();

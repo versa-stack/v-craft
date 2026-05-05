@@ -179,11 +179,16 @@ const updateIframeHeight = () => {
 };
 
 const inheritStyles = () => {
-  const styles = Array.from(
-    iframeRef.value?.contentWindow?.parent.document.querySelectorAll("style") ??
-      []
-  );
+  const parentDoc = iframeRef.value?.contentWindow?.parent.document;
+  if (!parentDoc) return;
+
+  const styles = Array.from(parentDoc.querySelectorAll("style") ?? []);
   styles.forEach((el: any) => {
+    iframeRef.value?.contentDocument?.head.appendChild(el.cloneNode(true));
+  });
+
+  const links = Array.from(parentDoc.querySelectorAll("link[rel='stylesheet']") ?? []);
+  links.forEach((el: any) => {
     iframeRef.value?.contentDocument?.head.appendChild(el.cloneNode(true));
   });
 };

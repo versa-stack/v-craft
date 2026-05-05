@@ -41,6 +41,8 @@ defineOptions({
 
 const props = defineProps<{
   craftNode: CraftNode;
+  nodeDataMap?: Record<string, CraftNodeDatasource>;
+  eventsContext?: Record<string, any>;
 }>();
 
 const craftNode = toRef(props, "craftNode");
@@ -55,7 +57,7 @@ const nodeProps = computed(() => ({
 }));
 
 const data = computed(() => {
-  return editor.nodeDataMap[craftNode.value.uuid];
+  return props.nodeDataMap?.[craftNode.value.uuid] || editor?.nodeDataMap?.[craftNode.value.uuid];
 });
 
 const slotNodes = computed(() => {
@@ -92,11 +94,11 @@ const nodeRef = ref<HTMLElement | null>(null);
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   editor as any,
-  editor.eventsContext
+  props.eventsContext || editor?.eventsContext || {}
 );
 
 onMounted(() => {
-  if (nodeRef.value && craftNode.value) {
+  if (nodeRef.value && craftNode.value && editor) {
     editor.setNodeRef(craftNode.value, nodeRef.value);
   }
 });

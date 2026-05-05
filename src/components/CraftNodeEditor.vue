@@ -9,14 +9,14 @@
     :style="{ '--node-color': nodeColor }"
     :class="{
       'v-craft-node-selected': isSelected,
-      'v-craft-node': editor.enabled,
+      'v-craft-node': editor?.enabled,
       'v-craft-canvas': craftNodeIsCanvas(craftNode),
       'v-craft-empty': !craftNode.slots || Object.keys(craftNode.slots).length === 0 || Object.values(craftNode.slots).every(slot => slot.length === 0),
       'v-craft-other-node-dragged':
-        editor.draggedNode &&
+        editor?.draggedNode &&
         !craftNodeIsAncestorOf(editor.draggedNode, craftNode),
     }"
-    :draggable="editor.enabled && isDraggable"
+    :draggable="editor?.enabled && isDraggable"
     @click.prevent.stop="craftNodeClick"
     @dragend.prevent.stop="handleDragEnd"
     @dragover.prevent.stop="handleDragOver"
@@ -25,7 +25,7 @@
   >
     <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
       <div
-        v-if="craftNodeIsCanvas(craftNode) && (!craftNode.slots?.[slotName] || craftNode.slots[slotName].length === 0)"
+        v-if="craftNodeIsCanvas(craftNode) && (craftNode.slots[slotName]?.length == 0)"
         class="v-craft-drop-text"
         :data-slot-name="slotName"
         @dragover.prevent.stop="handleDragOver"
@@ -83,7 +83,7 @@ if (resolver.value) provide("resolver", resolver);
 
 const nodeRef = ref<ComponentPublicInstance<HTMLElement> | null>(null);
 
-const craftNodeData = computed(() => editor.nodeDataMap[craftNode.value.uuid]);
+const craftNodeData = computed(() => editor?.nodeDataMap[craftNode.value.uuid]);
 
 const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
   craftNode.value,
@@ -96,7 +96,7 @@ const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   editor as any,
-  editor.eventsContext
+  editor?.eventsContext || {}
 );
 
 const nodeName = computed(() => {

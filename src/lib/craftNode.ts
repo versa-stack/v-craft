@@ -104,7 +104,7 @@ export const craftNodeCanBeChildOf = <T extends object>(
     return false;
   }
 
-  if (craftNode === targetNode) {
+  if (craftNode.uuid === targetNode.uuid) {
     return false;
   }
 
@@ -158,7 +158,7 @@ export const craftNodeCanBeSiblingOf = <T extends object>(
   resolver: CraftNodeResolver<T>
 ) => {
   const editor = useEditor();
-  if (targetNode === craftNode) {
+  if (targetNode.uuid === craftNode.uuid) {
     return false;
   }
 

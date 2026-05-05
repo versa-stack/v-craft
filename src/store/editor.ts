@@ -211,7 +211,9 @@ export const useEditor = defineStore("editor", {
         }
 
         craftNode.parentUuid = null;
-        this.nodeMap.delete(craftNode.uuid);
+        if (this.nodeMap.get(craftNode.uuid) === craftNode) {
+          this.nodeMap.delete(craftNode.uuid);
+        }
         return craftNode;
       },
 
