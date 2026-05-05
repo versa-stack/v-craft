@@ -18,7 +18,7 @@ jobs:
       checks: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
@@ -26,12 +26,14 @@ jobs:
       run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ env.NODE_VERSION }}
+        registry-url: 'https://registry.npmjs.org'
+        package-manager-cache: false
 
     - name: Cache node modules
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-node-modules
       with:
