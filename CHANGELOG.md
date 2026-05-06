@@ -1,3 +1,9 @@
+## [0.1.0-alpha.31](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.30...v0.1.0-alpha.31) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* add repository url to package.json for provenance validation ([eba0656](https://github.com/versa-stack/v-craft/commit/eba0656970822488b4998279c00b04e1726204ee))
+
 ## [0.1.0-alpha.30](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.29...v0.1.0-alpha.30) (2026-05-06)
 
 ### ✨ Features
