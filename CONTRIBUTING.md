@@ -67,7 +67,10 @@ This project uses semantic-release for automated versioning and publishing. The 
 - **develop branch** → alpha channel (e.g., `0.8.0-alpha.1`, `0.8.0-alpha.2`)
 - **beta branch** → beta channel (e.g., `0.8.0-beta.1`, `0.8.0-beta.2`)
 - **main branch** → stable channel (e.g., `0.8.0`, `0.8.1`)
-- **Maintenance branches** (e.g., `0.8.x`) → stable channel (automatic patch releases)
+- **Maintenance branches**:
+  - `0.8.x` → stable channel (automatic patch releases)
+  - `0.8-beta.x` → beta channel (patch prereleases)
+  - `0.8-alpha.x` → alpha channel (patch prereleases)
 
 ### Workflow
 
@@ -77,11 +80,24 @@ This project uses semantic-release for automated versioning and publishing. The 
 
 ### Maintenance Branches (LTS)
 
-After a stable release (e.g., `v0.8.0`), you can create a maintenance branch for long-term support:
+After a stable release (e.g., `v0.8.0`), you can create maintenance branches for long-term support:
 
+**Stable maintenance branch** (for patch releases):
 ```bash
 git checkout -b 0.8.x
 git push origin 0.8.x
+```
+
+**Beta maintenance branch** (for patch prereleases):
+```bash
+git checkout -b 0.8-beta.x
+git push origin 0.8-beta.x
+```
+
+**Alpha maintenance branch** (for patch prereleases):
+```bash
+git checkout -b 0.8-alpha.x
+git push origin 0.8-alpha.x
 ```
 
 Commits to maintenance branches (e.g., `0.8.x`, `1.x`, `2.0.x`) trigger automatic stable patch releases (e.g., `0.8.1`, `0.8.2`). No manual tags are needed for maintenance branches.

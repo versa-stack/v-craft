@@ -8,7 +8,16 @@
     {
       "name": "develop",
       "prerelease": "alpha"
-    }
+    },
+    {
+      "name": "+([0-9])?(.{+([0-9]),x})-beta.x",
+      "prerelease": "beta"
+    },
+    {
+      "name": "+([0-9])?(.{+([0-9]),x})-alpha.x",
+      "prerelease": "alpha"
+    },
+    "+([0-9])?(.{+([0-9]),x}).x"
   ],
   "plugins": [
     "@semantic-release/commit-analyzer",
