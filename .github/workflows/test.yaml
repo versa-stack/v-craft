@@ -78,7 +78,7 @@ jobs:
     needs: test
     if: |
       github.event_name == 'push' &&
-      github.event_name != 'pull_request' &&
+      !startsWith(github.ref, 'refs/pull/') &&
       (github.ref == 'refs/heads/main' ||
        github.ref == 'refs/heads/develop' ||
        github.ref == 'refs/heads/beta' ||
