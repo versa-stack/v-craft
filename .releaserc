@@ -57,6 +57,11 @@
         "hidden": false
       },
       {
+        "type": "release",
+        "section": "🚀 Releases",
+        "hidden": false
+      },
+      {
         "type": "revert",
         "section": "⏪ Reverts",
         "hidden": true
