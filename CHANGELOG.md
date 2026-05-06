@@ -1,3 +1,10 @@
+## [0.9.0-beta.8](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.7...v0.9.0-beta.8) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* remove beta from release job - only run on merge targets ([f9b9a91](https://github.com/versa-stack/v-craft/commit/f9b9a915dfd05176d7a37bd7517b371b6ad20bb1))
+* restore beta to release job conditions ([03f73b4](https://github.com/versa-stack/v-craft/commit/03f73b4df72396194cf6144ccac301a6ad01b4f3))
+
 ## [0.9.0-beta.7](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.6...v0.9.0-beta.7) (2026-05-06)
 
 ### 🐛 Bug Fixes
