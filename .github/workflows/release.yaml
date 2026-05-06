@@ -13,6 +13,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped' }}
     permissions:
       contents: write
       issues: write
@@ -35,7 +36,7 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
     
     - name: Cache node modules
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       env:
         cache-name: cache-node-modules
       with:
@@ -54,8 +55,10 @@ jobs:
       env:
         NODE_OPTIONS: --max_old_space_size=4096
 
+    - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+      run: npm audit signatures
+
     - name: Semantic Release
       env:
         GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: npx semantic-release -ci
+      run: npx semantic-release
