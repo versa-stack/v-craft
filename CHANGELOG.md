@@ -1,3 +1,10 @@
+## [0.9.0-beta.7](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.6...v0.9.0-beta.7) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* explicitly exclude PR refs from release job ([c29b6e2](https://github.com/versa-stack/v-craft/commit/c29b6e20e909d80ac3adaab9a59eee21d0faeaab))
+* prevent release job from running on pull requests ([569ea6d](https://github.com/versa-stack/v-craft/commit/569ea6d57af87dda4804fe5977582cde001d7723))
+
 ## [0.9.0-beta.6](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.5...v0.9.0-beta.6) (2026-05-06)
 
 ### 🐛 Bug Fixes
