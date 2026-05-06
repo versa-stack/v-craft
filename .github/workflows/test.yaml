@@ -6,11 +6,13 @@ on:
     - main
     - develop
     - beta
+    - rc
   pull_request:
     branches:
      - main
      - develop
      - beta
+     - rc
 
 jobs:
   test:

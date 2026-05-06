@@ -6,6 +6,7 @@ on:
     - main
     - develop
     - beta
+    - rc
   workflow_dispatch:
 
 permissions:
