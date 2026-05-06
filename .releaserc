@@ -35,7 +35,8 @@
     "@semantic-release/git",
     {
       "path": "@semantic-release/exec",
-      "publishCmd": "npm publish --provenance --access public --tag ${nextRelease.channel}"
+      "publishCmd": "npm publish --provenance --access public --tag ${nextRelease.channel}",
+      "condition": "nextRelease"
     }
   ],
   "preset": "conventionalcommits",
