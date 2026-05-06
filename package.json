@@ -3,6 +3,10 @@
   "license": "MIT",
   "description": "Vue3 UI builder kit.",
   "version": "0.1.0-alpha.28",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/versa-stack/v-craft"
+  },
   "scripts": {
     "build-raw": "vite build",
     "build": "rimraf dist && vite build",
@@ -17,6 +21,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@semantic-release/exec": "^7.1.0",
     "jsonpath-plus": "^10.4.0",
     "lodash-es": "^4.17.21"
   },
