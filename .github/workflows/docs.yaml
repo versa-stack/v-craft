@@ -46,7 +46,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
 
       - name: Get branch name
         id: branch-name
