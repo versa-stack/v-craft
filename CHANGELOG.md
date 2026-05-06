@@ -1,3 +1,9 @@
+## [0.9.0-alpha.5](https://github.com/versa-stack/v-craft/compare/v0.9.0-alpha.4...v0.9.0-alpha.5) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* remove persist-credentials: false from release checkout to allow pushing ([65e5538](https://github.com/versa-stack/v-craft/commit/65e55388e3704574b5c1991fb9828d49cab431a5))
+
 ## [0.9.0-alpha.4](https://github.com/versa-stack/v-craft/compare/v0.9.0-alpha.3...v0.9.0-alpha.4) (2026-05-06)
 
 ### 🐛 Bug Fixes
