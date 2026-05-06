@@ -1,3 +1,9 @@
+## [0.9.0-beta.5](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.4...v0.9.0-beta.5) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* update package.json version to match beta branch ([912a4e6](https://github.com/versa-stack/v-craft/commit/912a4e69ff50e4ea2c76a9bf059217168fcf6c6f))
+
 ## [0.9.0-beta.4](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.3...v0.9.0-beta.4) (2026-05-06)
 
 ### 🐛 Bug Fixes
