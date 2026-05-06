@@ -5,21 +5,22 @@ on:
     workflows: ["Test"]
     types:
       - completed
-    branches:
-    - main
-    - develop
-    - beta
-    - rc
-    - "**.x"
-    - "**-rc.x"
-    - "**-beta.x"
-    - "**-alpha.x"
   workflow_dispatch:
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped' }}
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') &&
+      (github.event.workflow_run.head_branch == 'main' ||
+       github.event.workflow_run.head_branch == 'develop' ||
+       github.event.workflow_run.head_branch == 'beta' ||
+       github.event.workflow_run.head_branch == 'rc' ||
+       startsWith(github.event.workflow_run.head_branch, '0.') ||
+       contains(github.event.workflow_run.head_branch, '-rc.') ||
+       contains(github.event.workflow_run.head_branch, '-beta.') ||
+       contains(github.event.workflow_run.head_branch, '-alpha.'))
     permissions:
       contents: write
       issues: write
