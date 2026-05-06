@@ -58,6 +58,74 @@ git push origin my-feature-branch
 
 Navigate to the original repository on GitHub and create a pull request from your feature branch. Provide a clear description of what you've done and why it should be merged.
 
+## Release Process
+
+This project uses semantic-release for automated versioning and publishing. The release process is configured to publish to different npm channels based on the branch.
+
+### Release Channels
+
+- **develop branch** → alpha channel (e.g., `0.8.0-alpha.1`, `0.8.0-alpha.2`)
+- **beta branch** → beta channel (e.g., `0.8.0-beta.1`, `0.8.0-beta.2`)
+- **rc branch** → release candidate channel (e.g., `0.8.0-rc.1`, `0.8.0-rc.2`)
+- **main branch** → stable channel (e.g., `0.8.0`, `0.8.1`)
+- **Maintenance branches**:
+  - `0.8.x` → stable channel (automatic patch releases)
+  - `0.8-rc.x` → release candidate channel (patch prereleases)
+  - `0.8-beta.x` → beta channel (patch prereleases)
+  - `0.8-alpha.x` → alpha channel (patch prereleases)
+
+### Workflow
+
+1. **Development**: Work on the `develop` branch. Commits trigger alpha releases automatically.
+2. **Beta testing**: Merge `develop` to `beta`. Commits trigger beta releases automatically.
+3. **Release candidates**: Merge `beta` to `rc`. Commits trigger rc releases automatically.
+4. **Stable release**: Merge `rc` to `main`. Commits trigger stable releases automatically.
+
+### Maintenance Branches (LTS)
+
+After a stable release (e.g., `v0.8.0`), you can create maintenance branches for long-term support:
+
+**Stable maintenance branch** (for patch releases):
+```bash
+git checkout -b 0.8.x
+git push origin 0.8.x
+```
+
+**Beta maintenance branch** (for patch prereleases):
+```bash
+git checkout -b 0.8-beta.x
+git push origin 0.8-beta.x
+```
+
+**RC maintenance branch** (for patch prereleases):
+```bash
+git checkout -b 0.8-rc.x
+git push origin 0.8-rc.x
+```
+
+**Alpha maintenance branch** (for patch prereleases):
+```bash
+git checkout -b 0.8-alpha.x
+git push origin 0.8-alpha.x
+```
+
+Commits to maintenance branches (e.g., `0.8.x`, `1.x`, `2.0.x`) trigger automatic stable patch releases (e.g., `0.8.1`, `0.8.2`). No manual tags are needed for maintenance branches.
+
+### Version Increment Rules
+
+Semantic-release determines version increments based on conventional commit types:
+
+- **`feat:`** → minor version increment (0.8.0 → 0.9.0)
+- **`fix:`** → patch version increment (0.8.0 → 0.8.1)
+- **`BREAKING CHANGE:`** (in footer) or `feat!`, `fix!` → major version increment (0.8.0 → 1.0.0)
+
+Example commits:
+```bash
+git commit -m "feat: add new component"  # Triggers 0.8.0 → 0.9.0
+git commit -m "fix: resolve styling bug"  # Triggers 0.8.0 → 0.8.1
+git commit -m "feat!: breaking API change"  # Triggers 0.8.0 → 1.0.0
+```
+
 ## Guidelines for Contributions
 
     - Code Style: Follow the existing code style and conventions used in the project.
