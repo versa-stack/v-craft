@@ -1,3 +1,37 @@
+## [0.9.0-alpha.2](https://github.com/versa-stack/v-craft/compare/v0.9.0-alpha.1...v0.9.0-alpha.2) (2026-05-06)
+
+### ✨ Features
+
+* add rc (release candidate) channel configuration ([a645376](https://github.com/versa-stack/v-craft/commit/a645376ba86d75338c1fe6b4f35904edcc4daba6))
+
+### 🐛 Bug Fixes
+
+* add BRANCH env var to semantic-release for correct branch detection ([7bcfe58](https://github.com/versa-stack/v-craft/commit/7bcfe5856e71456d1374ccc9f9a1acb61ac2f956))
+* add develop to release job condition (alpha branch) ([7cae30f](https://github.com/versa-stack/v-craft/commit/7cae30f5e86dc4441f887f940b058637cf3ce676))
+* add ref to checkout for correct branch detection in semantic-release ([1ecafe5](https://github.com/versa-stack/v-craft/commit/1ecafe5b3530e7ce8c6a03a325fd6a4cdbf05a04))
+* added beta release to docs. ([0b57f92](https://github.com/versa-stack/v-craft/commit/0b57f9210bec4be1b010b3e26fcab754b237b2c0))
+* Added release commit. ([e04e9bd](https://github.com/versa-stack/v-craft/commit/e04e9bdb8955eaf0a00f0942cb47c73a05fa82c6))
+* checkout branch from triggering workflow in Release workflow ([d4f7eee](https://github.com/versa-stack/v-craft/commit/d4f7eeea323cad1d4868bae1a2fe3283ad16690a))
+* convert Release to reusable workflow to avoid workflow_run branch bug ([01b85f3](https://github.com/versa-stack/v-craft/commit/01b85f3aa260345889e9865887f7d57701d12231))
+* deploy release ([9c4d541](https://github.com/versa-stack/v-craft/commit/9c4d54146993ce5b83d6996f20c37fb5691da966))
+* deploy release ([ecec9ad](https://github.com/versa-stack/v-craft/commit/ecec9ad40baeac0454e3a6c60cc17f363c7ecac7))
+* explicitly exclude PR refs from release job ([362b9b5](https://github.com/versa-stack/v-craft/commit/362b9b57887f2fb544ce145f356058b2a41780e3))
+* inline release steps in test workflow to avoid workflow_run bug ([f3b017b](https://github.com/versa-stack/v-craft/commit/f3b017b5cc650f3339ffc9fb206399f2c25a2ec0))
+* only deploy docs to GitHub Pages from main branch ([bd53fb0](https://github.com/versa-stack/v-craft/commit/bd53fb092c89f56aecb485d9e85a3ce5cdde74ce))
+* prevent release job from running on pull requests ([3ee83e2](https://github.com/versa-stack/v-craft/commit/3ee83e20e306cc0faba4729c913a64768473ae41))
+* remove --no-ci flag and unnecessary git config for correct branch detection ([0230a27](https://github.com/versa-stack/v-craft/commit/0230a27839c94b7c7ffdca169b7ac1b89e5e0c59))
+* remove beta from release job - only run on merge targets ([55da574](https://github.com/versa-stack/v-craft/commit/55da57472fb15ae6c35cb55868803f0d7bb59dde))
+* remove branch filtering from workflow_run trigger and add job condition ([6caf6e2](https://github.com/versa-stack/v-craft/commit/6caf6e2e89eba04bffd17e88a705648c488e17af))
+* remove hardcoded version from package.json ([1bf3e21](https://github.com/versa-stack/v-craft/commit/1bf3e21d30201e7956f384e8ef9a5c75a232944c))
+* remove NPM registry configuration from test workflow ([d7f96be](https://github.com/versa-stack/v-craft/commit/d7f96be027a41b59b3e964aad315b4a1f256c6a5))
+* restore beta to release job conditions ([eb6f417](https://github.com/versa-stack/v-craft/commit/eb6f41757a778998ed13dd9b4f5fe5f0b3d8b2db))
+* restore version field to package.json ([31062da](https://github.com/versa-stack/v-craft/commit/31062da9960910f00b317db0f244551ea873c33f))
+* restrict docs deployment to main branch only ([42c0b19](https://github.com/versa-stack/v-craft/commit/42c0b197053c0fe190d0fd7a458c69b5e5bb95ac))
+* update package.json version to match beta branch ([fd0d9c0](https://github.com/versa-stack/v-craft/commit/fd0d9c002b195f0aa96eeed1e2bca57175c14d18))
+* update workflow for npm publishing on release branches ([e93a38a](https://github.com/versa-stack/v-craft/commit/e93a38a15d77127b0f68a6572f683a57b5f4ce15))
+* use --branches flag to explicitly tell semantic-release to use beta branch ([d1c7f49](https://github.com/versa-stack/v-craft/commit/d1c7f49e844f5a3587f535060bbee1e91fa1989e))
+* verify beta release versioning ([b4a666e](https://github.com/versa-stack/v-craft/commit/b4a666efaef984de5f1a404e03649bb48ade37e7))
+
 ## [0.9.0-beta.9](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.8...v0.9.0-beta.9) (2026-05-06)
 
 ### 🐛 Bug Fixes
