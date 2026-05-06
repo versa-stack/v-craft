@@ -1,3 +1,21 @@
+## [0.1.0-alpha.31](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.30...v0.1.0-alpha.31) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* add repository url to package.json for provenance validation ([eba0656](https://github.com/versa-stack/v-craft/commit/eba0656970822488b4998279c00b04e1726204ee))
+
+## [0.1.0-alpha.30](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.29...v0.1.0-alpha.30) (2026-05-06)
+
+### ✨ Features
+
+* fix npm publish tag to use channel instead of gitTag ([9a92062](https://github.com/versa-stack/v-craft/commit/9a92062702b647129018d68bdd37ee5ee7382c54))
+
+## [0.1.0-alpha.29](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.28...v0.1.0-alpha.29) (2026-05-06)
+
+### ✨ Features
+
+* release trigger ([d1c788a](https://github.com/versa-stack/v-craft/commit/d1c788ae1af2b9f916f8636fc1f8307a895df2a5))
+
 ## [0.1.0-alpha.28](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.27...v0.1.0-alpha.28) (2026-05-05)
 
 ### ✨ Features
