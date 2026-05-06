@@ -7,12 +7,20 @@ on:
     - develop
     - beta
     - rc
+    - "**.x"
+    - "**-rc.x"
+    - "**-beta.x"
+    - "**-alpha.x"
   pull_request:
     branches:
      - main
      - develop
      - beta
      - rc
+     - "**.x"
+     - "**-rc.x"
+     - "**-beta.x"
+     - "**-alpha.x"
 
 jobs:
   test:

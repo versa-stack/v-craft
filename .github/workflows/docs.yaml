@@ -7,6 +7,10 @@ on:
     - develop
     - beta
     - rc
+    - "**.x"
+    - "**-rc.x"
+    - "**-beta.x"
+    - "**-alpha.x"
   workflow_dispatch:
 
 permissions:
