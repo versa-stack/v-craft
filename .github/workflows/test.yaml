@@ -103,9 +103,11 @@ jobs:
       run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ env.NODE_VERSION }}
+        registry-url: 'https://registry.npmjs.org'
+        package-manager-cache: false
     
     - name: Cache node modules
       uses: actions/cache@v5
@@ -133,4 +135,5 @@ jobs:
     - name: Semantic Release
       env:
         GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: npx semantic-release
