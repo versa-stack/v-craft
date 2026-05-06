@@ -1,3 +1,9 @@
+## [0.9.0-beta.9](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.8...v0.9.0-beta.9) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* remove hardcoded version from package.json ([7d95b51](https://github.com/versa-stack/v-craft/commit/7d95b51e269674a239c2e1750d557e5859e472e9))
+
 ## [0.9.0-beta.8](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.7...v0.9.0-beta.8) (2026-05-06)
 
 ### 🐛 Bug Fixes
