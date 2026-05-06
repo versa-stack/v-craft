@@ -98,7 +98,6 @@ jobs:
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
-        persist-credentials: false
 
     - name: Read .nvmrc
       run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
