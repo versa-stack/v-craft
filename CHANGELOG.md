@@ -1,3 +1,9 @@
+## [0.9.0-alpha.3](https://github.com/versa-stack/v-craft/compare/v0.9.0-alpha.2...v0.9.0-alpha.3) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* add condition to prevent npm publish on non-release runs ([4b1a1d9](https://github.com/versa-stack/v-craft/commit/4b1a1d931a9808db371ebbc0bd15f4b70942de1b))
+
 ## [0.9.0-alpha.2](https://github.com/versa-stack/v-craft/compare/v0.9.0-alpha.1...v0.9.0-alpha.2) (2026-05-06)
 
 ### ✨ Features
