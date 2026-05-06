@@ -1,3 +1,9 @@
+## [0.9.0-beta.2](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.1...v0.9.0-beta.2) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* add BRANCH env var to semantic-release for correct branch detection ([a187c88](https://github.com/versa-stack/v-craft/commit/a187c885a84ef7e8cf3aaa158074871dec02cab2))
+
 ## [0.9.0-beta.1](https://github.com/versa-stack/v-craft/compare/v0.1.0-beta.1...v0.9.0-beta.1) (2026-05-06)
 
 ### 🐛 Bug Fixes
