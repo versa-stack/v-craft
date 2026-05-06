@@ -136,4 +136,5 @@ jobs:
     - name: Semantic Release
       env:
         GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+        BRANCH: ${{ github.ref_name }}
       run: npx semantic-release
