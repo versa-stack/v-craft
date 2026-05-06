@@ -1,3 +1,9 @@
+## [0.1.0-alpha.29](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.28...v0.1.0-alpha.29) (2026-05-06)
+
+### ✨ Features
+
+* configure semantic-release channels ([86cdff3](https://github.com/versa-stack/v-craft/commit/86cdff3382b497809dd16fed95fdd4a21aaa85fd))
+
 ## [0.1.0-alpha.31](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.30...v0.1.0-alpha.31) (2026-05-06)
 
 ### 🐛 Bug Fixes
