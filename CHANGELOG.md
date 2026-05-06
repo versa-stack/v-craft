@@ -1,3 +1,10 @@
+## [0.9.0-beta.3](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.2...v0.9.0-beta.3) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* remove --no-ci flag and unnecessary git config for correct branch detection ([9f04947](https://github.com/versa-stack/v-craft/commit/9f04947d5afd5938eaa75c389dcd495b21cde57e))
+* use --branches flag to explicitly tell semantic-release to use beta branch ([f381ed8](https://github.com/versa-stack/v-craft/commit/f381ed8384ac66c835123f2b00143cd02122f780))
+
 ## [0.9.0-beta.2](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.1...v0.9.0-beta.2) (2026-05-06)
 
 ### 🐛 Bug Fixes
