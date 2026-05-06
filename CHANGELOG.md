@@ -1,3 +1,10 @@
+## [0.9.0-rc.1](https://github.com/versa-stack/v-craft/compare/v0.1.0-rc.1...v0.9.0-rc.1) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* disable automatic npm publish and remove hardcoded version from package.json ([9ec6d21](https://github.com/versa-stack/v-craft/commit/9ec6d21854a1008077f39687dc8d5ff89c95e16e))
+* update package.json version to 0.9.0-rc.1 for rc branch ([461d64c](https://github.com/versa-stack/v-craft/commit/461d64ce5d8d640ab76107eaee199564133d1caa))
+
 ## [0.1.0-rc.1](https://github.com/versa-stack/v-craft/compare/v0.0.11...v0.1.0-rc.1) (2026-05-06)
 
 ### ✨ Features
