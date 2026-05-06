@@ -99,7 +99,6 @@ jobs:
       with:
         fetch-depth: 0
         persist-credentials: false
-        ref: ${{ github.ref }}
 
     - name: Read .nvmrc
       run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
@@ -136,4 +135,4 @@ jobs:
     - name: Semantic Release
       env:
         GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
-      run: npx semantic-release --branches beta
+      run: npx semantic-release
