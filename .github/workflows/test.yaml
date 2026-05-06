@@ -106,7 +106,6 @@ jobs:
       uses: actions/setup-node@v6
       with:
         node-version: ${{ env.NODE_VERSION }}
-        registry-url: 'https://registry.npmjs.org'
         package-manager-cache: false
     
     - name: Cache node modules
@@ -135,5 +134,4 @@ jobs:
     - name: Semantic Release
       env:
         GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: npx semantic-release
