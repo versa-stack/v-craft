@@ -1,3 +1,9 @@
+## [0.1.0-alpha.30](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.29...v0.1.0-alpha.30) (2026-05-06)
+
+### ✨ Features
+
+* fix npm publish tag to use channel instead of gitTag ([9a92062](https://github.com/versa-stack/v-craft/commit/9a92062702b647129018d68bdd37ee5ee7382c54))
+
 ## [0.1.0-alpha.29](https://github.com/versa-stack/v-craft/compare/v0.1.0-alpha.28...v0.1.0-alpha.29) (2026-05-06)
 
 ### ✨ Features
