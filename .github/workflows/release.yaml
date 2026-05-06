@@ -8,6 +8,7 @@ on:
     branches:
     - main
     - develop
+    - beta
   workflow_dispatch:
 
 jobs:
