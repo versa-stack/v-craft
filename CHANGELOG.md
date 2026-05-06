@@ -1,3 +1,9 @@
+## [0.9.0-alpha.4](https://github.com/versa-stack/v-craft/compare/v0.9.0-alpha.3...v0.9.0-alpha.4) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* disable npm plugin's publish and let exec handle it with provenance ([47ee747](https://github.com/versa-stack/v-craft/commit/47ee747608dc083c45ba11e6ddd12e5f99620a37))
+
 ## [0.9.0-alpha.3](https://github.com/versa-stack/v-craft/compare/v0.9.0-alpha.2...v0.9.0-alpha.3) (2026-05-06)
 
 ### 🐛 Bug Fixes
