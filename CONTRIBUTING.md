@@ -66,9 +66,11 @@ This project uses semantic-release for automated versioning and publishing. The 
 
 - **develop branch** → alpha channel (e.g., `0.8.0-alpha.1`, `0.8.0-alpha.2`)
 - **beta branch** → beta channel (e.g., `0.8.0-beta.1`, `0.8.0-beta.2`)
+- **rc branch** → release candidate channel (e.g., `0.8.0-rc.1`, `0.8.0-rc.2`)
 - **main branch** → stable channel (e.g., `0.8.0`, `0.8.1`)
 - **Maintenance branches**:
   - `0.8.x` → stable channel (automatic patch releases)
+  - `0.8-rc.x` → release candidate channel (patch prereleases)
   - `0.8-beta.x` → beta channel (patch prereleases)
   - `0.8-alpha.x` → alpha channel (patch prereleases)
 
@@ -76,7 +78,8 @@ This project uses semantic-release for automated versioning and publishing. The 
 
 1. **Development**: Work on the `develop` branch. Commits trigger alpha releases automatically.
 2. **Beta testing**: Merge `develop` to `beta`. Commits trigger beta releases automatically.
-3. **Stable release**: Merge `beta` to `main`. Commits trigger stable releases automatically.
+3. **Release candidates**: Merge `beta` to `rc`. Commits trigger rc releases automatically.
+4. **Stable release**: Merge `rc` to `main`. Commits trigger stable releases automatically.
 
 ### Maintenance Branches (LTS)
 
@@ -92,6 +95,12 @@ git push origin 0.8.x
 ```bash
 git checkout -b 0.8-beta.x
 git push origin 0.8-beta.x
+```
+
+**RC maintenance branch** (for patch prereleases):
+```bash
+git checkout -b 0.8-rc.x
+git push origin 0.8-rc.x
 ```
 
 **Alpha maintenance branch** (for patch prereleases):
