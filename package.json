@@ -17,6 +17,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@semantic-release/exec": "^7.1.0",
     "jsonpath-plus": "^10.4.0",
     "lodash-es": "^4.17.21"
   },
