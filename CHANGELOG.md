@@ -1,3 +1,9 @@
+## [0.9.0-beta.4](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.3...v0.9.0-beta.4) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* verify beta release versioning ([1e7df9d](https://github.com/versa-stack/v-craft/commit/1e7df9dcb990b25a03e6469bb6157db79230d849))
+
 ## [0.9.0-beta.3](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.2...v0.9.0-beta.3) (2026-05-06)
 
 ### 🐛 Bug Fixes
