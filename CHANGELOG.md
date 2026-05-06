@@ -1,3 +1,10 @@
+## [0.9.0-beta.6](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.5...v0.9.0-beta.6) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* remove NPM registry configuration from test workflow ([83dd642](https://github.com/versa-stack/v-craft/commit/83dd6422db576e24b47f5f4571d92289059cf7e2))
+* update workflow for npm publishing on release branches ([a759332](https://github.com/versa-stack/v-craft/commit/a759332a58d619cdb55871b7932adec54f5e67db))
+
 ## [0.9.0-beta.5](https://github.com/versa-stack/v-craft/compare/v0.9.0-beta.4...v0.9.0-beta.5) (2026-05-06)
 
 ### 🐛 Bug Fixes
