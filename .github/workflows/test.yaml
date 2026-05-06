@@ -81,7 +81,6 @@ jobs:
       !startsWith(github.ref, 'refs/pull/') &&
       (github.ref == 'refs/heads/main' ||
        github.ref == 'refs/heads/develop' ||
-       github.ref == 'refs/heads/beta' ||
        github.ref == 'refs/heads/rc' ||
        startsWith(github.ref, 'refs/heads/0.') ||
        contains(github.ref, '-rc.') ||
