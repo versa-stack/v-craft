@@ -65,20 +65,15 @@ This project uses semantic-release for automated versioning and publishing. The 
 ### Release Channels
 
 - **develop branch** → alpha channel (e.g., `0.8.0-alpha.1`, `0.8.0-alpha.2`)
-- **main branch** → beta channel (e.g., `0.8.0-beta.1`, `0.8.0-beta.2`)
-- **Tags** → stable channel (e.g., `v0.8.0`, `v0.8.1`)
+- **beta branch** → beta channel (e.g., `0.8.0-beta.1`, `0.8.0-beta.2`)
+- **main branch** → stable channel (e.g., `0.8.0`, `0.8.1`)
 - **Maintenance branches** (e.g., `0.8.x`) → stable channel (automatic patch releases)
 
 ### Workflow
 
 1. **Development**: Work on the `develop` branch. Commits trigger alpha releases automatically.
-2. **Beta testing**: Merge `develop` to `main`. Commits trigger beta releases automatically.
-3. **Stable release**: Tag the `main` branch when ready for production:
-   ```bash
-   git tag v0.8.0
-   git push origin v0.8.0
-   ```
-   This triggers a stable release to the npm `latest` channel.
+2. **Beta testing**: Merge `develop` to `beta`. Commits trigger beta releases automatically.
+3. **Stable release**: Merge `beta` to `main`. Commits trigger stable releases automatically.
 
 ### Maintenance Branches (LTS)
 
