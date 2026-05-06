@@ -1,3 +1,10 @@
+## [0.9.0-beta.1](https://github.com/versa-stack/v-craft/compare/v0.1.0-beta.1...v0.9.0-beta.1) (2026-05-06)
+
+### 🐛 Bug Fixes
+
+* add develop to release job condition (alpha branch) ([821984d](https://github.com/versa-stack/v-craft/commit/821984d80134534cf99df7f6ded4279ca3042e09))
+* add ref to checkout for correct branch detection in semantic-release ([0cb4471](https://github.com/versa-stack/v-craft/commit/0cb4471e8b39692022d7a84b9eb99e8f7c1a1954))
+
 ## [0.1.0-beta.1](https://github.com/versa-stack/v-craft/compare/v0.0.11...v0.1.0-beta.1) (2026-05-06)
 
 ### ✨ Features
