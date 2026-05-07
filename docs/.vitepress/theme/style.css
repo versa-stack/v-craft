@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@source "../../formkit.theme.ts";
+@source "../../formkit.config.ts";
+
+/* Custom styles */
+.Layout.no-aside #VPContent.VPContent.has-sidebar {
+  padding-right: 0;
+}
+
+.Layout.no-aside .VPNav .content {
+  background-color: var(--vp-nav-bg-color);
+}
+
+.v-craft-frame {
+  width: 100%;
+}
+
+.v-craft-panel-center {
+  margin: auto 1em;
+}

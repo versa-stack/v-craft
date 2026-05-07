@@ -1,0 +1,84 @@
+{
+  "name": "@versa-stack/v-craft",
+  "license": "MIT",
+  "description": "Vue3 UI builder kit.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/versa-stack/v-craft.git"
+  },
+  "scripts": {
+    "build-raw": "vite build",
+    "build": "rimraf dist && vite build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "npm run build && cp dist/v-craft.css docs/.vitepress/theme/ && vitepress build docs && node scripts/inject-tailwind-css.js",
+    "docs:serve": "vitepress serve docs",
+    "watch:build": "nodemon -e ts -e vue -x \"npm run build\"",
+    "docs:preview": "vitepress preview docs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage  --reporter=junit --outputFile=test-report.junit.xml"
+  },
+  "type": "module",
+  "dependencies": {
+    "jsonpath-plus": "^10.4.0",
+    "lodash-es": "^4.17.21"
+  },
+  "peerDependencies": {
+    "@formkit/vue": "^2.0.0",
+    "pinia": "^2.0||^3.0",
+    "uuid": "^14.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@algolia/client-search": "^5.21.0",
+    "@formkit/icons": "^1.0.0",
+    "@formkit/themes": "^1.0.0",
+    "@formkit/vue": "^2.0.0",
+    "@pinia/testing": "^1.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "@tailwindcss/postcss": "^4.0.14",
+    "@tailwindcss/vite": "^4.0.14",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^22.13.10",
+    "@vitejs/plugin-vue": "^6.0.6",
+    "@vitest/coverage-v8": "^3.0.8",
+    "@vue/test-utils": "^2.4.10",
+    "autoprefixer": "^10.4.21",
+    "conventional-changelog-conventionalcommits": "^8.0.0",
+    "happy-dom": "^20.0.8",
+    "nodemon": "^3.1.9",
+    "pinia": "^3.0",
+    "postcss": "^8.5.3",
+    "rimraf": "^6.0.1",
+    "sass": "^1.85.1",
+    "semantic-release": "^24.2.3",
+    "tailwindcss": "^4.0.14",
+    "ts-jest": "^29.2.6",
+    "typescript": "^5.8.2",
+    "uuid": "^14.0.0",
+    "vite": "^6.2.2",
+    "vite-plugin-dts": "^4.5.3",
+    "vitepress": "^2.0.0-alpha.17",
+    "vitest": "^3.0.8",
+    "vue": "^3.5.33",
+    "vue-tsc": "^2.2.8"
+  },
+  "files": [
+    "dist"
+  ],
+  "types": "./dist/types/index.d.ts",
+  "module": "./dist/v-craft.es.js",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/v-craft.es.js"
+    },
+    "./dist/v-craft.css": "./dist/v-craft.css"
+  },
+  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a"
+}

@@ -1,0 +1,27 @@
+@use "sass:meta";
+@use "sass:map";
+
+@use "variables" as variables;
+@use "colors_dark" as colors_dark;
+@use "colors_light" as colors_light;
+
+:root {
+  @each $key, $value in colors_light.$colors-light {
+    --v-craft-#{$key}: #{$value};
+  }
+
+  @each $variable, $value in meta.module-variables(variables) {
+    @if meta.type-of($value) == "color" or
+        meta.type-of($value) == "number" or
+        meta.type-of($value) == "string"
+    {
+      --v-craft-#{$variable}: #{$value};
+    }
+  }
+}
+
+html.dark {
+  @each $key, $value in colors_dark.$colors-dark {
+    --v-craft-#{$key}: #{$value};
+  }
+}

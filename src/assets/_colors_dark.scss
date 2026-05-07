@@ -1,0 +1,44 @@
+@use "sass:color";
+
+$blue: #1473e6;
+$red: #ff3366;
+$green: rgb(15, 177, 88);
+$gray-dark: #2c2c2c;
+$gray-medium: #4b4b4b;
+$gray-light: #8e8e8e;
+$gray-darkest: #1e1e1e;
+$white: #ffffff;
+$text-color: #e0e0e0;
+
+$colors-dark: (
+  'blue': $blue,
+  'red': $red,
+  'green': $green,
+  'gray-dark': $gray-dark,
+  'gray-medium': $gray-medium,
+  'gray-light': $gray-light,
+  'gray-darkest': $gray-darkest,
+  'white': $white,
+  'background-color': $gray-darkest,
+  'background-color-lighter-10': color.adjust($gray-darkest, $lightness: 10%),
+  'background-color-darker-10': color.adjust($gray-darkest, $lightness: -10%),
+  'input-background': #2d2d2d,
+  'input-border': #3a3a3a,
+  'text-color': $text-color,
+  'text-color-blue': $text-color,
+  'error-color': $red,
+  'blue-darker-25': color.adjust($blue, $lightness: -25%),
+  'blue-darker-30': color.adjust($blue, $lightness: -30%),
+  'blue-lighter-5': color.adjust($blue, $lightness: 5%),
+  'blue-lighter-10': color.adjust($blue, $lightness: 10%),
+  'blue-lighter-15': color.adjust($blue, $lightness: 15%),
+  'blue-lighter-20': color.adjust($blue, $lightness: 20%),
+  'blue-transparent-20': rgba($blue, 0.2),
+  'blue-transparent-70': rgba($blue, 0.7),
+  'gray-dark-darker-10': color.adjust($gray-dark, $lightness: -10%),
+  'gray-dark-darker-5': color.adjust($gray-dark, $lightness: -5%),
+  'gray-dark-lighter-10': color.adjust($gray-dark, $lightness: 10%),
+  'gray-dark-transparent-50': rgba($gray-dark, 0.5),
+  'gray-medium-darker-10': color.adjust($gray-medium, $lightness: -10%),
+  'gray-medium-lighter-15': color.adjust($gray-medium, $lightness: 15%)
+);

@@ -1,0 +1,105 @@
+{
+  "branches": [
+    "main",
+    {
+      "name": "rc",
+      "prerelease": "rc"
+    },
+    {
+      "name": "beta",
+      "prerelease": "beta"
+    },
+    {
+      "name": "develop",
+      "prerelease": "alpha"
+    },
+    {
+      "name": "+([0-9])?(.{+([0-9]),x})-rc.x",
+      "prerelease": "rc"
+    },
+    {
+      "name": "+([0-9])?(.{+([0-9]),x})-beta.x",
+      "prerelease": "beta"
+    },
+    {
+      "name": "+([0-9])?(.{+([0-9]),x})-alpha.x",
+      "prerelease": "alpha"
+    },
+    "+([0-9])?(.{+([0-9]),x}).x"
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/github",
+    {
+      "path": "@semantic-release/npm",
+      "npmPublish": false
+    },
+    {
+      "path": "@semantic-release/exec",
+      "publishCmd": "npm publish --provenance --access public --tag ${nextRelease.channel}",
+      "condition": "nextRelease"
+    }
+  ],
+  "preset": "conventionalcommits",
+  "presetConfig": {
+    "types": [
+      {
+        "type": "feat",
+        "section": "✨ Features",
+        "hidden": false
+      },
+      {
+        "type": "fix",
+        "section": "🐛 Bug Fixes",
+        "hidden": false
+      },
+      {
+        "type": "perf",
+        "section": "⚡ Performance Improvements",
+        "hidden": false
+      },
+      {
+        "type": "revert",
+        "section": "⏪ Reverts",
+        "hidden": true
+      },
+      {
+        "type": "docs",
+        "section": "📚 Documentation",
+        "hidden": true
+      },
+      {
+        "type": "style",
+        "section": "💄 Styles",
+        "hidden": true
+      },
+      {
+        "type": "chore",
+        "section": "🐙 Miscellaneous Chores",
+        "hidden": true
+      },
+      {
+        "type": "refactor",
+        "section": "♻️ Code Refactoring",
+        "hidden": true
+      },
+      {
+        "type": "test",
+        "section": "✅ Tests",
+        "hidden": true
+      },
+      {
+        "type": "build",
+        "section": "📦 Build System",
+        "hidden": true
+      },
+      {
+        "type": "ci",
+        "section": "👷 Continuous Integration",
+        "hidden": true
+      }
+    ]
+  }
+}
