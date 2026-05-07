@@ -4,6 +4,7 @@ on:
   push:
     branches:
     - main
+    - develop
   workflow_dispatch:
 
 permissions:
@@ -18,12 +19,16 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: [main, develop]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: ${{ matrix.branch }}
           fetch-depth: 0
-      
+
       - name: Read .nvmrc
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
 
@@ -44,35 +49,115 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
-
-      - name: Get branch name
-        id: branch-name
-        uses: tj-actions/branch-names@v9.0.2
-
       - name: Install dependencies
         run: npm ci
 
       - name: Build with VitePress
         env:
-          PUBLIC_BASE: /v-craft/
+          PUBLIC_BASE: /v-craft/${{ matrix.branch }}/
+          BRANCH_NAME: ${{ matrix.branch }}
         run: npm run docs:build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.branch }}
+          path: docs/.vitepress/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download main artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: main
+          path: main-dist
+        continue-on-error: true
+
+      - name: Download develop artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: develop
+          path: develop-dist
+        continue-on-error: true
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Create public directory structure
+        run: |
+          mkdir -p public
+          if [ -d "main-dist" ]; then
+            mkdir -p public/main
+            cp -r main-dist/* public/main/
+          fi
+          if [ -d "develop-dist" ]; then
+            mkdir -p public/develop
+            cp -r develop-dist/* public/develop/
+          fi
+
+      - name: Create root index.html
+        run: |
+          cat > public/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>v-craft Documentation</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                max-width: 800px;
+                margin: 100px auto;
+                padding: 20px;
+                text-align: center;
+              }
+              h1 {
+                color: #333;
+                margin-bottom: 40px;
+              }
+              ul {
+                list-style: none;
+                padding: 0;
+              }
+              li {
+                margin: 20px 0;
+              }
+              a {
+                display: inline-block;
+                padding: 15px 30px;
+                background: #3eaf7c;
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: bold;
+                transition: background 0.3s;
+              }
+              a:hover {
+                background: #369868;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>Select Version</h1>
+            <ul>
+              <li><a href="/v-craft/main/">Main Branch</a></li>
+              <li><a href="/v-craft/develop/">Develop Branch</a></li>
+            </ul>
+          </body>
+          </html>
+          EOF
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: docs/.vitepress/dist
+          path: public
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    name: Deploy
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

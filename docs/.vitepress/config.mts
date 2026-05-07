@@ -20,7 +20,10 @@ export default defineConfig({
     nav: [
       {
         text: "Versions",
-        items: [{ text: "develop", link: "/" }],
+        items: [
+          { text: "Main", link: "https://versa-stack.github.io/v-craft/main/" },
+          { text: "Develop", link: "https://versa-stack.github.io/v-craft/develop/" }
+        ],
       },
     ],
     sidebar: [
@@ -47,6 +50,9 @@ export default defineConfig({
       alias: {
         "@versa-stack/v-craft": path.resolve(__dirname, "../../src"),
       },
+    },
+    define: {
+      __VP_VERSION__: JSON.stringify(process.env.BRANCH_NAME || "develop"),
     },
     css: {
       postcss: {
