@@ -67,6 +67,11 @@ export default defineConfig({
     },
     build: {
       cssCodeSplit: true,
+      rollupOptions: {
+        input: {
+          frame: path.resolve(__dirname, "theme/frame.css"),
+        },
+      },
     },
   },
 });
