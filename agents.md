@@ -30,7 +30,6 @@
   - `assets/` - SCSS assets
 - `docs/` - VitePress documentation
 - `tests/` - Test files
-- `scripts/` - Build and utility scripts
 
 ## Common Commands
 
@@ -56,7 +55,7 @@ The build process involves:
 1. Building the library with Vite (`npm run build`)
 2. Copying the generated CSS to docs theme
 3. Building VitePress docs
-4. Running post-build CSS injection script (`scripts/inject-tailwind-css.js`)
+4. Running post-build CSS injection script (`docs/.vitepress/inject-tailwind-css.js`)
 
 **Important**: The post-build script is critical for ensuring Tailwind CSS is properly injected into the documentation HTML files.
 
@@ -136,7 +135,7 @@ Components can have multiple named slots. The editor supports this natively:
 
 ## Important Notes
 
-1. **CSS Injection**: The `scripts/inject-tailwind-css.js` script is essential for production docs builds. It ensures Tailwind CSS is properly linked in HTML files.
+1. **CSS Injection**: The `docs/.vitepress/inject-tailwind-css.js` script is specific to the VitePress documentation build process. It ensures Tailwind CSS is properly linked in the documentation HTML files. When using v-craft in your own application, iframe CSS injection is an application responsibility (via the `inheritStyles` prop or manual style injection).
 
 2. **TypeScript**: The project uses strict TypeScript. Ensure types are properly defined when making changes.
 

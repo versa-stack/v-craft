@@ -10,7 +10,7 @@
     "build-raw": "vite build",
     "build": "rimraf dist && vite build",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "npm run build && cp dist/v-craft.css docs/.vitepress/theme/ && vitepress build docs && node scripts/inject-tailwind-css.js",
+    "docs:build": "npm run build && cp dist/v-craft.css docs/.vitepress/theme/ && vitepress build docs && node docs/.vitepress/inject-tailwind-css.js",
     "docs:serve": "vitepress serve docs",
     "watch:build": "nodemon -e ts -e vue -x \"npm run build\"",
     "docs:preview": "vitepress preview docs",

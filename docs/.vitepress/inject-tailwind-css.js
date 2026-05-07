@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const distDir = path.resolve(__dirname, "../docs/.vitepress/dist");
+const distDir = path.resolve(__dirname, "dist");
 const base = process.env.PUBLIC_BASE || "/";
 
 function injectTailwindCSS() {
@@ -45,9 +45,12 @@ function injectTailwindCSS() {
         if (stat.isDirectory()) {
           walkDir(filePath);
         } else if (file.endsWith(".html")) {
-          let content = fs.readFileSync(filePath, "utf-8");
+          let content = fs.readFileSync(filePath, "utf8");
 
-          if (!content.includes(`${base}assets/${cssFile}`)) {
+          // Check for regular stylesheet link, not preload
+          const hasRegularStylesheetLink = content.includes(`<link rel="stylesheet" href="${base}assets/${cssFile}"`);
+          
+          if (!hasRegularStylesheetLink) {
             content = content.replace("</head>", `${cssLink}\n  </head>`);
             fs.writeFileSync(filePath, content);
             console.log(`✓ Injected CSS into ${path.relative(distDir, filePath)}`);
