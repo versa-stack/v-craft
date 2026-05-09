@@ -15,6 +15,7 @@
         :useIframe="useIframe"
         :inheritStyles="inheritStyles"
         :iFrameStyleSheets="iFrameStyleSheets"
+        :iFrameClass="iFrameClass"
         :resolverMap="config.resolverMap"
         @iframe-load="(iframe) => emit('iframeLoad', iframe)"
       >
@@ -25,25 +26,27 @@
 </template>
 
 <script lang="ts" setup generic="T extends object">
-import { provide, ref, watch } from "vue";
+import { storeToRefs } from "pinia";
+import { HTMLAttributes, provide, ref, watch } from "vue";
+import { type CraftNode } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { CraftEditorConfig } from "../lib/model";
-import { type CraftNode } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
-import { storeToRefs } from "pinia";
 
 const props = withDefaults(
   defineProps<{
     config: CraftEditorConfig<T>;
     useIframe?: boolean;
     iFrameStyleSheets?: string[];
+    iFrameClass?: HTMLAttributes["class"];
     inheritStyles?: boolean;
   }>(),
   {
     useIframe: false,
     inheritStyles: false,
+    iFrameClass: "",
     iFrameStyleSheets: () => [],
-  }
+  },
 );
 
 const emit = defineEmits<{

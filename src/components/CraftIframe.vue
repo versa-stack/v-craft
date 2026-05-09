@@ -19,15 +19,15 @@ import {
   nextTick,
   StyleValue,
   onUnmounted,
-  toRef,
   toRefs,
   watch,
   computed,
+  HTMLAttributes,
 } from "vue";
 
 const props = withDefaults(
   defineProps<{
-    iframeClass?: string | Record<string, boolean>;
+    iframeClass?: HTMLAttributes["class"];
     iframeStyle?: StyleValue;
     inheritStyles?: boolean;
     styleSheets?: string[];

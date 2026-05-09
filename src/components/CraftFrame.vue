@@ -8,6 +8,7 @@
         ...iFrameStyles,
       ]"
       :iframe-style="iFrameStyle"
+      :iframe-class="iFrameClass"
       :style-sheets="iFrameStyleSheets"
       :width="iFrameWidth"
       :height="iFrameHeight"
@@ -44,7 +45,7 @@
 
 <script lang="ts" setup generic="T extends object">
 import { storeToRefs } from "pinia";
-import { StyleValue, toRefs } from "vue";
+import { StyleValue, toRefs, type HTMLAttributes } from "vue";
 import { CraftNodeResolverMap } from "../lib/CraftNodeResolver";
 import Indicator from "./CraftDropIndicator.vue";
 import CraftIframe from "./CraftIframe.vue";
@@ -61,6 +62,7 @@ const props = withDefaults(
     iFrameStyleSheets?: string[];
     iFrameStyles?: string[];
     iFrameWidth?: "auto" | number;
+    iFrameClass?: HTMLAttributes["class"];
     inheritStyles?: boolean;
     resolverMap?: CraftNodeResolverMap<T>;
     useIframe?: boolean;
