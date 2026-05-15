@@ -29,7 +29,7 @@
     <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
       <div
         v-if="
-          craftNodeIsCanvas(craftNode) && craftNode.slots[slotName]?.length == 0
+          craftNodeIsCanvas(craftNode) && (!craftNode.slots || craftNode.slots[slotName]?.length == 0)
         "
         class="v-craft-drop-text"
         :data-slot-name="slotName"

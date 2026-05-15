@@ -270,6 +270,83 @@ describe("CraftNodeEditor", () => {
     expect(wrapper.find(".v-craft-drop-text").exists()).toBe(true);
   });
 
+  it("renders drop text for HTML canvas elements with empty slots", () => {
+    const craftNode = ref({
+      componentName: "CraftCanvas",
+      props: {
+        componentName: "footer",
+      },
+      slots: {
+        default: [],
+      },
+      uuid: uuidv4(),
+    });
+    const editor = useEditor();
+    editor.enable();
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        CraftCanvas: defaultResolvers.CraftCanvas,
+        footer: { componentName: "footer" },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: {
+        craftNode: craftNode.value,
+      },
+      global: {
+        components: {
+          CraftNodeViewer,
+          CraftCanvas,
+        },
+        provide: {
+          resolver,
+        },
+      },
+    });
+
+    expect(wrapper.find("footer").exists()).toBe(true);
+    expect(wrapper.find(".v-craft-drop-text").exists()).toBe(true);
+  });
+
+  it("renders drop text for HTML canvas elements without slots property", () => {
+    const craftNode = ref({
+      componentName: "CraftCanvas",
+      props: {
+        componentName: "footer",
+      },
+      uuid: uuidv4(),
+    });
+    const editor = useEditor();
+    editor.enable();
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        CraftCanvas: defaultResolvers.CraftCanvas,
+        footer: { componentName: "footer" },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: {
+        craftNode: craftNode.value,
+      },
+      global: {
+        components: {
+          CraftNodeViewer,
+          CraftCanvas,
+        },
+        provide: {
+          resolver,
+        },
+      },
+    });
+
+    expect(wrapper.find("footer").exists()).toBe(true);
+    expect(wrapper.find(".v-craft-drop-text").exists()).toBe(true);
+  });
+
   it("renders slot templates for non-canvas nodes with non-empty slots", () => {
     const craftNode = ref({
       componentName: "div",
@@ -487,5 +564,106 @@ describe("CraftNodeEditor", () => {
 
     expect(wrapper.find(".default").exists()).toBe(true);
     expect(wrapper.text()).toBe("default");
+  });
+
+  it("renders drop text for canvas nodes with empty slots when content is loaded", async () => {
+    const MultiSlotComponent = defineComponent({
+      name: "MultiSlotComponent",
+      template: `
+        <div>
+          <header><slot name="header" /></header>
+          <main><slot name="body" /></main>
+        </div>
+      `,
+    });
+
+    const craftNode = ref({
+      componentName: "CraftCanvas",
+      props: {
+        componentName: "MultiSlotComponent",
+      },
+      slots: {
+        header: [],
+        body: [],
+      },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        ...defaultResolvers,
+        MultiSlotComponent: {
+          componentName: "MultiSlotComponent",
+          slots: ["header", "body"],
+        },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer, MultiSlotComponent, CraftCanvas },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+    await nextTick();
+
+    // Verify drop text is rendered in both slots
+    const dropTextElements = wrapper.findAll(".v-craft-drop-text");
+    expect(dropTextElements.length).toBe(2);
+
+    // Verify drop text has correct slot names
+    const headerDropText = dropTextElements.find(
+      (el) => el.attributes("data-slot-name") === "header"
+    );
+    const bodyDropText = dropTextElements.find(
+      (el) => el.attributes("data-slot-name") === "body"
+    );
+
+    expect(headerDropText).toBeDefined();
+    expect(bodyDropText).toBeDefined();
+    expect(headerDropText?.text()).toContain("Drop a component here");
+    expect(headerDropText?.text()).toContain("header");
+    expect(bodyDropText?.text()).toContain("Drop a component here");
+    expect(bodyDropText?.text()).toContain("body");
+  });
+
+  it("renders drop text for canvas node with default slot when content is loaded", async () => {
+    const craftNode = ref({
+      componentName: "CraftCanvas",
+      props: {
+        componentName: "div",
+      },
+      slots: {
+        default: [],
+      },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        ...defaultResolvers,
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer, CraftCanvas },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+    await nextTick();
+
+    // Verify drop text is rendered in default slot
+    const dropTextElement = wrapper.find(".v-craft-drop-text");
+    expect(dropTextElement.exists()).toBe(true);
+    expect(dropTextElement.attributes("data-slot-name")).toBe("default");
+    expect(dropTextElement.text()).toContain("Drop a component here");
+    expect(dropTextElement.text()).toContain("default");
   });
 });

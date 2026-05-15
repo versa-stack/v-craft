@@ -295,4 +295,29 @@ describe("useEditor", () => {
     expect(store.nodeMap.has(newNode.uuid)).toBe(true);
     expect(store.nodeMap.get(parentNode.uuid)?.slots.default[1]).toEqual(newNode);
   });
+
+  it("should initialize slots from resolver when setNodes is called with canvas nodes", () => {
+    const store = useEditor();
+    const resolver = new CraftNodeResolver<any>({
+      MultiSlotComponent: {
+        componentName: "MultiSlotComponent",
+        slots: ["header", "body"],
+      },
+    });
+    store.setResolver(resolver);
+
+    const canvasNode = createTestNode({
+      componentName: "CraftCanvas",
+      props: { componentName: "MultiSlotComponent" },
+      slots: {},
+    });
+
+    store.setNodes([canvasNode]);
+
+    const updatedNode = store.nodeMap.get(canvasNode.uuid);
+    expect(updatedNode?.slots).toHaveProperty("header");
+    expect(updatedNode?.slots).toHaveProperty("body");
+    expect(updatedNode?.slots.header).toEqual([]);
+    expect(updatedNode?.slots.body).toEqual([]);
+  });
 });

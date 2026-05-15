@@ -7,6 +7,7 @@ import {
   craftNodeCanBeChildOf,
   craftNodeCanBeSiblingOf,
   craftNodeIsCanvas,
+  initializeSlotsFromResolver,
   resolveNodeName,
 } from "../craftNode";
 import CraftNodeResolver from "../CraftNodeResolver";
@@ -60,25 +61,6 @@ const handleElementDrop = <T extends object>(
   }
 
   return context.craftNode.value;
-};
-
-const initializeSlotsFromResolver = <T extends object>(
-  node: CraftNode,
-  resolver: CraftNodeResolver<T>
-): CraftNode => {
-  if (!node.slots || Object.keys(node.slots).length === 0) {
-    const resolved = resolver.resolveNode?.(node);
-    const resolverSlots = resolved?.slots;
-    if (resolverSlots && resolverSlots.length > 0) {
-      node.slots = {};
-      resolverSlots.forEach((slotName: string) => {
-        node.slots[slotName] = [];
-      });
-    } else {
-      node.slots = { default: [] };
-    }
-  }
-  return node;
 };
 
 const handleCanvasDrop = <T extends object>(
