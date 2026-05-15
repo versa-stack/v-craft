@@ -11,7 +11,10 @@
       'v-craft-node-selected': isSelected,
       'v-craft-node': editor?.enabled,
       'v-craft-canvas': craftNodeIsCanvas(craftNode),
-      'v-craft-empty': !craftNode.slots || Object.keys(craftNode.slots).length === 0 || Object.values(craftNode.slots).every(slot => slot.length === 0),
+      'v-craft-empty':
+        !craftNode.slots ||
+        Object.keys(craftNode.slots).length === 0 ||
+        Object.values(craftNode.slots).every((slot) => slot.length === 0),
       'v-craft-other-node-dragged':
         editor?.draggedNode &&
         !craftNodeIsAncestorOf(editor.draggedNode, craftNode),
@@ -25,7 +28,9 @@
   >
     <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
       <div
-        v-if="craftNodeIsCanvas(craftNode) && (craftNode.slots[slotName]?.length == 0)"
+        v-if="
+          craftNodeIsCanvas(craftNode) && craftNode.slots[slotName]?.length == 0
+        "
         class="v-craft-drop-text"
         :data-slot-name="slotName"
         @dragover.prevent.stop="handleDragOver"
@@ -35,15 +40,20 @@
         <span class="v-craft-slot-name">{{ slotName }}</span>
       </div>
       <template v-if="shouldRenderSlots">
-        <template v-if="craftNodeData?.type && craftNodeData.slotName === slotName">
+        <template
+          v-if="craftNodeData?.type && craftNodeData.slotName === slotName"
+        >
           <CraftNodeViewer
-            v-for="item in computedDataChildren(craftNode.slots?.[slotName] || [], slotName)"
+            v-for="item in computedDataChildren(
+              craftNode.slots?.[slotName] || [],
+              slotName,
+            )"
             :key="item.key"
             :craftNode="item.craftNode"
           />
         </template>
         <CraftNodeEditor
-          v-for="childNode in (craftNode.slots?.[slotName] || [])"
+          v-for="childNode in craftNode.slots?.[slotName] || []"
           :key="childNode.uuid"
           :craftNode="childNode"
         />
@@ -78,7 +88,6 @@ const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
 const { resolvedNode, defaultProps, resolver } = useResolveCraftNode(craftNode);
 
-
 if (resolver.value) provide("resolver", resolver);
 
 const nodeRef = ref<ComponentPublicInstance<HTMLElement> | null>(null);
@@ -87,7 +96,7 @@ const craftNodeData = computed(() => editor?.nodeDataMap[craftNode.value.uuid]);
 
 const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
   craftNode.value,
-  nodeRef
+  nodeRef,
 );
 
 const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
@@ -96,12 +105,14 @@ const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   editor as any,
-  editor?.eventsContext || {}
+  editor?.eventsContext || {},
 );
 
 const nodeName = computed(() => {
   const resolved = resolver?.value?.resolve(craftNode.value.componentName);
-  return resolved?.componentName || craftNode.value.componentName;
+  return craftNodeIsCanvas(craftNode.value)
+    ? craftNode.value.props.componentName
+    : resolved?.componentName || craftNode.value.componentName;
 });
 
 const craftNodeClick = () => {
@@ -128,19 +139,22 @@ const availableSlots = computed(() => {
   if (resolverSlots && resolverSlots.length > 0) {
     slots.push(...resolverSlots);
   } else {
-    slots.push('default');
+    slots.push("default");
   }
   return slots;
 });
 
 const shouldRenderSlots = computed(() => {
   if (craftNodeIsCanvas(craftNode.value)) return true;
-  return Object.values(craftNode.value.slots || {}).some(children => children.length > 0);
+  return Object.values(craftNode.value.slots || {}).some(
+    (children) => children.length > 0,
+  );
 });
 
 const computedDataChildren = (children: CraftNode[], slotName: string) => {
   if (!craftNodeData.value) return [];
-  if (craftNodeData.value.slotName && craftNodeData.value.slotName !== slotName) return [];
+  if (craftNodeData.value.slotName && craftNodeData.value.slotName !== slotName)
+    return [];
   return computeDataNodes(craftNodeData.value, children);
 };
 
@@ -148,7 +162,7 @@ type ComputedDataNode = { key: string; craftNode: CraftNode };
 
 const computeDataNodes = (
   data: CraftNodeDatasource,
-  children: CraftNode[]
+  children: CraftNode[],
 ): ComputedDataNode[] => {
   if (data.type === "single") {
     return children.map((childNode) => ({
@@ -177,7 +191,7 @@ const computeDataNodes = (
               ...(item || {}),
             },
           },
-        }))
+        })),
       );
     }, [] as ComputedDataNode[]);
   }
