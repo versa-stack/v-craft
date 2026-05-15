@@ -63,7 +63,6 @@ export default <T extends object>(
       return;
     }
     editor.dragNode(null);
-    indicator.hide();
   };
 
   return {

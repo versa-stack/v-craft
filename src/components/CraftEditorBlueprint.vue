@@ -10,10 +10,8 @@
 <script lang="ts" setup generic="T extends object">
 import { CraftNode } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
-import { useIndicator } from "../store/indicator";
 
 const editor = useEditor();
-const indicator = useIndicator();
 
 defineOptions({
   name: "CraftEditorBlueprint",
@@ -34,6 +32,5 @@ const handleDragEnd = (e: MouseEvent) => {
   e.stopPropagation();
 
   editor.dragNode(null);
-  indicator.hide();
 };
 </script>

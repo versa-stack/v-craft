@@ -32,6 +32,7 @@ import { type CraftNode } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { CraftEditorConfig } from "../lib/model";
 import { useEditor } from "../store/editor";
+import { useIndicator } from "../store/indicator";
 
 const props = withDefaults(
   defineProps<{
@@ -56,6 +57,7 @@ const emit = defineEmits<{
 }>();
 
 const editor = useEditor();
+const indicator = useIndicator();
 
 const { getDraggedNode } = storeToRefs(editor);
 
@@ -65,6 +67,7 @@ watch(getDraggedNode, (node) => {
     return;
   }
   emit("nodeDragEnd");
+  indicator.hide();
 });
 
 const resolver = ref(
