@@ -6,7 +6,12 @@
     "esModuleInterop": true,
     "strict": true,
     "jsx": "preserve",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@versa-stack/v-craft": ["../../src/index.ts"],
+      "@versa-stack/v-craft/*": ["../../src/*"]
+    }
   },
   "include": [
     "./**/*.ts",

@@ -12,7 +12,7 @@
 2. Then install the latest version
 
    ```bash
-   npm install @versa-stack/v-craft@alpha
+   npm install @versa-stack/v-craft
 
    ```
 
