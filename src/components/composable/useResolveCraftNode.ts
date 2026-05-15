@@ -6,21 +6,29 @@ import CraftNodeResolver, {
 } from "../../lib/CraftNodeResolver";
 
 const resolveComponent = (
-  resolvedNode: CraftNodeComponentMap<any> | undefined,
-  fallbackName: string
+  resolver: CraftNodeResolver<any> | undefined,
+  craftNode: CraftNode
 ): string | Component => {
-  const component = resolvedNode?.component;
-  if (!component) {
-    return resolvedNode?.componentName || fallbackName;
+  if (!resolver) {
+    return craftNode.componentName;
   }
+
+  const resolvedComponent = resolver.resolveComponent(craftNode);
+
+  if (!resolvedComponent) {
+    const resolvedNode = resolver.resolve(craftNode.componentName);
+    return resolvedNode?.componentName || craftNode.componentName;
+  }
+
   if (
-    typeof component === "function" &&
-    !("setup" in component) &&
-    !("render" in component)
+    typeof resolvedComponent === "function" &&
+    !("setup" in resolvedComponent) &&
+    !("render" in resolvedComponent)
   ) {
-    return defineAsyncComponent(component as () => Promise<Component>);
+    return defineAsyncComponent(resolvedComponent as () => Promise<Component>);
   }
-  return component;
+
+  return resolvedComponent;
 };
 
 export const useResolveCraftNode = <T extends object>(
@@ -37,7 +45,7 @@ export const useResolveCraftNode = <T extends object>(
   const defaultProps = computed(() => resolvedNode.value?.defaultProps || {});
 
   const componentToRender = computed(() =>
-    resolveComponent(resolvedNode.value, craftNode.value?.componentName || "")
+    resolveComponent(resolver?.value, craftNode.value)
   );
 
   return {

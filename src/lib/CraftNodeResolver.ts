@@ -17,8 +17,14 @@ export type CraftNodeResolverMap<T extends object> = Record<
   CraftNodeComponentMap<T>
 >;
 
+export type ResolveComponentHook = (
+  craftNode: CraftNode,
+  defaultResolver: (name: string) => Component | undefined
+) => Component | undefined;
+
 export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
   resolverMap: CraftNodeResolverMap<T> = {};
+  private resolveComponentHook?: ResolveComponentHook;
 
   constructor(resolverMap: Record<string, CraftNodeComponentMap<T>> = {}) {
     this.setResolverMap(resolverMap);
@@ -32,8 +38,42 @@ export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
     });
   }
 
+  onResolveComponent(hook: ResolveComponentHook): void {
+    this.resolveComponentHook = hook;
+  }
+
   resolve(name: string): CraftNodeComponentMap<T> {
     return this.resolverMap[name];
+  }
+
+  resolveComponent(craftNode: CraftNode): Component | undefined {
+    const componentName = craftNodeIsCanvas(craftNode)
+      ? craftNode.props.componentName
+      : craftNode.componentName;
+
+    const defaultResolver = (name: string): Component | undefined => {
+      const resolved = this.resolve(name);
+      if (!resolved?.component) {
+        return undefined;
+      }
+      if (
+        typeof resolved.component === "function" &&
+        !("setup" in resolved.component) &&
+        !("render" in resolved.component)
+      ) {
+        return resolved.component as () => Promise<Component>;
+      }
+      return resolved.component;
+    };
+
+    if (this.resolveComponentHook) {
+      const result = this.resolveComponentHook(craftNode, defaultResolver);
+      if (result) {
+        return result;
+      }
+    }
+
+    return defaultResolver(componentName);
   }
 
   getDefaultProps(craftNode: CraftNode): Record<string, any> {

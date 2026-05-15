@@ -67,6 +67,8 @@ watch(getDraggedNode, (node) => {
   emit("nodeDragEnd");
 });
 
-const resolver = ref(new CraftNodeResolver(props.config.resolverMap));
+const resolver = ref(
+  props.config.resolver || new CraftNodeResolver(props.config.resolverMap)
+);
 provide("resolver", resolver);
 </script>

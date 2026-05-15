@@ -409,4 +409,83 @@ describe("CraftNodeEditor", () => {
     expect(wrapper.find(".async-parent").exists()).toBe(true);
     expect(wrapper.find(".async-leaf").exists()).toBe(true);
   });
+
+  it("uses custom component resolution hook when provided", async () => {
+    const CustomComponent = defineComponent({
+      name: "CustomComponent",
+      template: `<div class="custom-hook">custom hook</div>`,
+    });
+
+    const craftNode = ref({
+      componentName: "CustomComponent",
+      props: {},
+      slots: {},
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        CustomComponent: { componentName: "CustomComponent" },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    resolver.value.onResolveComponent((craftNode, defaultResolver) => {
+      if (craftNode.componentName === "CustomComponent") {
+        return CustomComponent;
+      }
+      return defaultResolver(craftNode.componentName);
+    });
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    expect(wrapper.find(".custom-hook").exists()).toBe(true);
+    expect(wrapper.text()).toBe("custom hook");
+  });
+
+  it("falls back to default resolver when hook returns undefined", async () => {
+    const DefaultComponent = defineComponent({
+      name: "DefaultComponent",
+      template: `<div class="default">default</div>`,
+    });
+
+    const craftNode = ref({
+      componentName: "DefaultComponent",
+      props: {},
+      slots: {},
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        DefaultComponent: {
+          componentName: "DefaultComponent",
+          component: DefaultComponent,
+        },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    resolver.value.onResolveComponent((craftNode, defaultResolver) => {
+      if (craftNode.componentName === "NonExistent") {
+        return DefaultComponent;
+      }
+      return defaultResolver(craftNode.componentName);
+    });
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    expect(wrapper.find(".default").exists()).toBe(true);
+    expect(wrapper.text()).toBe("default");
+  });
 });

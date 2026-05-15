@@ -20,12 +20,15 @@ defineOptions({
 
 const props = defineProps<{
   nodes: CraftNode[];
-  resolverMap: CraftNodeResolverMap<T>;
+  resolverMap?: CraftNodeResolverMap<T>;
+  resolver?: CraftNodeResolver<T>;
   nodeDataMap?: Record<string, CraftNodeDatasource>;
   eventsContext?: Record<string, any>;
 }>();
 
-const resolver = computed(() => new CraftNodeResolver(props.resolverMap));
+const resolver = computed(() =>
+  props.resolver || new CraftNodeResolver(props.resolverMap)
+);
 provide("resolver", resolver);
 provide("nodeDataMap", props.nodeDataMap || {});
 provide("eventsContext", props.eventsContext || {});

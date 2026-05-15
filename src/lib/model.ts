@@ -1,4 +1,4 @@
-import { CraftNodeResolverMap } from "./CraftNodeResolver";
+import { CraftNodeResolver, CraftNodeResolverMap } from "./CraftNodeResolver";
 import { CraftNode } from "./craftNode";
 
 export type CraftBlueprintData = {
@@ -33,7 +33,8 @@ export type Blueprint = Omit<CraftNode, "parentUuid" | "uuid"> & {
 
 export type CraftEditorConfig<T extends object> = {
   blueprintsLibrary: BlueprintsLibrary;
-  resolverMap: CraftNodeResolverMap<T>;
+  resolverMap?: CraftNodeResolverMap<T>;
+  resolver?: CraftNodeResolver<T>;
 };
 
 export type CraftDataPatch<V = any, D = any> = {
