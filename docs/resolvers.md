@@ -397,6 +397,173 @@ const DraggableSection = {
 }
 ```
 
+## Async Component Resolution
+
+The `component` field in a resolver map entry accepts either a **sync Vue component** or an **async factory function** (`() => Promise<Component>`). This enables lazy-loading components on demand — essential for Nuxt's auto-import system or any code-split setup.
+
+The `component` field is read by all rendering paths — `CraftNodeViewer`, `CraftNodeEditor`, and `CraftCanvas` — via the shared `useResolveCraftNode` composable. This means async loading works for **every node type**, not just container nodes.
+
+### Usage
+
+```typescript
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+
+const resolverMap: CraftNodeResolverMap<any> = {
+  HeroSection: {
+    componentName: "HeroSection",
+    component: () => import("./components/HeroSection.vue"),
+  },
+};
+```
+
+The factory is detected automatically and wrapped with Vue's `defineAsyncComponent`. No extra configuration is needed.
+
+### Sync vs Async
+
+```typescript
+import HeroSection from "./components/HeroSection.vue";
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+
+const resolverMap: CraftNodeResolverMap<any> = {
+  HeroSection: {
+    componentName: "HeroSection",
+    component: HeroSection,                                  // sync — imported at bundle time
+  },
+  LazyCard: {
+    componentName: "LazyCard",
+    component: () => import("./components/LazyCard.vue"),   // async — loaded on demand
+  },
+  PlainDiv: {
+    componentName: "div",                                    // no component — falls back to HTML tag
+  },
+};
+```
+
+| Scenario | `component` value |
+|---|---|
+| Standard Vue app | Sync import: `component: MyComponent` |
+| Nuxt / code-split | Async factory: `component: () => import('./MyComponent.vue')` |
+| HTML element or globally registered | Omit `component`, use `componentName` only |
+
+### Complete Example
+
+The following shows a full setup with both sync and async components in the same resolver map:
+
+**`components/HeroSection.vue`**
+```vue
+<template>
+  <section :style="{ backgroundColor: bgColor, padding: '60px 20px', textAlign: 'center' }">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+  </section>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  title: string;
+  subtitle: string;
+  bgColor: string;
+}>();
+</script>
+```
+
+**`components/LazyCard.vue`**
+```vue
+<template>
+  <div class="card" :style="{ padding: '20px', border: '1px solid #eee', borderRadius: '8px' }">
+    <h3>{{ heading }}</h3>
+    <slot />
+  </div>
+</template>
+
+<script setup lang="ts">
+defineProps<{ heading: string }>();
+</script>
+```
+
+**`resolvers.ts`**
+```typescript
+import HeroSection from "./components/HeroSection.vue";
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+
+export const resolverMap: CraftNodeResolverMap<any> = {
+  HeroSection: {
+    componentName: "HeroSection",
+    component: HeroSection,                                 // sync
+    defaultProps: { title: "Hello", subtitle: "", bgColor: "#f0f0f0" },
+    propsSchema: [
+      { $formkit: "text", name: "title", label: "Title" },
+      { $formkit: "text", name: "subtitle", label: "Subtitle" },
+      { $formkit: "color", name: "bgColor", label: "Background" },
+    ],
+  },
+  LazyCard: {
+    componentName: "LazyCard",
+    component: () => import("./components/LazyCard.vue"), // async — loaded on demand
+    defaultProps: { heading: "Card" },
+    propsSchema: [
+      { $formkit: "text", name: "heading", label: "Heading" },
+    ],
+    slots: ["default"],
+  },
+};
+```
+
+**`App.vue`**
+```vue
+<template>
+  <CraftStaticRenderer :nodes="nodes" :resolverMap="resolverMap" />
+</template>
+
+<script setup lang="ts">
+import { CraftStaticRenderer } from "@versa-stack/v-craft";
+import { resolverMap } from "./resolvers";
+
+const nodes = [
+  {
+    uuid: "1",
+    componentName: "HeroSection",
+    props: { title: "Welcome", subtitle: "Built with v-craft", bgColor: "#6366f1" },
+    slots: {},
+  },
+  {
+    uuid: "2",
+    componentName: "LazyCard",
+    props: { heading: "Features" },
+    slots: {
+      default: [
+        {
+          uuid: "3",
+          componentName: "HeroSection",
+          props: { title: "Fast", subtitle: "Lazy loaded", bgColor: "#fff" },
+          slots: {},
+        },
+      ],
+    },
+  },
+];
+</script>
+```
+
+`LazyCard` is only fetched from the server when the renderer first encounters it. `HeroSection` is bundled synchronously. Both are configured identically from the resolver's perspective.
+
+### Nuxt Example
+
+In Nuxt, components are auto-imported and cannot be statically imported in library code. Use `resolveComponent` from Vue as the factory:
+
+```typescript
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+import { resolveComponent } from "vue";
+
+export const nuxtResolvers: CraftNodeResolverMap<any> = {
+  AppHero: {
+    componentName: "AppHero",
+    component: () => Promise.resolve(resolveComponent("AppHero")) as any,
+    defaultProps: { title: "Welcome" },
+  },
+};
+```
+
 ## Using the CraftNodeResolver Class
 
 The `CraftNodeResolver` class provides methods to work with your resolver map:

@@ -17,7 +17,7 @@ type Blueprint = {
   label: string;
   componentName: string;
   props: Record<string, any>;
-  children: Blueprint[];  // always Blueprint[], always empty for simple components
+  slots: Record<string, Blueprint[]>;  // keyed by slot name, e.g. "default", "header"
 }
 ```
 
@@ -38,7 +38,7 @@ type CraftNode = {
 }
 ```
 
-**Never use `children` on a CraftNode. Never use `slots` on a Blueprint.**
+**Never use `children` on a CraftNode. Never use `children` on a Blueprint.**
 
 ---
 
@@ -101,7 +101,7 @@ const myBlueprints = {
     label: 'My Container',
     componentName: 'CraftCanvas',
     props: { componentName: 'MyContainer' },
-    children: [],
+    slots: { default: [] },
   }
 }
 ```
@@ -137,13 +137,13 @@ const blueprintsLibrary = {
       label: 'Button',
       componentName: 'MyButton',
       props: { text: 'Click me' },
-      children: [],
+      slots: { default: [] },
     },
     MyContainer: {
       label: 'Container',
       componentName: 'CraftCanvas',
       props: { componentName: 'MyContainer' },
-      children: [],
+      slots: { default: [] },
     },
   },
 }
@@ -254,7 +254,7 @@ const tree = buildCraftNodeTree({
   label: 'Card',
   componentName: 'CraftCanvas',
   props: { componentName: 'MyCard' },
-  children: [],
+  slots: { default: [] },
 }
 ```
 
@@ -297,7 +297,7 @@ Define per-node rules in the resolver map:
 | Mistake | Fix |
 |---------|-----|
 | Using `children` on a CraftNode | Use `slots: { default: [] }` |
-| Using `slots` on a Blueprint | Use `children: []` |
+| Using `children` on a Blueprint | Use `slots: { default: [] }` |
 | Forgetting `uuid` on a CraftNode | Use `uuidv4()` or call `buildCraftNodeTree` |
 | Using a component name not in the resolver | Add it to `CraftNodeResolver` |
 | Wrapping your Vue component with `CraftCanvas` in your template | Only use `CraftCanvas` in blueprint definitions, not in component templates |

@@ -383,6 +383,55 @@ import HeroSection from './HeroSection.vue'
 </script>
 ```
 
+## Async Component Resolution
+
+The `component` field in a resolver map entry accepts either a Vue component object **or an async factory function** that returns a `Promise<Component>`. This is useful for lazy-loading components on demand — for example in Nuxt, where components may be auto-imported.
+
+The `component` field is read by all rendering paths — `CraftNodeViewer`, `CraftNodeEditor`, and `CraftCanvas` — via the shared `useResolveCraftNode` composable. This means async loading works for every node type.
+
+### Syntax
+
+```typescript
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+
+const resolverMap: CraftNodeResolverMap<any> = {
+  HeroSection: {
+    componentName: "HeroSection",
+    component: () => import("./components/HeroSection.vue"),
+  },
+};
+```
+
+`CraftCanvas` detects whether `component` is an async factory and wraps it with `defineAsyncComponent` automatically. Sync components (objects or functional components with `setup`/`render`) are passed through as-is.
+
+### When to Use
+
+| Scenario | Approach |
+|---|---|
+| Standard Vue app | Sync: `component: HeroSection` |
+| Nuxt / code-split | Async: `component: () => import('./HeroSection.vue')` |
+| Global registration only | Omit `component`, set `componentName` |
+
+### Example: Mixed Resolver Map
+
+```typescript
+import HeroSection from "./components/HeroSection.vue";
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+
+const resolverMap: CraftNodeResolverMap<any> = {
+  HeroSection: {
+    componentName: "HeroSection",
+    component: HeroSection, // sync
+  },
+  LazyCard: {
+    componentName: "LazyCard",
+    component: () => import("./components/LazyCard.vue"), // async
+  },
+};
+```
+
+Both entries work identically from the editor's perspective. The async entry resolves and renders once its promise settles.
+
 ## Next Steps
 
 Now that you understand components:
