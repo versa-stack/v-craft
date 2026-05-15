@@ -1,9 +1,10 @@
 import type { FormKitSchemaFormKit } from "@formkit/core";
-import { markRaw } from "vue";
+import { markRaw, type Component } from "vue";
 import { CraftNode, craftNodeIsCanvas, CraftNodeRules } from "./craftNode";
 
 export type CraftNodeComponentMap<T extends object> = {
   componentName: string;
+  component?: Component | (() => Promise<Component>);
   propsSchema?: T;
   eventsSchema?: T;
   defaultProps?: Record<string, any>;

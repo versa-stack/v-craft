@@ -5,7 +5,7 @@
     v-bind="{ ...defaultProps, ...craftNode.props }"
     v-on="eventHandlers"
     :data-node-name="nodeName"
-    :is="resolvedNode.componentName"
+    :is="componentToRender"
     :style="{ '--node-color': nodeColor }"
     :class="{
       'v-craft-node-selected': isSelected,
@@ -86,7 +86,7 @@ const props = defineProps<{
 
 const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, defaultProps, resolver } = useResolveCraftNode(craftNode);
+const { resolvedNode, defaultProps, resolver, componentToRender } = useResolveCraftNode(craftNode);
 
 if (resolver.value) provide("resolver", resolver);
 

@@ -2,7 +2,7 @@
   <component
     ref="nodeRef"
     v-if="visible && resolver && resolvedNode"
-    :is="resolvedNode.componentName"
+    :is="componentToRender"
     v-bind="nodeProps"
     v-on="eventHandlers"
   >
@@ -47,7 +47,7 @@ const props = defineProps<{
 
 const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, defaultProps, resolver } = useResolveCraftNode(craftNode);
+const { resolvedNode, defaultProps, resolver, componentToRender } = useResolveCraftNode(craftNode);
 
 provide("resolver", resolver);
 

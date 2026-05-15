@@ -1,9 +1,9 @@
 import { FormKitSchemaFormKit } from "@formkit/core";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
-import { nextTick, ref } from "vue";
+import { defineComponent, nextTick, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
@@ -43,6 +43,13 @@ const createCanvas = <T extends object = FormKitSchemaFormKit>(
     uuid: uuidv4(),
   };
 };
+
+const AsyncLeaf = defineComponent({
+  name: "AsyncLeaf",
+  template: `<div class="async-leaf">async leaf</div>`,
+});
+
+const asyncLeafFactory = () => Promise.resolve(AsyncLeaf);
 
 describe("CraftNodeViewer", () => {
   beforeEach(() => {
@@ -281,5 +288,76 @@ describe("CraftNodeViewer", () => {
 
     expect(wrapper.find("img").exists()).toBe(true);
     expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(0);
+  });
+
+  it("renders a leaf node from an async component factory", async () => {
+    const craftNode = ref({
+      componentName: "AsyncLeaf",
+      props: {},
+      slots: {},
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        AsyncLeaf: { componentName: "AsyncLeaf", component: asyncLeafFactory },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeViewer, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.find(".async-leaf").exists()).toBe(true);
+    expect(wrapper.text()).toBe("async leaf");
+  });
+
+  it("renders child nodes of an async leaf node", async () => {
+    const AsyncParent = defineComponent({
+      name: "AsyncParent",
+      template: `<div class="async-parent"><slot /></div>`,
+    });
+
+    const craftNode = ref({
+      componentName: "AsyncParent",
+      props: {},
+      slots: {
+        default: [
+          {
+            componentName: "AsyncLeaf",
+            props: {},
+            slots: {},
+            uuid: uuidv4(),
+          },
+        ],
+      },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        AsyncParent: { componentName: "AsyncParent", component: () => Promise.resolve(AsyncParent) },
+        AsyncLeaf: { componentName: "AsyncLeaf", component: asyncLeafFactory },
+      } as CraftNodeResolverMap<any>)
+    );
+
+    const wrapper = mount(CraftNodeViewer, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.find(".async-parent").exists()).toBe(true);
+    expect(wrapper.find(".async-leaf").exists()).toBe(true);
   });
 });
