@@ -18,27 +18,32 @@
           @input="handleFormInput"
           :actions="false"
         >
-          <FormKitSchema :schema="(schema as FormKitSchemaFormKit)" />
+          <FormKitSchema :schema="schema" />
         </FormKit>
       </fieldset>
     </template>
   </CraftEditorPanelForm>
 </template>
 
-<script lang="ts" setup generic="T extends object = FormKitSchemaFormKit">
-import { FormKitSchemaFormKit } from "@formkit/core";
+<script
+  lang="ts"
+  setup
+  generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
+>
+import { type FormKitSchemaDefinition } from "@formkit/core";
 import { FormKit, FormKitSchema } from "@formkit/vue";
 import { toRefs } from "vue";
 import { CraftNode } from "../lib/craftNode";
 
-export interface Props<T extends object> {
-  craftNode?: CraftNode;
-  schema?: T;
-}
-
-const props = withDefaults(defineProps<Props<T>>(), {
-  schema: () => ({} as T),
-});
+const props = withDefaults(
+  defineProps<{
+    craftNode?: CraftNode;
+    schema?: T;
+  }>(),
+  {
+    schema: () => ({}) as any,
+  },
+);
 
 const { craftNode, schema } = toRefs(props);
 

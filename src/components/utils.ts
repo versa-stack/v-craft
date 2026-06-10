@@ -2,8 +2,9 @@ import { CraftNode } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { BlueprintGroup } from "../lib/model";
 import { v4 as uuidv4 } from "uuid";
+import { FormKitSchemaDefinition } from '@formkit/core';
 
-export const blueprintsWithDefaults = <T extends object>(
+export const blueprintsWithDefaults = <T extends FormKitSchemaDefinition>(
   group: BlueprintGroup,
   resolver: CraftNodeResolver<T>
 ) => {

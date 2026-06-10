@@ -41,7 +41,12 @@
   </div>
 </template>
 
-<script lang="ts" setup generic="T extends object">
+<script
+  lang="ts"
+  setup
+  generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
+>
+import { FormKitSchemaDefinition } from "@formkit/core";
 import { storeToRefs } from "pinia";
 import { toRefs } from "vue";
 import { CraftNodeResolverMap } from "../lib/CraftNodeResolver";

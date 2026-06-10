@@ -1,4 +1,4 @@
-import type { FormKitSchemaFormKit } from "@formkit/core";
+import { FormKitSchemaDefinition } from "@formkit/core";
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { markRaw } from "vue";
@@ -22,7 +22,7 @@ export interface EditorState {
   draggedNode: CraftNode | null;
   enabled: boolean;
   nodeRefsRecord: Record<string, HTMLElement>;
-  resolver: CraftNodeResolver<FormKitSchemaFormKit> | null;
+  resolver: CraftNodeResolver<FormKitSchemaDefinition> | null;
   eventsContext: Record<string, any>;
   nodeDataMap: Record<string, CraftNodeDatasource | null>;
   draggingDisabled: boolean;
@@ -67,7 +67,7 @@ export const useEditor = defineStore("editor", {
       this.draggingDisabled = false;
     },
 
-    setResolver(resolver: CraftNodeResolver<FormKitSchemaFormKit>) {
+    setResolver(resolver: CraftNodeResolver<FormKitSchemaDefinition>) {
       this.resolver = resolver;
     },
 

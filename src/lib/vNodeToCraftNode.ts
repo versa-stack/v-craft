@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { CraftNode } from "./craftNode";
-import CraftNodeResolver from "./CraftNodeResolver";
+import type { CraftNode } from "./craftNode";
+import type CraftNodeResolver from "./CraftNodeResolver";
+import type { FormKitSchemaDefinition } from "@formkit/core";
 
 const formatComponentName = (vNode) => {
   if (typeof vNode.type === "symbol") {
@@ -18,10 +19,12 @@ const formatComponentName = (vNode) => {
   return "anonmymous";
 };
 
-const createNodeFromVNode = <T extends object>(
+const createNodeFromVNode = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
   resolver: CraftNodeResolver<T>,
   vNode,
-  parentNode: CraftNode | null = null
+  parentNode: CraftNode | null = null,
 ) => {
   const componentName = formatComponentName(vNode);
   const { props } = vNode;
@@ -34,24 +37,38 @@ const createNodeFromVNode = <T extends object>(
   };
 
   if (vNode.children) {
-    if (typeof vNode.children === 'object' && !Array.isArray(vNode.children)) {
+    if (typeof vNode.children === "object" && !Array.isArray(vNode.children)) {
       Object.entries(vNode.children).forEach(([slotName, slotFn]) => {
-        if (typeof slotFn === 'function') {
+        if (typeof slotFn === "function") {
           const slotChildren = slotFn();
           if (slotChildren) {
-            craftNode.slots[slotName] = createChildren<T>(resolver, slotChildren, craftNode);
+            craftNode.slots[slotName] = createChildren<T>(
+              resolver,
+              slotChildren,
+              craftNode,
+            );
           }
         }
       });
     } else if (Array.isArray(vNode.children)) {
-      craftNode.slots.default = createChildren<T>(resolver, vNode.children, craftNode);
+      craftNode.slots.default = createChildren<T>(
+        resolver,
+        vNode.children,
+        craftNode,
+      );
     }
   }
 
   return craftNode;
 };
 
-const createChildren = <T extends object>(resolver, vnodeChildren, parent) => {
+const createChildren = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
+  resolver,
+  vnodeChildren,
+  parent,
+) => {
   if (!vnodeChildren || !(vnodeChildren instanceof Array))
     return [] as unknown as CraftNode[];
   return vnodeChildren

@@ -1,6 +1,7 @@
 import { HTMLAttributes, StyleValue } from "vue";
 import { CraftNodeResolver, CraftNodeResolverMap } from "./CraftNodeResolver";
 import { CraftNode } from "./craftNode";
+import { FormKitSchemaDefinition } from '@formkit/core';
 
 export type CraftBlueprintData = {
   label: string;
@@ -32,7 +33,7 @@ export type Blueprint = Omit<CraftNode, "parentUuid" | "uuid"> & {
   slots: Record<string, Blueprint[]>;
 };
 
-export type CraftEditorConfig<T extends object> = {
+export type CraftEditorConfig<T extends FormKitSchemaDefinition = FormKitSchemaDefinition> = {
   blueprintsLibrary: BlueprintsLibrary;
   resolverMap?: CraftNodeResolverMap<T>;
   resolver?: CraftNodeResolver<T>;

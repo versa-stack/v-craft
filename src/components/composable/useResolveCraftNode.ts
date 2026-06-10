@@ -1,6 +1,7 @@
 import { computed, ComputedRef, defineAsyncComponent, inject, Ref } from "vue";
 import type { Component } from "vue";
 import { CraftNode } from "../../lib/craftNode";
+import { FormKitSchemaDefinition } from '@formkit/core';
 import CraftNodeResolver, {
   CraftNodeComponentMap,
 } from "../../lib/CraftNodeResolver";
@@ -31,7 +32,7 @@ const resolveComponent = (
   return resolvedComponent;
 };
 
-export const useResolveCraftNode = <T extends object>(
+export const useResolveCraftNode = <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
   craftNode: Ref<CraftNode>
 ) => {
   const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver")!;

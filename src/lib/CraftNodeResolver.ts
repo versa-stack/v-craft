@@ -1,8 +1,10 @@
-import type { FormKitSchemaFormKit } from "@formkit/core";
+import { type FormKitSchemaDefinition } from "@formkit/core";
 import { markRaw, type Component } from "vue";
 import { CraftNode, craftNodeIsCanvas, CraftNodeRules } from "./craftNode";
 
-export type CraftNodeComponentMap<T extends object> = {
+export type CraftNodeComponentMap<
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+> = {
   componentName: string;
   component?: Component | (() => Promise<Component>);
   propsSchema?: T;
@@ -12,17 +14,18 @@ export type CraftNodeComponentMap<T extends object> = {
   slots?: string[];
 };
 
-export type CraftNodeResolverMap<T extends object> = Record<
-  string,
-  CraftNodeComponentMap<T>
->;
+export type CraftNodeResolverMap<
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+> = Record<string, CraftNodeComponentMap<T>>;
 
 export type ResolveComponentHook = (
   craftNode: CraftNode,
-  defaultResolver: (name: string) => Component | undefined
+  defaultResolver: (name: string) => Component | undefined,
 ) => Component | undefined;
 
-export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
+export class CraftNodeResolver<
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+> {
   resolverMap: CraftNodeResolverMap<T> = {};
   private resolveComponentHook?: ResolveComponentHook;
 
@@ -87,12 +90,12 @@ export class CraftNodeResolver<T extends object = FormKitSchemaFormKit[]> {
     return result;
   }
 
-  getSchema(craftNode: CraftNode): Record<string, any> {
-    return this.resolveNode(craftNode)?.propsSchema || {};
+  getSchema(craftNode: CraftNode): T {
+    return this.resolveNode(craftNode)?.propsSchema || {} as T;
   }
 
-  getEventsSchema(craftNode: CraftNode): Record<string, any> {
-    return this.resolveNode(craftNode)?.eventsSchema || {};
+  getEventsSchema(craftNode: CraftNode): T {
+    return this.resolveNode(craftNode)?.eventsSchema || {} as T;
   }
 
   getRules(craftNode: CraftNode): CraftNodeRules {

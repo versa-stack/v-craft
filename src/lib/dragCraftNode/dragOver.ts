@@ -5,8 +5,9 @@ import {
 } from "../craftNode";
 import { DragCraftNodeContext } from "./drop";
 import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
+import { FormKitSchemaDefinition } from '@formkit/core';
 
-const handleElementDragOver = <T extends object>(
+const handleElementDragOver = <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
   e: MouseEvent,
   el: HTMLElement,
   { editor, indicator, craftNode, resolver }: DragCraftNodeContext<T>
@@ -25,14 +26,13 @@ const handleElementDragOver = <T extends object>(
   indicator.pointAfter(el);
 };
 
-const handleCanvasDragOver = <T extends object>(
+const handleCanvasDragOver = <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
   e: MouseEvent,
   el: HTMLElement,
   { editor, indicator, craftNode, resolver }: DragCraftNodeContext<T>
 ) => {
   if (!editor.draggedNode) return;
 
-  // Check if hovering over a slot placeholder
   const target = e.target as HTMLElement;
   const slotPlaceholder = target.closest('.v-craft-drop-text');
   
@@ -42,7 +42,6 @@ const handleCanvasDragOver = <T extends object>(
     indicator.pointInside(slotPlaceholder as HTMLElement);
     return;
   }
-
   if (mouseOnEdge(e, el)) {
     handleElementDragOver(e, el, { editor, indicator, craftNode, resolver });
     return;
@@ -58,7 +57,7 @@ const handleCanvasDragOver = <T extends object>(
   indicator.pointInside(el);
 };
 
-export default <T extends object>(
+export default <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
   e: MouseEvent,
   el: HTMLElement,
   context: DragCraftNodeContext<T>

@@ -53,11 +53,12 @@
   </slot>
 </template>
 
-<script lang="ts" setup generic="T extends object">
+<script lang="ts" setup generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition">
 import { storeToRefs } from "pinia";
 import { computed, inject, type ComputedRef } from "vue";
 import CoreResolver from "../lib/CraftNodeResolver";
 import { useEditor } from "../store/editor";
+import type { FormKitSchemaDefinition } from '@formkit/core';
 
 const editor = useEditor();
 const { selectedNode } = storeToRefs(editor);

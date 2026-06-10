@@ -1,23 +1,24 @@
+import { FormKitSchemaDefinition } from "@formkit/core";
 import { v4 as uuidv4 } from "uuid";
-import CraftNodeResolver from "./CraftNodeResolver";
 import { useEditor } from "../store/editor";
+import CraftNodeResolver from "./CraftNodeResolver";
 
 export type CraftNodeRules = {
-  canMoveIn?: <T extends object>(
+  canMoveIn?: <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
     craftNode: CraftNode,
     targetNode: CraftNode,
-    resolver: CraftNodeResolver<T>
+    resolver: CraftNodeResolver<T>,
   ) => boolean;
-  canMoveOut?: <T extends object>(
+  canMoveOut?: <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
     craftNode: CraftNode,
     targetNode: CraftNode,
-    resolver: CraftNodeResolver<T>
+    resolver: CraftNodeResolver<T>,
   ) => boolean;
-  canDrag?: <T extends object>(craftNode: CraftNode) => boolean;
-  canMoveInto?: <T extends object>(
+  canDrag?: (craftNode: CraftNode) => boolean;
+  canMoveInto?: <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
     craftNode: CraftNode,
     targetNode: CraftNode,
-    resolver: CraftNodeResolver<T>
+    resolver: CraftNodeResolver<T>,
   ) => boolean;
 };
 
@@ -42,7 +43,7 @@ export type CraftNodeDatasource = {
 export const isVisible = (craftNode: CraftNode) =>
   craftNode.visible === undefined || craftNode.visible;
 
-export const craftNodeInCanvas = <T extends object>(craftNode: CraftNode) => {
+export const craftNodeInCanvas = (craftNode: CraftNode) => {
   let node = craftNode;
   const editor = useEditor();
 
@@ -56,8 +57,8 @@ export const craftNodeInCanvas = <T extends object>(craftNode: CraftNode) => {
   return false;
 };
 
-export const craftNodeIsDraggable = <T extends object>(
-  craftNode: CraftNode
+export const craftNodeIsDraggable = (
+  craftNode: CraftNode,
 ) => {
   if (!craftNodeInCanvas(craftNode)) {
     return false;
@@ -70,9 +71,9 @@ export const craftNodeIsDraggable = <T extends object>(
   return true;
 };
 
-export const craftNodeIsAncestorOf = <T extends object>(
+export const craftNodeIsAncestorOf = (
   craftNode: CraftNode,
-  descendant: CraftNode
+  descendant: CraftNode,
 ) => {
   const editor = useEditor();
   let currentNode = descendant;
@@ -87,7 +88,7 @@ export const craftNodeIsAncestorOf = <T extends object>(
   return false;
 };
 
-export const resolveNodeName = <T extends object>(craftNode: CraftNode) => {
+export const resolveNodeName = (craftNode: CraftNode) => {
   if (craftNode.componentName === "CraftCanvas") {
     return craftNode.props.componentName;
   }
@@ -95,10 +96,12 @@ export const resolveNodeName = <T extends object>(craftNode: CraftNode) => {
   return craftNode.componentName;
 };
 
-export const craftNodeCanBeChildOf = <T extends object>(
+export const craftNodeCanBeChildOf = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
   craftNode: CraftNode,
   targetNode: CraftNode,
-  resolver: CraftNodeResolver<T>
+  resolver: CraftNodeResolver<T>,
 ) => {
   if (!craftNodeIsCanvas(targetNode)) {
     return false;
@@ -118,7 +121,7 @@ export const craftNodeCanBeChildOf = <T extends object>(
     const editor = useEditor();
     const parent = editor.nodeMap.get(craftNode.parentUuid) as CraftNode;
 
-    const rules = resolver.resolve(resolveNodeName<T>(parent))?.rules || {};
+    const rules = resolver.resolve(resolveNodeName(parent))?.rules || {};
     if (
       rules.canMoveOut &&
       !rules.canMoveOut(craftNode, targetNode, resolver)
@@ -148,14 +151,16 @@ export const craftNodeCanBeChildOf = <T extends object>(
   return true;
 };
 
-export const craftNodeIsCanvas = <T extends object>(craftNode: CraftNode) => {
+export const craftNodeIsCanvas = (craftNode: CraftNode) => {
   return craftNode.componentName === "CraftCanvas";
 };
 
-export const craftNodeCanBeSiblingOf = <T extends object>(
+export const craftNodeCanBeSiblingOf = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
   craftNode: CraftNode,
   targetNode: CraftNode,
-  resolver: CraftNodeResolver<T>
+  resolver: CraftNodeResolver<T>,
 ) => {
   const editor = useEditor();
   if (targetNode.uuid === craftNode.uuid) {
@@ -169,12 +174,12 @@ export const craftNodeCanBeSiblingOf = <T extends object>(
   return craftNodeCanBeChildOf(
     craftNode,
     editor.nodeMap.get(targetNode.parentUuid) as CraftNode,
-    resolver
+    resolver,
   );
 };
 
-export const buildCraftNodeTree = <T extends object>(
-  craftNode: CraftNode
+export const buildCraftNodeTree = (
+  craftNode: CraftNode,
 ): CraftNode => {
   if (!craftNode.uuid) {
     craftNode.uuid = uuidv4();
@@ -202,9 +207,11 @@ export const buildCraftNodeTree = <T extends object>(
   return craftNode;
 };
 
-export const initializeSlotsFromResolver = <T extends object>(
+export const initializeSlotsFromResolver = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
   node: CraftNode,
-  resolver: CraftNodeResolver<T>
+  resolver: CraftNodeResolver<T>,
 ): CraftNode => {
   if (!node.slots || Object.keys(node.slots).length === 0) {
     const resolved = resolver.resolveNode?.(node);

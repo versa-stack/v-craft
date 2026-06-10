@@ -8,11 +8,18 @@
   />
 </template>
 
-<script lang="ts" setup generic="T extends object">
+<script
+  lang="ts"
+  setup
+  generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
+>
 import { computed, provide } from "vue";
 import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
-import CraftNodeResolver, { CraftNodeResolverMap } from "../lib/CraftNodeResolver";
+import CraftNodeResolver, {
+  CraftNodeResolverMap,
+} from "../lib/CraftNodeResolver";
 import CraftNodeViewer from "./CraftNodeViewer.vue";
+import { FormKitSchemaDefinition } from "@formkit/core";
 
 defineOptions({
   name: "CraftStaticRenderer",
@@ -26,8 +33,8 @@ const props = defineProps<{
   eventsContext?: Record<string, any>;
 }>();
 
-const resolver = computed(() =>
-  props.resolver || new CraftNodeResolver(props.resolverMap)
+const resolver = computed(
+  () => props.resolver || new CraftNodeResolver(props.resolverMap),
 );
 provide("resolver", resolver);
 provide("nodeDataMap", props.nodeDataMap || {});

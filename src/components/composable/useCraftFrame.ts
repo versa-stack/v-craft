@@ -13,8 +13,9 @@ import CraftNodeResolver, {
 } from "../../lib/CraftNodeResolver";
 import vNodeToCraftNode from "../../lib/vNodeToCraftNode";
 import { useEditor } from "../../store/editor";
+import { FormKitSchemaDefinition } from '@formkit/core';
 
-export const useCraftFrame = <T extends object>(
+export const useCraftFrame = <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
   resolverMap?: CraftNodeResolverMap<T>
 ) => {
   const editor = useEditor();

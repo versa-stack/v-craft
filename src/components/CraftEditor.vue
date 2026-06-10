@@ -22,7 +22,7 @@
   </CraftEditorPanelLayout>
 </template>
 
-<script lang="ts" setup generic="T extends object">
+<script lang="ts" setup generic="T extends FormKitSchemaDefinition">
 import { storeToRefs } from "pinia";
 import { provide, ref, watch } from "vue";
 import { type CraftFrameIFrameProps } from "../lib/model";
@@ -31,6 +31,7 @@ import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { CraftEditorConfig } from "../lib/model";
 import { useEditor } from "../store/editor";
 import { useIndicator } from "../store/indicator";
+import { FormKitSchemaDefinition } from '@formkit/core';
 
 const props = defineProps<{
   config: CraftEditorConfig<T>;

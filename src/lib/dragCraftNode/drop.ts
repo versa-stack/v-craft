@@ -1,3 +1,4 @@
+import { FormKitSchemaDefinition } from "@formkit/core";
 import { Ref, ref } from "vue";
 import { EditorStoreInstanceType } from "../../store/editor";
 import { IndicatorStoreType } from "../../store/indicator";
@@ -8,29 +9,32 @@ import {
   craftNodeCanBeSiblingOf,
   craftNodeIsCanvas,
   initializeSlotsFromResolver,
-  resolveNodeName,
 } from "../craftNode";
 import CraftNodeResolver from "../CraftNodeResolver";
 import { mouseOnEdge, mouseOnLeftHalf, mouseOnTopHalf } from "./mouse";
 
-export type DragCraftNodeContext<T extends object> = {
+export type DragCraftNodeContext<
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+> = {
   editor: EditorStoreInstanceType;
   indicator: IndicatorStoreType;
   craftNode: Ref<CraftNode>;
   resolver: CraftNodeResolver<T>;
 };
 
-const handleElementDrop = <T extends object>(
+const handleElementDrop = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
   e: MouseEvent,
   el: HTMLElement,
   draggedNode: CraftNode,
-  context: DragCraftNodeContext<T>
+  context: DragCraftNodeContext<T>,
 ) => {
   if (
     !craftNodeCanBeSiblingOf(
       draggedNode,
       context.craftNode.value,
-      context.resolver
+      context.resolver,
     )
   ) {
     return context.craftNode.value;
@@ -43,9 +47,9 @@ const handleElementDrop = <T extends object>(
     return context.craftNode.value;
   }
 
-  const sibling = Object.values(parent.slots || {}).flat().find(
-    (c) => c.uuid === context.craftNode.value.uuid
-  );
+  const sibling = Object.values(parent.slots || {})
+    .flat()
+    .find((c) => c.uuid === context.craftNode.value.uuid);
   if (!sibling) {
     return context.craftNode.value;
   }
@@ -63,24 +67,29 @@ const handleElementDrop = <T extends object>(
   return context.craftNode.value;
 };
 
-const handleCanvasDrop = <T extends object>(
+const handleCanvasDrop = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
   e: MouseEvent,
   el: HTMLElement,
   draggedNode: CraftNode,
-  context: DragCraftNodeContext<T>
+  context: DragCraftNodeContext<T>,
 ) => {
   const { editor, resolver, craftNode } = context;
   const target = e.target as HTMLElement;
   const targetNode = editor.nodeMap.get(target.id);
   if (targetNode && craftNodeIsCanvas(targetNode)) {
-    handleCanvasDrop(e, el, draggedNode, { ...context, craftNode: ref(targetNode) });
+    handleCanvasDrop(e, el, draggedNode, {
+      ...context,
+      craftNode: ref(targetNode),
+    });
     return context.craftNode.value;
   }
-  const slotPlaceholder = target.closest('.v-craft-drop-text');
-  let slotName = 'default';
-  
+  const slotPlaceholder = target.closest(".v-craft-drop-text");
+  let slotName = "default";
+
   if (slotPlaceholder) {
-    const slotNameAttr = slotPlaceholder.getAttribute('data-slot-name');
+    const slotNameAttr = slotPlaceholder.getAttribute("data-slot-name");
     if (slotNameAttr) {
       slotName = slotNameAttr;
     }
@@ -91,21 +100,25 @@ const handleCanvasDrop = <T extends object>(
 
     const targetSlots = context.craftNode.value.slots || {};
     const slotNames = Object.keys(targetSlots);
-    slotName = slotNames.length > 0 ? slotNames[0] : 'default';
+    slotName = slotNames.length > 0 ? slotNames[0] : "default";
   }
 
   if (
     !craftNodeCanBeChildOf(
       draggedNode,
       context.craftNode.value,
-      context.resolver
+      context.resolver,
     )
   ) {
     return context.craftNode.value;
   }
 
   if (mouseOnTopHalf(e, el)) {
-    context.editor.prependNodeTo(draggedNode, context.craftNode.value, slotName);
+    context.editor.prependNodeTo(
+      draggedNode,
+      context.craftNode.value,
+      slotName,
+    );
   } else {
     context.editor.appendNodeTo(draggedNode, context.craftNode.value, slotName);
   }
@@ -113,10 +126,10 @@ const handleCanvasDrop = <T extends object>(
   return context.craftNode.value;
 };
 
-export default <T extends object>(
+export default <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
   e: MouseEvent,
   el: HTMLElement,
-  context: DragCraftNodeContext<T>
+  context: DragCraftNodeContext<T>,
 ) => {
   if (!context.editor.draggedNode) {
     return context.craftNode.value;
@@ -128,7 +141,7 @@ export default <T extends object>(
       copy = JSON.parse(JSON.stringify(context.editor.draggedNode));
     } else {
       copy = buildCraftNodeTree(
-        JSON.parse(JSON.stringify(context.editor.draggedNode))
+        JSON.parse(JSON.stringify(context.editor.draggedNode)),
       );
     }
     return initializeSlotsFromResolver(copy, context.resolver);
