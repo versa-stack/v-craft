@@ -67,6 +67,9 @@ const slotNodes = computed(() => {
 const isCanvas = computed(() => craftNodeIsCanvas(craftNode.value));
 
 const availableSlots = computed(() => {
+  if (!shouldRenderSlots.value) {
+    return [];
+  }
   const slots: string[] = [];
   const resolved = resolver?.value?.resolveNode?.(craftNode.value);
   const resolverSlots = resolved?.slots;
