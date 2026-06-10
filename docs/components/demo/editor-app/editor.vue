@@ -1,8 +1,14 @@
 <template>
   <CraftEditor
     :config="config"
-    :inheritStyles="true"
-    :useIframe="true"
+    :iframe="{
+      inheritStyles: true,
+      wrapperClass: 'w-full h-[100vh]',
+      iframeStyle: {
+        height: '100%',
+        width: '100%',
+      }
+    }"
     @iframe-load="onIframeLoad"
   >
     <CraftCanvas componentName="div" />
@@ -91,5 +97,9 @@ const onIframeLoad = (iframe: HTMLIFrameElement) => {
 <style lang="scss" scoped>
 .editor-switch {
   display: inline-block;
+}
+.v-craft-frame {
+  height: 100%;
+  width: 100%;
 }
 </style>

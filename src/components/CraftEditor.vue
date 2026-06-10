@@ -12,10 +12,7 @@
     </template>
     <template v-else #default>
       <CraftFrame
-        :useIframe="useIframe"
-        :inheritStyles="inheritStyles"
-        :iFrameStyleSheets="iFrameStyleSheets"
-        :iFrameClass="iFrameClass"
+        :iframe="iframe"
         :resolverMap="config.resolverMap"
         @iframe-load="(iframe) => emit('iframeLoad', iframe)"
       >
@@ -27,28 +24,18 @@
 
 <script lang="ts" setup generic="T extends object">
 import { storeToRefs } from "pinia";
-import { HTMLAttributes, provide, ref, watch } from "vue";
+import { provide, ref, watch } from "vue";
+import { type CraftFrameIFrameProps } from "../lib/model";
 import { type CraftNode } from "../lib/craftNode";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { CraftEditorConfig } from "../lib/model";
 import { useEditor } from "../store/editor";
 import { useIndicator } from "../store/indicator";
 
-const props = withDefaults(
-  defineProps<{
-    config: CraftEditorConfig<T>;
-    useIframe?: boolean;
-    iFrameStyleSheets?: string[];
-    iFrameClass?: HTMLAttributes["class"];
-    inheritStyles?: boolean;
-  }>(),
-  {
-    useIframe: false,
-    inheritStyles: false,
-    iFrameClass: "",
-    iFrameStyleSheets: () => [],
-  },
-);
+const props = defineProps<{
+  config: CraftEditorConfig<T>;
+  iframe?: CraftFrameIFrameProps;
+}>();
 
 const emit = defineEmits<{
   (e: "nodeDragStart", n: CraftNode): void;
@@ -71,7 +58,8 @@ watch(getDraggedNode, (node) => {
 });
 
 const resolver = ref(
-  props.config.resolver || new CraftNodeResolver(props.config.resolverMap)
+  props.config.resolver || new CraftNodeResolver(props.config.resolverMap),
 );
+
 provide("resolver", resolver);
 </script>

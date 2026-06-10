@@ -1,3 +1,4 @@
+import { HTMLAttributes, StyleValue } from "vue";
 import { CraftNodeResolver, CraftNodeResolverMap } from "./CraftNodeResolver";
 import { CraftNode } from "./craftNode";
 
@@ -51,3 +52,18 @@ export type CraftDataWrapperPropMap<V = any, D = any> = {
   patches: CraftDataPatch<V, D>[];
   type: "single" | "list";
 };
+
+export type CraftNodeIFrameProps = {
+  iframeClass?: HTMLAttributes["class"];
+  iframeStyle?: StyleValue;
+  inheritStyles?: boolean;
+  styleSheets?: string[];
+  styles?: string[];
+  iframeId?: string;
+};
+
+
+export type CraftFrameIFrameProps = CraftNodeIFrameProps & {
+  wrapperClass?: HTMLAttributes["class"];
+  wrapperStyle?: StyleValue;
+}
