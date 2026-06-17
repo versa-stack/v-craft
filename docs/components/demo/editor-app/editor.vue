@@ -4,10 +4,7 @@
     :iframe="{
       inheritStyles: true,
       wrapperClass: 'w-full h-[100vh]',
-      iframeStyle: {
-        height: '100%',
-        width: '100%',
-      }
+      iframeClass: 'w-full h-[100vh]',
     }"
     @iframe-load="onIframeLoad"
   >
@@ -97,9 +94,5 @@ const onIframeLoad = (iframe: HTMLIFrameElement) => {
 <style lang="scss" scoped>
 .editor-switch {
   display: inline-block;
-}
-.v-craft-frame {
-  height: 100%;
-  width: 100%;
 }
 </style>

@@ -31,6 +31,7 @@ export type CraftNode = {
   uuid: string;
   visible?: boolean;
   events?: Record<string, string>;
+  label?: string;
 };
 
 export type CraftNodeDatasource = {

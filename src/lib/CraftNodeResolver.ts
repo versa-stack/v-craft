@@ -6,6 +6,7 @@ export type CraftNodeComponentMap<
   T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
 > = {
   componentName: string;
+  label?: string;
   component?: Component | (() => Promise<Component>);
   propsSchema?: T;
   eventsSchema?: T;

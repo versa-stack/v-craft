@@ -5,11 +5,14 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { h, defineComponent, nextTick, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
-import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
+import CraftNodeStatic from "../../src/components/CraftNodeStatic.vue";
 import CraftStaticRenderer from "../../src/components/CraftStaticRenderer.vue";
 import { CraftNode } from "../../src/lib/craftNode";
-import CraftNodeResolver, { CraftNodeResolverMap } from "../../src/lib/CraftNodeResolver";
+import CraftNodeResolver, {
+  CraftNodeResolverMap,
+} from "../../src/lib/CraftNodeResolver";
 import { defaultResolvers } from "../../src/resolvers/default";
+import { writeFileSync } from "fs";
 
 const TestComponent = defineComponent({
   name: "TestComponent",
@@ -17,7 +20,8 @@ const TestComponent = defineComponent({
     text: { type: String, default: "" },
   },
   setup(props, { slots }) {
-    return () => h("div", { class: "test-component" }, [props.text, slots.default?.()]);
+    return () =>
+      h("div", { class: "test-component" }, [props.text, slots.default?.()]);
   },
 });
 
@@ -61,7 +65,7 @@ describe("CraftStaticRenderer", () => {
           TestComponent,
           TestContainer,
           CraftStaticRenderer,
-          CraftNodeViewer,
+          CraftNodeStatic,
           CraftComponentSimpleText,
           CraftCanvas,
         },
@@ -143,7 +147,9 @@ describe("CraftStaticRenderer", () => {
     ];
 
     const wrapper = createWrapper(nodes);
-    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
+    expect(
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
+    ).toBe(true);
   });
 
   it("overrides default props with node props", () => {
@@ -189,7 +195,7 @@ describe("CraftStaticRenderer", () => {
     expect(wrapper.text()).not.toContain("Hidden");
   });
 
-  it("renders CraftNodeViewer for each node", () => {
+  it("renders CraftNodeStatic for each node", () => {
     const nodes: CraftNode[] = [
       {
         uuid: uuidv4(),
@@ -206,7 +212,11 @@ describe("CraftStaticRenderer", () => {
     ];
 
     const wrapper = createWrapper(nodes);
-    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(2);
+
+    writeFileSync("hello.txt", wrapper.html());
+    expect(wrapper.findAllComponents({ name: "CraftNodeStatic" })).toHaveLength(
+      2,
+    );
   });
 
   it("provides resolver to child components", () => {
@@ -230,7 +240,9 @@ describe("CraftStaticRenderer", () => {
 
     const wrapper = createWrapper(nodes);
     expect(wrapper.findComponent({ name: "CraftCanvas" }).exists()).toBe(true);
-    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
+    expect(
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
+    ).toBe(true);
     expect(wrapper.text()).toContain("Canvas Child");
   });
 
@@ -264,7 +276,9 @@ describe("CraftStaticRenderer", () => {
 
     const wrapper = createWrapper(nodes);
     expect(wrapper.findAll(".test-container")).toHaveLength(2);
-    expect(wrapper.find(".test-container .test-container .test-component").exists()).toBe(true);
+    expect(
+      wrapper.find(".test-container .test-container .test-component").exists(),
+    ).toBe(true);
     expect(wrapper.text()).toContain("Deep");
   });
 
@@ -383,7 +397,10 @@ describe("CraftStaticRenderer", () => {
                               {
                                 uuid: "paragraph",
                                 componentName: "CraftComponentSimpleText",
-                                props: { content: "Article content here", componentName: "p" },
+                                props: {
+                                  content: "Article content here",
+                                  componentName: "p",
+                                },
                                 slots: {},
                               },
                             ],
@@ -426,10 +443,18 @@ describe("CraftStaticRenderer", () => {
     expect(html).toContain("<article>");
     expect(html).toContain("<footer>");
 
-    expect(wrapper.find("div.container > header.bg-black > nav > h1").exists()).toBe(true);
-    expect(wrapper.find("div.container > header.bg-black > nav > h1").text()).toBe("Site Title");
-    expect(wrapper.find("div.container > main > section > article > p").exists()).toBe(true);
-    expect(wrapper.find("div.container > main > section > article > p").text()).toBe("Article content here");
+    expect(
+      wrapper.find("div.container > header.bg-black > nav > h1").exists(),
+    ).toBe(true);
+    expect(
+      wrapper.find("div.container > header.bg-black > nav > h1").text(),
+    ).toBe("Site Title");
+    expect(
+      wrapper.find("div.container > main > section > article > p").exists(),
+    ).toBe(true);
+    expect(
+      wrapper.find("div.container > main > section > article > p").text(),
+    ).toBe("Article content here");
     expect(wrapper.find("div.container > footer > span").exists()).toBe(true);
     expect(wrapper.find("div.container > footer > span").text()).toBe("© 2025");
   });
@@ -460,7 +485,7 @@ describe("CraftStaticRenderer", () => {
         components: {
           TestComponent,
           CraftStaticRenderer,
-          CraftNodeViewer,
+          CraftNodeStatic,
         },
       },
     });
@@ -495,7 +520,7 @@ describe("CraftStaticRenderer", () => {
         components: {
           TestComponent,
           CraftStaticRenderer,
-          CraftNodeViewer,
+          CraftNodeStatic,
         },
       },
     });
@@ -540,7 +565,7 @@ describe("CraftStaticRenderer", () => {
         components: {
           ResolverComponent,
           CraftStaticRenderer,
-          CraftNodeViewer,
+          CraftNodeStatic,
         },
       },
     });
@@ -593,7 +618,7 @@ describe("CraftStaticRenderer", () => {
         components: {
           TestComponent,
           CraftStaticRenderer,
-          CraftNodeViewer,
+          CraftNodeStatic,
         },
       },
     });

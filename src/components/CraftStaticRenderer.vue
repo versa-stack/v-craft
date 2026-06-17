@@ -1,8 +1,9 @@
 <template>
-  <CraftNodeViewer
+  <CraftNodeStatic
     v-for="craftNode in nodes"
     :key="craftNode.uuid"
     :craftNode="craftNode"
+    :nodeMap="nodeMap"
     :nodeDataMap="nodeDataMap"
     :eventsContext="eventsContext"
   />
@@ -13,12 +14,12 @@
   setup
   generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
 >
-import { computed, provide } from "vue";
+import { computed, provide, readonly } from "vue";
 import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
 } from "../lib/CraftNodeResolver";
-import CraftNodeViewer from "./CraftNodeViewer.vue";
+import CraftNodeStatic from "./CraftNodeStatic.vue";
 import { FormKitSchemaDefinition } from "@formkit/core";
 
 defineOptions({
@@ -32,6 +33,23 @@ const props = defineProps<{
   nodeDataMap?: Record<string, CraftNodeDatasource>;
   eventsContext?: Record<string, any>;
 }>();
+
+const recurseNodes = (node: CraftNode, nm: Map<string, CraftNode>) => {
+  nm.set(node.uuid, node);
+  Object.entries(node.slots).forEach(([slot, children]) => {
+    if (!children?.forEach) {
+      return;
+    }
+
+    children.forEach((c) => recurseNodes(c, nm));
+  });
+};
+
+const nodeMap = computed(() => {
+  const nm = new Map<string, CraftNode>();
+  props.nodes.forEach((n) => recurseNodes(n, nm));
+  return nm;
+});
 
 const resolver = computed(
   () => props.resolver || new CraftNodeResolver(props.resolverMap),

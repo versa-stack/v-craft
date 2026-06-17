@@ -4,7 +4,7 @@
     v-if="visible && craftNode && resolvedNode"
     v-bind="{ ...defaultProps, ...craftNode.props }"
     v-on="eventHandlers"
-    :data-node-name="nodeName"
+    :data-node-name="nodeName || 'what the fuck'"
     :is="componentToRender"
     :style="{ '--node-color': nodeColor }"
     :class="{
@@ -29,7 +29,8 @@
     <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
       <div
         v-if="
-          craftNodeIsCanvas(craftNode) && (!craftNode.slots || craftNode.slots[slotName]?.length == 0)
+          craftNodeIsCanvas(craftNode) &&
+          (!craftNode.slots || craftNode.slots[slotName]?.length == 0)
         "
         class="v-craft-drop-text"
         :data-slot-name="slotName"
@@ -63,7 +64,14 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentPublicInstance, computed, provide, ref, toRef } from "vue";
+import {
+  ComponentPublicInstance,
+  computed,
+  provide,
+  ref,
+  toRefs,
+  watch,
+} from "vue";
 import {
   CraftNode,
   craftNodeIsAncestorOf,
@@ -84,14 +92,24 @@ const props = defineProps<{
   craftNode: CraftNode;
 }>();
 
-const craftNode = toRef(props, "craftNode");
+const { craftNode } = toRefs(props);
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, defaultProps, resolver, componentToRender } = useResolveCraftNode(craftNode);
+const { resolvedNode, defaultProps, resolver, componentToRender } =
+  useResolveCraftNode(craftNode);
 
-if (resolver.value) provide("resolver", resolver);
+watch(
+  resolver,
+  (v) => {
+    if (!v) {
+      return;
+    }
+
+    provide("resolver", resolver);
+  },
+  { immediate: true },
+);
 
 const nodeRef = ref<ComponentPublicInstance<HTMLElement> | null>(null);
-
 const craftNodeData = computed(() => editor?.nodeDataMap[craftNode.value.uuid]);
 
 const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
@@ -104,15 +122,28 @@ const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
 
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
-  editor as any,
   editor?.eventsContext || {},
+  () =>
+    editor?.nodeMap
+      ? (Object.fromEntries(editor.nodeMap.entries()) as Record<
+          string,
+          CraftNode
+        >)
+      : null,
+  (uuid) => editor?.nodeMap[uuid] ?? null,
 );
 
 const nodeName = computed(() => {
   const resolved = resolver?.value?.resolve(craftNode.value.componentName);
-  return craftNodeIsCanvas(craftNode.value)
+  if (resolved?.label) {
+    return resolved.label
+  }
+
+  const nn = craftNodeIsCanvas(craftNode.value)
     ? craftNode.value.props.componentName
     : resolved?.componentName || craftNode.value.componentName;
+
+  return nn;
 });
 
 const craftNodeClick = () => {
@@ -198,6 +229,13 @@ const computeDataNodes = (
 
   return [];
 };
+
+watch([nodeRef, nodeName], ([node, name]) => {
+  if (!node?.$el || !name) {
+    return
+  }
+  node.$el.setAttribute('data-node-name', name)
+}, {immediate: true})
 </script>
 
 <style lang="scss">

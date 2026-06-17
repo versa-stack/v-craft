@@ -1,7 +1,7 @@
 <template>
   <component
     ref="nodeRef"
-    v-if="visible && resolver && resolvedNode"
+    v-if="(craftNode.visible || craftNode.visible === undefined) && resolver && resolvedNode"
     :is="componentToRender"
     v-bind="nodeProps"
     v-on="eventHandlers"
@@ -9,17 +9,23 @@
     <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
       <template v-if="shouldRenderSlots">
         <template v-if="!data?.type">
-          <CraftNodeViewer
+          <CraftNodeStatic
             v-for="childNode in slotNodes[slotName]"
             :key="childNode.uuid"
             :craftNode="childNode"
+            :nodeMap="nodeMap"
+            :nodeDataMap="nodeDataMap"
+            :eventsContext="eventsContext"
           />
         </template>
         <template v-else>
-          <CraftNodeViewer
+          <CraftNodeStatic
             v-for="item in computedChildren(slotNodes[slotName], slotName)"
             :key="item.key"
             :craftNode="item.craftNode"
+            :nodeMap="nodeMap"
+            :nodeDataMap="nodeDataMap"
+            :eventsContext="eventsContext"
           />
         </template>
       </template>
@@ -28,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, provide, ref, toRef, readonly } from "vue";
+import { computed, provide, readonly, ref, toRefs } from "vue";
 import {
   CraftNode,
   CraftNodeDatasource,
@@ -36,25 +42,25 @@ import {
 } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
-import { useCraftNodeWrapper } from "./composable/useCraftNodeWrapper";
-import CraftNodeViewer from "./CraftNodeViewer.vue";
+import CraftNodeStatic from "./CraftNodeStatic.vue";
 
 defineOptions({
-  name: "CraftNodeViewer",
+  name: "CraftNodeStatic",
 });
 
 const props = defineProps<{
   craftNode: CraftNode;
+  nodeMap: Map<string, CraftNode>;
   nodeDataMap?: Record<string, CraftNodeDatasource>;
   eventsContext?: Record<string, any>;
 }>();
 
-const craftNode = toRef(props, "craftNode");
-const { editor, visible } = useCraftNodeWrapper(craftNode);
+const { craftNode, nodeMap } = toRefs(props);
 const { resolvedNode, defaultProps, resolver, componentToRender } =
   useResolveCraftNode(craftNode);
 
 provide("resolver", resolver);
+provide("craftNode", readonly(craftNode.value));
 
 const nodeProps = computed(() => ({
   ...defaultProps.value,
@@ -62,10 +68,7 @@ const nodeProps = computed(() => ({
 }));
 
 const data = computed(() => {
-  return (
-    props.nodeDataMap?.[craftNode.value.uuid] ||
-    editor?.nodeDataMap?.[craftNode.value.uuid]
-  );
+  return props.nodeDataMap?.[craftNode.value.uuid] || null;
 });
 
 const slotNodes = computed(() => {
@@ -100,26 +103,12 @@ const computedChildren = (children: CraftNode[], slotName: string) => {
   return computeDataNodes(data.value, children);
 };
 
-const nodeRef = ref<HTMLElement | null>(null);
-
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
-  props.eventsContext || editor?.eventsContext || {},
-  () =>
-    editor?.nodeMap
-      ? (Object.fromEntries(editor.nodeMap.entries()) as Record<
-          string,
-          CraftNode
-        >)
-      : null,
-  (uuid) => editor?.nodeMap[uuid] ?? null,
+  props.eventsContext || {},
+  () => Object.fromEntries(nodeMap.value.entries()),
+  (uuid) => nodeMap.value[uuid] ?? null,
 );
-
-onMounted(() => {
-  if (nodeRef.value && craftNode.value && editor) {
-    editor.setNodeRef(craftNode.value, nodeRef.value);
-  }
-});
 
 type ComputedDataNode = { key: string; craftNode: CraftNode };
 
