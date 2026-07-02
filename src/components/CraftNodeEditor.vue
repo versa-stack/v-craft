@@ -2,11 +2,13 @@
   <component
     ref="nodeRef"
     v-if="visible && craftNode && resolvedNode"
-    v-bind="{ ...defaultProps, ...craftNode.props }"
+    v-bind="{
+      ...defaultProps,
+      ...craftNode.props,
+      [`data-craft-uuid`]: craftNode.uuid,
+    }"
     v-on="eventHandlers"
-    :data-node-name="nodeName || 'what the fuck'"
     :is="componentToRender"
-    :style="{ '--node-color': nodeColor }"
     :class="{
       'v-craft-node-selected': isSelected,
       'v-craft-node': editor?.enabled,
@@ -45,7 +47,7 @@
           v-if="craftNodeData?.type && craftNodeData.slotName === slotName"
         >
           <CraftNodeViewer
-            v-for="item in computedDataChildren(
+            v-for="item in computeDataChildren(
               craftNode.slots?.[slotName] || [],
               slotName,
             )"
@@ -67,6 +69,9 @@
 import {
   ComponentPublicInstance,
   computed,
+  nextTick,
+  onMounted,
+  onUpdated,
   provide,
   ref,
   toRefs,
@@ -83,6 +88,7 @@ import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useCraftNodeWrapper } from "./composable/useCraftNodeWrapper";
 import useDragCraftNode from "./composable/useDragCraftNode";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
+import { generateColorFromUUID } from "./utils";
 
 defineOptions({
   name: "CraftNodeEditor",
@@ -100,16 +106,14 @@ const { resolvedNode, defaultProps, resolver, componentToRender } =
 watch(
   resolver,
   (v) => {
-    if (!v) {
-      return;
-    }
-
+    if (!v) return;
     provide("resolver", resolver);
   },
   { immediate: true },
 );
 
 const nodeRef = ref<ComponentPublicInstance<HTMLElement> | null>(null);
+const nodeEl = ref<HTMLElement | null>(null);
 const craftNodeData = computed(() => editor?.nodeDataMap[craftNode.value.uuid]);
 
 const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
@@ -135,44 +139,63 @@ const { eventHandlers } = useCraftNodeEvents(
 
 const nodeName = computed(() => {
   const resolved = resolver?.value?.resolve(craftNode.value.componentName);
-  if (resolved?.label) {
-    return resolved.label
-  }
+  if (resolved?.label) return resolved.label;
 
-  const nn = craftNodeIsCanvas(craftNode.value)
+  return craftNodeIsCanvas(craftNode.value)
     ? craftNode.value.props.componentName
     : resolved?.componentName || craftNode.value.componentName;
-
-  return nn;
 });
-
-const craftNodeClick = () => {
-  selectNode();
-};
-
-const generateColorFromUUID = (uuid: string): string => {
-  let hash = 0;
-  for (let i = 0; i < uuid.length; i++) {
-    hash = uuid.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const h = hash % 360;
-  const s = 70 + (hash % 30);
-  const l = 45 + (hash % 30);
-  return `hsla(${h}, ${s}%, ${l}%, 0.9)`;
-};
 
 const nodeColor = computed(() => generateColorFromUUID(craftNode.value.uuid));
 
+const resolveNodeEl = (): HTMLElement | null => {
+  const doc =
+    nodeEl.value?.ownerDocument ??
+    (nodeRef.value as ComponentPublicInstance | null)?.$el?.ownerDocument ??
+    document;
+
+  const stamped = doc.querySelector(
+    `[data-craft-uuid="${craftNode.value.uuid}"]`
+  ) as HTMLElement | null;
+  if (stamped) return stamped;
+
+  let el: any = (nodeRef.value as ComponentPublicInstance | null)?.$el;
+  while (el && !(el instanceof HTMLElement)) {
+    el = el.nextElementSibling ?? null;
+  }
+  return el ?? null;
+};
+
+const applyNodeAttributes = (el: HTMLElement, name: string, color: string) => {
+  if (!(el instanceof Element)) {
+    console.error("resolveNodeEl returned a non-Element:", el);
+    return;
+  }
+  el.style.setProperty("--node-name", name);
+  el.style.setProperty("--node-color", color);
+  el.setAttribute("data-node-name", name);
+};
+
+const syncNodeEl = () => {
+  const el = resolveNodeEl();
+  if (!el) return;
+  nodeEl.value = el;
+  applyNodeAttributes(el, nodeName.value ?? "(n/a)", nodeColor.value);
+};
+
+onMounted(() => nextTick(syncNodeEl));
+onUpdated(() => nextTick(syncNodeEl));
+
+watch([nodeName, nodeColor], () => {
+  if (!nodeEl.value) return;
+  applyNodeAttributes(nodeEl.value, nodeName.value ?? "", nodeColor.value);
+});
+
 const availableSlots = computed(() => {
-  const slots: string[] = [];
   const resolved = resolver?.value?.resolveNode?.(craftNode.value);
   const resolverSlots = resolved?.slots;
-  if (resolverSlots && resolverSlots.length > 0) {
-    slots.push(...resolverSlots);
-  } else {
-    slots.push("default");
-  }
-  return slots;
+  if (resolverSlots && resolverSlots.length > 0) return resolverSlots;
+  return ["default"];
 });
 
 const shouldRenderSlots = computed(() => {
@@ -182,7 +205,9 @@ const shouldRenderSlots = computed(() => {
   );
 });
 
-const computedDataChildren = (children: CraftNode[], slotName: string) => {
+const craftNodeClick = () => selectNode();
+
+const computeDataChildren = (children: CraftNode[], slotName: string) => {
   if (!craftNodeData.value) return [];
   if (craftNodeData.value.slotName && craftNodeData.value.slotName !== slotName)
     return [];
@@ -200,27 +225,20 @@ const computeDataNodes = (
       key: `${childNode.uuid}-single`,
       craftNode: {
         ...childNode,
-        props: {
-          ...childNode.props,
-          ...(data.item || {}),
-        },
+        props: { ...childNode.props, ...(data.item || {}) },
       },
     }));
   }
 
   if (data.type === "list") {
     if (!data.list) return [];
-
     return children.reduce((acc, childNode) => {
       return acc.concat(
         data.list!.map((item, index) => ({
           key: `${childNode.uuid}-data-${index}`,
           craftNode: {
             ...childNode,
-            props: {
-              ...childNode.props,
-              ...(item || {}),
-            },
+            props: { ...childNode.props, ...(item || {}) },
           },
         })),
       );
@@ -229,13 +247,6 @@ const computeDataNodes = (
 
   return [];
 };
-
-watch([nodeRef, nodeName], ([node, name]) => {
-  if (!node?.$el || !name) {
-    return
-  }
-  node.$el.setAttribute('data-node-name', name)
-}, {immediate: true})
 </script>
 
 <style lang="scss">

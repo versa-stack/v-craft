@@ -21,3 +21,14 @@ export const blueprintsWithDefaults = <T extends FormKitSchemaDefinition>(
     return result;
   });
 };
+
+export const generateColorFromUUID = (uuid: string): string => {
+  let hash = 0;
+  for (let i = 0; i < uuid.length; i++) {
+    hash = uuid.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const h = hash % 360;
+  const s = 70 + (hash % 30);
+  const l = 45 + (hash % 30);
+  return `hsla(${h}, ${s}%, ${l}%, 0.9)`;
+};
