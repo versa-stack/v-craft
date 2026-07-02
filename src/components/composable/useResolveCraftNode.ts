@@ -1,10 +1,21 @@
-import { computed, ComputedRef, defineAsyncComponent, inject, Ref } from "vue";
+import {
+  computed,
+  ComputedRef,
+  defineAsyncComponent,
+  inject,
+  MaybeRefOrGetter,
+  Ref,
+} from "vue";
 import type { Component } from "vue";
 import { CraftNode } from "../../lib/craftNode";
 import { FormKitSchemaDefinition } from '@formkit/core';
 import CraftNodeResolver, {
   CraftNodeComponentMap,
 } from "../../lib/CraftNodeResolver";
+import {
+  CraftNodePropsContext,
+  useResolveCraftNodeProps,
+} from "./useResolveCraftNodeProps";
 
 const resolveComponent = (
   resolver: CraftNodeResolver<any> | undefined,
@@ -33,7 +44,8 @@ const resolveComponent = (
 };
 
 export const useResolveCraftNode = <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
-  craftNode: Ref<CraftNode>
+  craftNode: Ref<CraftNode>,
+  context: MaybeRefOrGetter<CraftNodePropsContext> = {}
 ) => {
   const resolver = inject<ComputedRef<CraftNodeResolver<T>>>("resolver")!;
   const resolvedNode = computed(() => {
@@ -49,10 +61,19 @@ export const useResolveCraftNode = <T extends FormKitSchemaDefinition = FormKitS
     resolveComponent(resolver?.value, craftNode.value)
   );
 
+  const { props: contextProps } = useResolveCraftNodeProps(craftNode, context);
+
+  const props = computed(() => ({
+    ...defaultProps.value,
+    ...contextProps.value,
+    ...craftNode.value?.props,
+  }));
+
   return {
     resolvedNode,
     resolver,
     defaultProps,
     componentToRender,
+    props,
   };
 };

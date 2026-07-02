@@ -11,6 +11,7 @@ import CraftEditorPanelLayout from "./CraftEditorPanelLayout.vue";
 import CraftEditorPanelNodeEventsSettings from "./CraftEditorPanelNodeEventsSettings.vue";
 import CraftEditorPanelNodeLayer from "./CraftEditorPanelNodeLayer.vue";
 import CraftEditorPanelNodeSettings from "./CraftEditorPanelNodeSettings.vue";
+import CraftEditorPanelNodeSlotPropsSettings from "./CraftEditorPanelNodeSlotPropsSettings.vue";
 import CraftEditorPanelSettings from "./CraftEditorPanelSettings.vue";
 import CraftFrame from "./CraftFrame.vue";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
@@ -33,6 +34,7 @@ export {
   CraftEditorPanelNodeEventsSettings,
   CraftEditorPanelNodeLayer,
   CraftEditorPanelNodeSettings,
+  CraftEditorPanelNodeSlotPropsSettings,
   CraftEditorPanelSettings,
   CraftFrame,
   CraftIframe,

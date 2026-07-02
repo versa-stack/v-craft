@@ -3,8 +3,7 @@
     ref="nodeRef"
     v-if="visible && craftNode && resolvedNode"
     v-bind="{
-      ...defaultProps,
-      ...craftNode.props,
+      ...nodeProps,
       [`data-craft-uuid`]: craftNode.uuid,
     }"
     v-on="eventHandlers"
@@ -28,7 +27,11 @@
     @dragstart.stop="handleDragStart"
     @drop.prevent.stop="handleDrop"
   >
-    <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
+    <template
+      v-for="slotName in availableSlots"
+      :key="slotName"
+      #[slotName]="slotProps"
+    >
       <div
         v-if="
           craftNodeIsCanvas(craftNode) &&
@@ -59,6 +62,7 @@
           v-for="childNode in craftNode.slots?.[slotName] || []"
           :key="childNode.uuid"
           :craftNode="childNode"
+          :context="buildChildContext(slotName, slotProps)"
         />
       </template>
     </template>
@@ -88,6 +92,7 @@ import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useCraftNodeWrapper } from "./composable/useCraftNodeWrapper";
 import useDragCraftNode from "./composable/useDragCraftNode";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
+import { CraftNodePropsContext } from "./composable/useResolveCraftNodeProps";
 import { generateColorFromUUID } from "./utils";
 
 defineOptions({
@@ -96,12 +101,32 @@ defineOptions({
 
 const props = defineProps<{
   craftNode: CraftNode;
+  context?: CraftNodePropsContext;
 }>();
 
 const { craftNode } = toRefs(props);
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, defaultProps, resolver, componentToRender } =
-  useResolveCraftNode(craftNode);
+const { resolvedNode, resolver, componentToRender, props: nodeProps } =
+  useResolveCraftNode(craftNode, () => props.context || {});
+
+const buildChildContext = (
+  slotName: string,
+  slotProps: Record<string, any> = {},
+): CraftNodePropsContext => {
+  const allowedKeys = craftNode.value.slotsProps?.[slotName];
+  const bucket = allowedKeys
+    ? Object.fromEntries(
+        allowedKeys
+          .filter((key) => key in slotProps)
+          .map((key) => [key, slotProps[key]]),
+      )
+    : slotProps;
+
+  return {
+    ...(props.context || {}),
+    [slotName]: bucket,
+  };
+};
 
 watch(
   resolver,

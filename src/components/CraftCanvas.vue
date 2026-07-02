@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useAttrs, useSlots } from "vue";
+import { computed, useAttrs, useSlots, watch } from "vue";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
 import { CraftNode } from "../lib/craftNode";
 
@@ -29,5 +29,5 @@ const craftNode = computed<CraftNode>(() => ({
   uuid: "",
 }));
 
-const { componentToRender } = useResolveCraftNode(craftNode as any);
+const { componentToRender } = useResolveCraftNode(craftNode);
 </script>

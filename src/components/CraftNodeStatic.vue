@@ -1,33 +1,41 @@
 <template>
   <component
     ref="nodeRef"
-    v-if="(craftNode.visible || craftNode.visible === undefined) && resolver && resolvedNode"
+    v-if="
+      (craftNode.visible || craftNode.visible === undefined) &&
+      resolver &&
+      resolvedNode
+    "
     :is="componentToRender"
     v-bind="nodeProps"
     v-on="eventHandlers"
   >
-    <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
-      <template v-if="shouldRenderSlots">
-        <template v-if="!data?.type">
-          <CraftNodeStatic
-            v-for="childNode in slotNodes[slotName]"
-            :key="childNode.uuid"
-            :craftNode="childNode"
-            :nodeMap="nodeMap"
-            :nodeDataMap="nodeDataMap"
-            :eventsContext="eventsContext"
-          />
-        </template>
-        <template v-else>
-          <CraftNodeStatic
-            v-for="item in computedChildren(slotNodes[slotName], slotName)"
-            :key="item.key"
-            :craftNode="item.craftNode"
-            :nodeMap="nodeMap"
-            :nodeDataMap="nodeDataMap"
-            :eventsContext="eventsContext"
-          />
-        </template>
+    <template
+      v-for="slotName in availableSlots"
+      :key="slotName"
+      #[slotName]="slotProps"
+    >
+      <template v-if="!data?.type">
+        <CraftNodeStatic
+          v-for="childNode in slotNodes[slotName]"
+          :key="childNode.uuid"
+          :craftNode="childNode"
+          :nodeMap="nodeMap"
+          :nodeDataMap="nodeDataMap"
+          :eventsContext="eventsContext"
+          :context="buildChildContext(slotName, slotProps)"
+        />
+      </template>
+      <template v-else>
+        <CraftNodeStatic
+          v-for="item in computedChildren(slotNodes[slotName], slotName)"
+          :key="item.key"
+          :craftNode="item.craftNode"
+          :nodeMap="nodeMap"
+          :nodeDataMap="nodeDataMap"
+          :eventsContext="eventsContext"
+          :context="buildChildContext(slotName, slotProps)"
+        />
       </template>
     </template>
   </component>
@@ -42,6 +50,7 @@ import {
 } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
+import { CraftNodePropsContext } from "./composable/useResolveCraftNodeProps";
 import CraftNodeStatic from "./CraftNodeStatic.vue";
 
 defineOptions({
@@ -53,19 +62,34 @@ const props = defineProps<{
   nodeMap: Map<string, CraftNode>;
   nodeDataMap?: Record<string, CraftNodeDatasource>;
   eventsContext?: Record<string, any>;
+  context?: CraftNodePropsContext;
 }>();
 
 const { craftNode, nodeMap } = toRefs(props);
-const { resolvedNode, defaultProps, resolver, componentToRender } =
-  useResolveCraftNode(craftNode);
+const { resolvedNode, resolver, componentToRender, props: nodeProps } =
+  useResolveCraftNode(craftNode, () => props.context || {});
 
 provide("resolver", resolver);
 provide("craftNode", readonly(craftNode.value));
 
-const nodeProps = computed(() => ({
-  ...defaultProps.value,
-  ...craftNode.value?.props,
-}));
+const buildChildContext = (
+  slotName: string,
+  slotProps: Record<string, any> = {},
+): CraftNodePropsContext => {
+  const allowedKeys = craftNode.value.slotsProps?.[slotName];
+  const bucket = allowedKeys
+    ? Object.fromEntries(
+        allowedKeys
+          .filter((key) => key in slotProps)
+          .map((key) => [key, slotProps[key]]),
+      )
+    : slotProps;
+
+  return {
+    ...(props.context || {}),
+    [slotName]: bucket,
+  };
+};
 
 const data = computed(() => {
   return props.nodeDataMap?.[craftNode.value.uuid] || null;

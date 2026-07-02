@@ -24,6 +24,8 @@ export type CraftNodeRules = {
 
 export type CraftNode = {
   slots: Record<string, CraftNode[]>;
+  slotsProps?: Record<string, string[]>;
+  slotsPropsPropsMap?: Record<string, Record<string, string>>;
   componentName: string;
   parentUuid?: string | null;
   props: any;
@@ -58,9 +60,7 @@ export const craftNodeInCanvas = (craftNode: CraftNode) => {
   return false;
 };
 
-export const craftNodeIsDraggable = (
-  craftNode: CraftNode,
-) => {
+export const craftNodeIsDraggable = (craftNode: CraftNode) => {
   if (!craftNodeInCanvas(craftNode)) {
     return false;
   }
@@ -179,9 +179,7 @@ export const craftNodeCanBeSiblingOf = <
   );
 };
 
-export const buildCraftNodeTree = (
-  craftNode: CraftNode,
-): CraftNode => {
+export const buildCraftNodeTree = (craftNode: CraftNode): CraftNode => {
   if (!craftNode.uuid) {
     craftNode.uuid = uuidv4();
   }

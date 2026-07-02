@@ -60,4 +60,8 @@ export const resolverMap: CraftNodeResolverMap = {
   CraftContainerSingleSlot: {
     componentName: "CraftContainerSingleSlot",
   },
+  CraftListExample: {
+    componentName: "CraftListExample",
+    slots: ["default"],
+  },
 };

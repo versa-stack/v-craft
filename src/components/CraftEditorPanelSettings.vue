@@ -7,6 +7,10 @@
     :schema="schema"
     :eventsSchema="eventsSchema"
     :handleEventsUpdate="handleEventsUpdate"
+    :ownSlots="ownSlots"
+    :availableProps="availableProps"
+    :handleSlotsPropsUpdate="handleSlotsPropsUpdate"
+    :handleSlotsPropsPropsMapUpdate="handleSlotsPropsPropsMapUpdate"
     :deleteable="deleteable"
     :removeNode="removeNode"
   >
@@ -39,6 +43,15 @@
             @update:events="handleEventsUpdate"
           />
         </div>
+        <div v-if="selectedNode" class="v-craft-settings">
+          <CraftEditorPanelNodeSlotPropsSettings
+            :craftNode="selectedNode"
+            :availableSlots="ownSlots"
+            :availableProps="availableProps"
+            @update:slotsProps="handleSlotsPropsUpdate"
+            @update:slotsPropsPropsMap="handleSlotsPropsPropsMapUpdate"
+          />
+        </div>
         <div class="v-craft-actions" data-type="button">
           <button
             class="formkit-input v-craft-delete"
@@ -57,6 +70,7 @@
 import { storeToRefs } from "pinia";
 import { computed, inject, type ComputedRef } from "vue";
 import CoreResolver from "../lib/CraftNodeResolver";
+import { extractSchemaFieldNames } from "../lib/extractSchemaFieldNames";
 import { useEditor } from "../store/editor";
 import type { FormKitSchemaDefinition } from '@formkit/core';
 
@@ -75,6 +89,20 @@ const eventsSchema = computed(() => {
     return [];
   }
   return resolver.value.getEventsSchema(selectedNode.value);
+});
+
+const availableProps = computed(() => extractSchemaFieldNames(schema.value));
+
+// Only components that explicitly declare slots in their resolver entry
+// can expose slot context, so no "default" fallback here (unlike the
+// renderer's availableSlots, which assumes every component can accept
+// a default slot for placing children).
+const ownSlots = computed(() => {
+  if (!selectedNode.value || !resolver?.value) {
+    return [];
+  }
+  const resolved = resolver.value.resolveNode(selectedNode.value);
+  return resolved?.slots || [];
 });
 
 const deleteable = computed(
@@ -105,6 +133,23 @@ const handlePropsUpdate = (newProps: Record<string, any>) => {
 const handleEventsUpdate = (newEvents: Record<string, any>) => {
   if (selectedNode.value && newEvents) {
     editor.updateNodeEvents(selectedNode.value.uuid, newEvents);
+  }
+};
+
+const handleSlotsPropsUpdate = (slotsProps: Record<string, string[]>) => {
+  if (selectedNode.value) {
+    editor.updateNodeSlotsProps(selectedNode.value.uuid, slotsProps);
+  }
+};
+
+const handleSlotsPropsPropsMapUpdate = (
+  slotsPropsPropsMap: Record<string, Record<string, string>>,
+) => {
+  if (selectedNode.value) {
+    editor.updateNodeSlotsPropsPropsMap(
+      selectedNode.value.uuid,
+      slotsPropsPropsMap,
+    );
   }
 };
 </script>

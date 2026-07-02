@@ -105,6 +105,31 @@ export const demoContent: CraftNode[] = process([
                   ],
                 },
               },
+              {
+                label: "List (Slot Props Demo)",
+                componentName: "CraftCanvas",
+                props: {
+                  componentName: "CraftListExample",
+                },
+                slotsProps: {
+                  default: ["item", "index"],
+                },
+                slots: {
+                  default: [
+                    {
+                      label: "Text",
+                      componentName: "CraftComponentSimpleText",
+                      props: {
+                        componentName: "span",
+                      },
+                      slots: {},
+                      slotsPropsPropsMap: {
+                        default: { content: "$.item.title" },
+                      },
+                    },
+                  ],
+                },
+              },
             ],
           },
         },

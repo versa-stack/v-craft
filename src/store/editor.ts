@@ -119,6 +119,23 @@ export const useEditor = defineStore("editor", {
       }
     },
 
+    updateNodeSlotsProps(nodeUuid: string, slotsProps: Record<string, string[]>) {
+      const node = this.nodeMap.get(nodeUuid);
+      if (node) {
+        node.slotsProps = slotsProps;
+      }
+    },
+
+    updateNodeSlotsPropsPropsMap(
+      nodeUuid: string,
+      slotsPropsPropsMap: Record<string, Record<string, string>>,
+    ) {
+      const node = this.nodeMap.get(nodeUuid);
+      if (node) {
+        node.slotsPropsPropsMap = slotsPropsPropsMap;
+      }
+    },
+
     setNodes(nodes: CraftNode[]) {
       this.clear();
       this.rootNodes = [];

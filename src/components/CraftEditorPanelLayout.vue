@@ -14,7 +14,7 @@
       <div class="v-craft-panel-center flex grow" @click.stop="deselectNodes">
         <slot></slot>
       </div>
-      <div class="v-craft-grid-panel v-craft-panel-right shrink">
+      <div class="v-craft-grid-panel v-craft-panel-right shrink max-w-[20vw]">
         <CraftEditorPanelLayers />
         <CraftEditorPanelSettings />
       </div>
