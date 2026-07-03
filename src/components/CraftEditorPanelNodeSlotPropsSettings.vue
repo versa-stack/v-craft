@@ -1,41 +1,15 @@
 <template>
   <fieldset
     v-if="craftNode"
-    class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content v-craft-slot-props-settings"
+    class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
   >
-    <template v-if="ownSlotNames.length">
-      <legend class="formkit-legend">Slot Context</legend>
-      <p class="v-craft-slot-props-hint">
-        Prop names this component's own slots expose to their children (e.g.
-        a list exposing <code>item</code> and <code>index</code>).
-      </p>
-
-      <div
-        v-for="slotName in ownSlotNames"
-        :key="slotName"
-        class="v-craft-slot-props-row"
-      >
-        <label class="formkit-label" :for="`slot-props-${slotName}`">{{
-          slotName
-        }}</label>
-        <input
-          :id="`slot-props-${slotName}`"
-          class="formkit-input"
-          type="text"
-          placeholder="item, index"
-          :value="slotsPropsDraft[slotName]"
-          @input="updateSlotProps(slotName, ($event.target as HTMLInputElement).value)"
-        />
-      </div>
-    </template>
-
     <legend class="formkit-legend">Props Mapping</legend>
-    <p class="v-craft-slot-props-hint">
+    <p class="formkit-help">
       Map fields from an ancestor slot's context into this component's own
       props using JSONPath (e.g. <code>$.item.name</code>).
     </p>
 
-    <p v-if="!mappingGroups.length" class="v-craft-slot-props-empty">
+    <p v-if="!mappingGroups.length" class="formkit-help">
       No mappings configured.
     </p>
 
@@ -44,84 +18,47 @@
       :key="group.id"
       class="v-craft-slot-props-map-group"
     >
-      <div class="v-craft-slot-props-map-header">
-        <select
-          class="formkit-input v-craft-slot-props-bucket"
-          :value="group.bucket"
-          @change="updateBucket(groupIndex, ($event.target as HTMLSelectElement).value)"
-        >
-          <option value="" disabled>Select context</option>
-          <option
-            v-for="option in bucketOptions"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-        <button
-          type="button"
-          class="formkit-input v-craft-slot-props-remove"
-          @click.prevent="removeGroup(groupIndex)"
-        >
-          Remove
-        </button>
-      </div>
+      <FormKit
+        type="select"
+        label="Context"
+        placeholder="Select context"
+        :options="bucketOptions"
+        :value="group.bucket"
+        @input="(value) => updateBucket(groupIndex, String(value ?? ''))"
+      />
 
-      <div
-        v-for="(field, fieldIndex) in group.fields"
-        :key="field.id"
-        class="v-craft-slot-props-map-field"
-      >
-        <select
+      <template v-for="(field, fieldIndex) in group.fields" :key="field.id">
+        <FormKit
           v-if="availableProps && availableProps.length"
-          class="formkit-input"
+          type="select"
+          label="Target Prop"
+          placeholder="target prop"
+          :options="targetPropOptionsFor(field.targetProp)"
           :value="field.targetProp"
-          @change="
-            updateField(
-              groupIndex,
-              fieldIndex,
-              'targetProp',
-              ($event.target as HTMLSelectElement).value,
-            )
+          @input="
+            (value) =>
+              updateField(groupIndex, fieldIndex, 'targetProp', String(value ?? ''))
           "
-        >
-          <option value="" disabled>target prop</option>
-          <option
-            v-for="option in targetPropOptionsFor(field.targetProp)"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-        <input
+        />
+        <FormKit
           v-else
-          class="formkit-input"
           type="text"
+          label="Target Prop"
           placeholder="target prop"
           :value="field.targetProp"
           @input="
-            updateField(
-              groupIndex,
-              fieldIndex,
-              'targetProp',
-              ($event.target as HTMLInputElement).value,
-            )
+            (value) =>
+              updateField(groupIndex, fieldIndex, 'targetProp', String(value ?? ''))
           "
         />
-        <input
-          class="formkit-input"
+        <FormKit
           type="text"
+          label="JSONPath"
           placeholder="$.item.name"
           :value="field.fromPath"
           @input="
-            updateField(
-              groupIndex,
-              fieldIndex,
-              'fromPath',
-              ($event.target as HTMLInputElement).value,
-            )
+            (value) =>
+              updateField(groupIndex, fieldIndex, 'fromPath', String(value ?? ''))
           "
         />
         <button
@@ -129,9 +66,9 @@
           class="formkit-input v-craft-slot-props-remove"
           @click.prevent="removeField(groupIndex, fieldIndex)"
         >
-          &times;
+          Remove field
         </button>
-      </div>
+      </template>
 
       <button
         type="button"
@@ -139,6 +76,13 @@
         @click.prevent="addField(groupIndex)"
       >
         + Add field
+      </button>
+      <button
+        type="button"
+        class="formkit-input v-craft-slot-props-remove"
+        @click.prevent="removeGroup(groupIndex)"
+      >
+        Remove group
       </button>
     </div>
 
@@ -153,6 +97,7 @@
 </template>
 
 <script lang="ts" setup>
+import { FormKit } from "@formkit/vue";
 import { v4 as uuidv4 } from "uuid";
 import { computed, ref, toRef, watch } from "vue";
 import { CraftNode } from "../lib/craftNode";
@@ -164,12 +109,10 @@ type MappingGroup = { id: string; bucket: string; fields: MappingField[] };
 
 const props = defineProps<{
   craftNode?: CraftNode;
-  availableSlots?: string[];
   availableProps?: SchemaFieldOption[];
 }>();
 
 const emit = defineEmits<{
-  (e: "update:slotsProps", value: Record<string, string[]>): void;
   (
     e: "update:slotsPropsPropsMap",
     value: Record<string, Record<string, string>>,
@@ -195,8 +138,6 @@ const bucketOptions = computed(() => {
     }));
 });
 
-const ownSlotNames = computed(() => props.availableSlots || []);
-
 const targetPropOptionsFor = (currentValue: string) => {
   const base = props.availableProps || [];
   if (!currentValue || base.some((option) => option.value === currentValue)) {
@@ -205,17 +146,10 @@ const targetPropOptionsFor = (currentValue: string) => {
   return [{ value: currentValue, label: `${currentValue} (custom)` }, ...base];
 };
 
-const slotsPropsDraft = ref<Record<string, string>>({});
 const mappingGroups = ref<MappingGroup[]>([]);
 
 const syncFromNode = () => {
   const node = craftNode.value;
-
-  const nextSlotsProps: Record<string, string> = {};
-  ownSlotNames.value.forEach((slotName) => {
-    nextSlotsProps[slotName] = (node?.slotsProps?.[slotName] || []).join(", ");
-  });
-  slotsPropsDraft.value = nextSlotsProps;
 
   mappingGroups.value = Object.entries(node?.slotsPropsPropsMap || {}).map(
     ([bucket, fields]) => ({
@@ -232,18 +166,6 @@ const syncFromNode = () => {
 
 watch(() => craftNode.value?.uuid, syncFromNode, { immediate: true });
 
-const emitSlotsProps = () => {
-  const result: Record<string, string[]> = {};
-  Object.entries(slotsPropsDraft.value).forEach(([slotName, text]) => {
-    const keys = text
-      .split(",")
-      .map((key) => key.trim())
-      .filter(Boolean);
-    if (keys.length) result[slotName] = keys;
-  });
-  emit("update:slotsProps", result);
-};
-
 const emitMappingGroups = () => {
   const result: Record<string, Record<string, string>> = {};
   mappingGroups.value.forEach((group) => {
@@ -259,11 +181,6 @@ const emitMappingGroups = () => {
     }
   });
   emit("update:slotsPropsPropsMap", result);
-};
-
-const updateSlotProps = (slotName: string, value: string) => {
-  slotsPropsDraft.value[slotName] = value;
-  emitSlotsProps();
 };
 
 const addGroup = () => {
@@ -310,54 +227,16 @@ const updateField = (
 </script>
 
 <style lang="scss" scoped>
-.v-craft-slot-props-hint {
-  font-size: 0.8em;
-  opacity: 0.75;
-  margin: 0.25em 0 0.75em;
-}
-
-.v-craft-slot-props-empty {
-  font-size: 0.85em;
-  opacity: 0.65;
-}
-
-.v-craft-slot-props-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25em;
-  margin-bottom: 0.75em;
-}
-
 .v-craft-slot-props-map-group {
   border: 1px solid var(--v-craft-gray-medium, #ccc);
   border-radius: 4px;
-  padding: 0.5em;
-  margin-bottom: 0.75em;
+  padding: 0.75em;
+  margin-bottom: 1em;
 }
 
-.v-craft-slot-props-map-header {
-  display: flex;
-  gap: 0.5em;
-  align-items: center;
-  margin-bottom: 0.5em;
-}
-
-.v-craft-slot-props-bucket {
-  flex: 1;
-}
-
-.v-craft-slot-props-map-field {
-  display: flex;
-  gap: 0.5em;
-  align-items: center;
-  margin-bottom: 0.5em;
-}
-
-.v-craft-slot-props-map-field input {
-  flex: 1;
-}
-
-.v-craft-slot-props-remove {
-  flex: none;
+.v-craft-slot-props-remove,
+.v-craft-slot-props-add {
+  width: 100%;
+  margin-top: 0.25em;
 }
 </style>

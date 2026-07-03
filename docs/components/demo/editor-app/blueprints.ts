@@ -60,9 +60,6 @@ export default {
           props: {
             componentName: "CraftListExample",
           },
-          slotsProps: {
-            default: ["item", "index"],
-          },
           slots: {
             default: [
               {

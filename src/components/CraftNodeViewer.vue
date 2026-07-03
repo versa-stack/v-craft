@@ -6,13 +6,18 @@
     v-bind="nodeProps"
     v-on="eventHandlers"
   >
-    <template v-for="slotName in availableSlots" :key="slotName" #[slotName]>
+    <template
+      v-for="slotName in availableSlots"
+      :key="slotName"
+      #[slotName]="slotProps"
+    >
       <template v-if="shouldRenderSlots">
         <template v-if="!data?.type">
           <CraftNodeViewer
             v-for="childNode in slotNodes[slotName]"
             :key="childNode.uuid"
             :craftNode="childNode"
+            :context="buildChildContext(slotName, slotProps)"
           />
         </template>
         <template v-else>
@@ -20,6 +25,7 @@
             v-for="item in computedChildren(slotNodes[slotName], slotName)"
             :key="item.key"
             :craftNode="item.craftNode"
+            :context="buildChildContext(slotName, slotProps, item.dataItem)"
           />
         </template>
       </template>
@@ -36,6 +42,7 @@ import {
 } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
+import { CraftNodePropsContext } from "./composable/useResolveCraftNodeProps";
 import { useCraftNodeWrapper } from "./composable/useCraftNodeWrapper";
 import CraftNodeViewer from "./CraftNodeViewer.vue";
 
@@ -47,19 +54,41 @@ const props = defineProps<{
   craftNode: CraftNode;
   nodeDataMap?: Record<string, CraftNodeDatasource>;
   eventsContext?: Record<string, any>;
+  context?: CraftNodePropsContext;
 }>();
 
 const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, defaultProps, resolver, componentToRender } =
-  useResolveCraftNode(craftNode);
+const { resolvedNode, resolver, componentToRender, props: nodeProps } =
+  useResolveCraftNode(craftNode, () => props.context || {});
 
 provide("resolver", resolver);
 
-const nodeProps = computed(() => ({
-  ...defaultProps.value,
-  ...craftNode.value?.props,
-}));
+const buildChildContext = (
+  slotName: string,
+  slotProps: Record<string, any> = {},
+  dataItem?: Record<string, any>,
+): CraftNodePropsContext => {
+  const allowedKeys = resolver?.value?.getSlotsProps?.(craftNode.value)?.[slotName];
+  const bucket = allowedKeys
+    ? Object.fromEntries(
+        allowedKeys
+          .filter((key) => key in slotProps)
+          .map((key) => [key, slotProps[key]]),
+      )
+    : slotProps;
+
+  const context: CraftNodePropsContext = {
+    ...(props.context || {}),
+    [slotName]: bucket,
+  };
+
+  if (dataItem !== undefined) {
+    context.data = dataItem;
+  }
+
+  return context;
+};
 
 const data = computed(() => {
   return (
@@ -121,7 +150,11 @@ onMounted(() => {
   }
 });
 
-type ComputedDataNode = { key: string; craftNode: CraftNode };
+type ComputedDataNode = {
+  key: string;
+  craftNode: CraftNode;
+  dataItem: Record<string, any>;
+};
 
 const computeDataNodes = (
   data: CraftNodeDatasource,
@@ -137,6 +170,7 @@ const computeDataNodes = (
           ...(data.item || {}),
         },
       },
+      dataItem: data.item || {},
     }));
   }
 
@@ -155,6 +189,7 @@ const computeDataNodes = (
               ...(item || {}),
             },
           },
+          dataItem: item || {},
         })),
       );
     }, [] as ComputedDataNode[]);

@@ -47,7 +47,10 @@
       </div>
       <template v-if="shouldRenderSlots">
         <template
-          v-if="craftNodeData?.type && craftNodeData.slotName === slotName"
+          v-if="
+            craftNodeData?.type &&
+            (!craftNodeData.slotName || craftNodeData.slotName === slotName)
+          "
         >
           <CraftNodeViewer
             v-for="item in computeDataChildren(
@@ -56,6 +59,7 @@
             )"
             :key="item.key"
             :craftNode="item.craftNode"
+            :context="buildChildContext(slotName, slotProps, item.dataItem)"
           />
         </template>
         <CraftNodeEditor
@@ -112,8 +116,9 @@ const { resolvedNode, resolver, componentToRender, props: nodeProps } =
 const buildChildContext = (
   slotName: string,
   slotProps: Record<string, any> = {},
+  dataItem?: Record<string, any>,
 ): CraftNodePropsContext => {
-  const allowedKeys = craftNode.value.slotsProps?.[slotName];
+  const allowedKeys = resolver?.value?.getSlotsProps?.(craftNode.value)?.[slotName];
   const bucket = allowedKeys
     ? Object.fromEntries(
         allowedKeys
@@ -122,10 +127,16 @@ const buildChildContext = (
       )
     : slotProps;
 
-  return {
+  const context: CraftNodePropsContext = {
     ...(props.context || {}),
     [slotName]: bucket,
   };
+
+  if (dataItem !== undefined) {
+    context.data = dataItem;
+  }
+
+  return context;
 };
 
 watch(
@@ -239,7 +250,11 @@ const computeDataChildren = (children: CraftNode[], slotName: string) => {
   return computeDataNodes(craftNodeData.value, children);
 };
 
-type ComputedDataNode = { key: string; craftNode: CraftNode };
+type ComputedDataNode = {
+  key: string;
+  craftNode: CraftNode;
+  dataItem: Record<string, any>;
+};
 
 const computeDataNodes = (
   data: CraftNodeDatasource,
@@ -252,6 +267,7 @@ const computeDataNodes = (
         ...childNode,
         props: { ...childNode.props, ...(data.item || {}) },
       },
+      dataItem: data.item || {},
     }));
   }
 
@@ -265,6 +281,7 @@ const computeDataNodes = (
             ...childNode,
             props: { ...childNode.props, ...(item || {}) },
           },
+          dataItem: item || {},
         })),
       );
     }, [] as ComputedDataNode[]);

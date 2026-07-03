@@ -63,5 +63,8 @@ export const resolverMap: CraftNodeResolverMap = {
   CraftListExample: {
     componentName: "CraftListExample",
     slots: ["default"],
+    slotsProps: {
+      default: ["item", "index"],
+    },
   },
 };

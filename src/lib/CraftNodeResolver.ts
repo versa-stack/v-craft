@@ -13,6 +13,7 @@ export type CraftNodeComponentMap<
   defaultProps?: Record<string, any>;
   rules?: CraftNodeRules;
   slots?: string[];
+  slotsProps?: Record<string, string[]>;
 };
 
 export type CraftNodeResolverMap<
@@ -101,6 +102,10 @@ export class CraftNodeResolver<
 
   getRules(craftNode: CraftNode): CraftNodeRules {
     return this.resolveNode(craftNode)?.rules || {};
+  }
+
+  getSlotsProps(craftNode: CraftNode): Record<string, string[]> {
+    return this.resolveNode(craftNode)?.slotsProps || {};
   }
 }
 

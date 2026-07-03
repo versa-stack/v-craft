@@ -36,6 +36,7 @@ const resolverMap: CraftNodeResolverMap<any> = {
     componentName: "ScopedListComponent",
     component: ScopedListComponent,
     slots: ["default"],
+    slotsProps: { default: ["item", "index"] },
   },
   TextComponent: { componentName: "TextComponent", component: TextComponent },
 };
@@ -61,7 +62,6 @@ describe("slot props context mapping", () => {
       componentName: "ScopedListComponent",
       props: {},
       slots: { default: [textNode] },
-      slotsProps: { default: ["item", "index"] },
     };
 
     const wrapper = mount(CraftStaticRenderer, {
@@ -74,11 +74,14 @@ describe("slot props context mapping", () => {
     expect(wrapper.find(".text-component").text()).toBe("Alice");
   });
 
-  it("does not override an explicitly set prop with a mapped context value", () => {
+  it("a configured mapping overrides a static prop value for that same key", () => {
+    // A blueprint's baked-in placeholder value (e.g. Text's default lorem
+    // ipsum content) shouldn't shadow a mapping the user deliberately
+    // configured for that prop - the mapping is an active choice and wins.
     const textNode: CraftNode = {
       uuid: uuidv4(),
       componentName: "TextComponent",
-      props: { label: "Explicit" },
+      props: { label: "Placeholder" },
       slots: {},
       slotsPropsPropsMap: {
         default: { label: "$.item.name" },
@@ -90,7 +93,6 @@ describe("slot props context mapping", () => {
       componentName: "ScopedListComponent",
       props: {},
       slots: { default: [textNode] },
-      slotsProps: { default: ["item", "index"] },
     };
 
     const wrapper = mount(CraftStaticRenderer, {
@@ -100,6 +102,6 @@ describe("slot props context mapping", () => {
       },
     });
 
-    expect(wrapper.find(".text-component").text()).toBe("Explicit");
+    expect(wrapper.find(".text-component").text()).toBe("Alice");
   });
 });

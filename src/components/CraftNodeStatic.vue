@@ -34,7 +34,7 @@
           :nodeMap="nodeMap"
           :nodeDataMap="nodeDataMap"
           :eventsContext="eventsContext"
-          :context="buildChildContext(slotName, slotProps)"
+          :context="buildChildContext(slotName, slotProps, item.dataItem)"
         />
       </template>
     </template>
@@ -75,8 +75,9 @@ provide("craftNode", readonly(craftNode.value));
 const buildChildContext = (
   slotName: string,
   slotProps: Record<string, any> = {},
+  dataItem?: Record<string, any>,
 ): CraftNodePropsContext => {
-  const allowedKeys = craftNode.value.slotsProps?.[slotName];
+  const allowedKeys = resolver?.value?.getSlotsProps?.(craftNode.value)?.[slotName];
   const bucket = allowedKeys
     ? Object.fromEntries(
         allowedKeys
@@ -85,10 +86,16 @@ const buildChildContext = (
       )
     : slotProps;
 
-  return {
+  const context: CraftNodePropsContext = {
     ...(props.context || {}),
     [slotName]: bucket,
   };
+
+  if (dataItem !== undefined) {
+    context.data = dataItem;
+  }
+
+  return context;
 };
 
 const data = computed(() => {
@@ -134,7 +141,11 @@ const { eventHandlers } = useCraftNodeEvents(
   (uuid) => nodeMap.value[uuid] ?? null,
 );
 
-type ComputedDataNode = { key: string; craftNode: CraftNode };
+type ComputedDataNode = {
+  key: string;
+  craftNode: CraftNode;
+  dataItem: Record<string, any>;
+};
 
 const computeDataNodes = (
   data: CraftNodeDatasource,
@@ -150,6 +161,7 @@ const computeDataNodes = (
           ...(data.item || {}),
         },
       },
+      dataItem: data.item || {},
     }));
   }
 
@@ -168,6 +180,7 @@ const computeDataNodes = (
               ...(item || {}),
             },
           },
+          dataItem: item || {},
         })),
       );
     }, [] as ComputedDataNode[]);

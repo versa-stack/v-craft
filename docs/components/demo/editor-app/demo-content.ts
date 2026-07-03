@@ -111,9 +111,6 @@ export const demoContent: CraftNode[] = process([
                 props: {
                   componentName: "CraftListExample",
                 },
-                slotsProps: {
-                  default: ["item", "index"],
-                },
                 slots: {
                   default: [
                     {

@@ -7,10 +7,10 @@
     :schema="schema"
     :eventsSchema="eventsSchema"
     :handleEventsUpdate="handleEventsUpdate"
-    :ownSlots="ownSlots"
     :availableProps="availableProps"
-    :handleSlotsPropsUpdate="handleSlotsPropsUpdate"
     :handleSlotsPropsPropsMapUpdate="handleSlotsPropsPropsMapUpdate"
+    :nodeData="nodeData"
+    :handleNodeDataUpdate="handleNodeDataUpdate"
     :deleteable="deleteable"
     :removeNode="removeNode"
   >
@@ -46,10 +46,15 @@
         <div v-if="selectedNode" class="v-craft-settings">
           <CraftEditorPanelNodeSlotPropsSettings
             :craftNode="selectedNode"
-            :availableSlots="ownSlots"
             :availableProps="availableProps"
-            @update:slotsProps="handleSlotsPropsUpdate"
             @update:slotsPropsPropsMap="handleSlotsPropsPropsMapUpdate"
+          />
+        </div>
+        <div v-if="selectedNode" class="v-craft-settings">
+          <CraftEditorPanelNodeDataSourceSettings
+            :craftNode="selectedNode"
+            :nodeData="nodeData"
+            @update:nodeData="handleNodeDataUpdate"
           />
         </div>
         <div class="v-craft-actions" data-type="button">
@@ -70,12 +75,13 @@
 import { storeToRefs } from "pinia";
 import { computed, inject, type ComputedRef } from "vue";
 import CoreResolver from "../lib/CraftNodeResolver";
+import type { CraftNodeDatasource } from "../lib/craftNode";
 import { extractSchemaFieldNames } from "../lib/extractSchemaFieldNames";
 import { useEditor } from "../store/editor";
 import type { FormKitSchemaDefinition } from '@formkit/core';
 
 const editor = useEditor();
-const { selectedNode } = storeToRefs(editor);
+const { selectedNode, nodeDataMap } = storeToRefs(editor);
 const resolver = inject<ComputedRef<CoreResolver<T>>>("resolver");
 
 const schema = computed(() => {
@@ -92,18 +98,6 @@ const eventsSchema = computed(() => {
 });
 
 const availableProps = computed(() => extractSchemaFieldNames(schema.value));
-
-// Only components that explicitly declare slots in their resolver entry
-// can expose slot context, so no "default" fallback here (unlike the
-// renderer's availableSlots, which assumes every component can accept
-// a default slot for placing children).
-const ownSlots = computed(() => {
-  if (!selectedNode.value || !resolver?.value) {
-    return [];
-  }
-  const resolved = resolver.value.resolveNode(selectedNode.value);
-  return resolved?.slots || [];
-});
 
 const deleteable = computed(
   () => selectedNode.value && selectedNode.value.parentUuid
@@ -136,12 +130,6 @@ const handleEventsUpdate = (newEvents: Record<string, any>) => {
   }
 };
 
-const handleSlotsPropsUpdate = (slotsProps: Record<string, string[]>) => {
-  if (selectedNode.value) {
-    editor.updateNodeSlotsProps(selectedNode.value.uuid, slotsProps);
-  }
-};
-
 const handleSlotsPropsPropsMapUpdate = (
   slotsPropsPropsMap: Record<string, Record<string, string>>,
 ) => {
@@ -150,6 +138,18 @@ const handleSlotsPropsPropsMapUpdate = (
       selectedNode.value.uuid,
       slotsPropsPropsMap,
     );
+  }
+};
+
+const nodeData = computed<CraftNodeDatasource | null>(() =>
+  selectedNode.value
+    ? nodeDataMap.value[selectedNode.value.uuid] ?? null
+    : null,
+);
+
+const handleNodeDataUpdate = (data: CraftNodeDatasource | null) => {
+  if (selectedNode.value) {
+    editor.setNodeData(selectedNode.value.uuid, data);
   }
 };
 </script>

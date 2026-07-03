@@ -24,7 +24,11 @@ export type CraftNodeRules = {
 
 export type CraftNode = {
   slots: Record<string, CraftNode[]>;
-  slotsProps?: Record<string, string[]>;
+  // Set on the consumer (a descendant node), not the producer. Keyed by
+  // the ancestor's slot name (matching a key in that ancestor's
+  // resolver-declared slotsProps); each value maps { own prop name:
+  // JSONPath into that ancestor's exposed data } to fill in this node's
+  // own props. See CraftNodeComponentMap.slotsProps for the producer side.
   slotsPropsPropsMap?: Record<string, Record<string, string>>;
   componentName: string;
   parentUuid?: string | null;

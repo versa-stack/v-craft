@@ -1,10 +1,38 @@
 import { mount } from "@vue/test-utils";
+import { plugin, defaultConfig } from "@formkit/vue";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
+import { computed } from "vue";
 import { beforeEach, describe, expect, it } from "vitest";
 import CraftEditorPanelNodeSlotPropsSettings from "../../src/components/CraftEditorPanelNodeSlotPropsSettings.vue";
+import CraftNodeResolver from "../../src/lib/CraftNodeResolver";
 import { CraftNode } from "../../src/lib/craftNode";
 import { useEditor } from "../../src/store/editor";
+
+const resolver = computed(
+  () =>
+    new CraftNodeResolver({
+      ScopedListComponent: {
+        componentName: "ScopedListComponent",
+        slotsProps: { default: ["item", "index"] },
+      },
+      TextComponent: { componentName: "TextComponent" },
+    }),
+);
+
+const mountPanel = (props: Record<string, any>) =>
+  mount(CraftEditorPanelNodeSlotPropsSettings, {
+    props,
+    global: {
+      plugins: [[plugin, defaultConfig()]],
+      provide: { resolver },
+    },
+  });
+
+// FormKit text/select inputs debounce their input event (20ms by default)
+// before committing the value, so tests must wait past that before
+// asserting on emitted events.
+const waitForFormKitDebounce = () => new Promise((resolve) => setTimeout(resolve, 30));
 
 describe("CraftEditorPanelNodeSlotPropsSettings", () => {
   let editor: ReturnType<typeof useEditor>;
@@ -26,21 +54,18 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
       componentName: "ScopedListComponent",
       props: {},
       slots: { default: [textNode] },
-      slotsProps: { default: ["item", "index"] },
     };
 
     editor.setNodes([listNode]);
     textNode = editor.nodeMap.get(textNode.uuid)!;
   });
 
-  it("offers the ancestor's exposed slot props as a mapping context option", async () => {
-    const wrapper = mount(CraftEditorPanelNodeSlotPropsSettings, {
-      props: { craftNode: textNode, availableSlots: ["default"] },
-    });
+  it("offers the ancestor's resolver-declared slot props as a mapping context option", async () => {
+    const wrapper = mountPanel({ craftNode: textNode });
 
-    const addGroupButton = wrapper.findAll("button").find(
-      (b) => b.text() === "+ Add mapping group",
-    )!;
+    const addGroupButton = wrapper
+      .findAll("button")
+      .find((b) => b.text() === "+ Add mapping group")!;
     await addGroupButton.trigger("click");
 
     const options = wrapper.findAll("option").map((o) => o.text());
@@ -50,9 +75,7 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
   });
 
   it("emits update:slotsPropsPropsMap with the configured mapping", async () => {
-    const wrapper = mount(CraftEditorPanelNodeSlotPropsSettings, {
-      props: { craftNode: textNode, availableSlots: ["default"] },
-    });
+    const wrapper = mountPanel({ craftNode: textNode });
 
     await wrapper
       .findAll("button")
@@ -64,6 +87,7 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
     const inputs = wrapper.findAll("input");
     await inputs[inputs.length - 2].setValue("label");
     await inputs[inputs.length - 1].setValue("$.item.name");
+    await waitForFormKitDebounce();
 
     const emitted = wrapper.emitted("update:slotsPropsPropsMap");
     expect(emitted).toBeTruthy();
@@ -73,15 +97,12 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
   });
 
   it("offers known component props as a target-prop dropdown when availableProps is given", async () => {
-    const wrapper = mount(CraftEditorPanelNodeSlotPropsSettings, {
-      props: {
-        craftNode: textNode,
-        availableSlots: ["default"],
-        availableProps: [
-          { value: "label", label: "Label" },
-          { value: "class", label: "CSS class(es)" },
-        ],
-      },
+    const wrapper = mountPanel({
+      craftNode: textNode,
+      availableProps: [
+        { value: "label", label: "Label" },
+        { value: "class", label: "CSS class(es)" },
+      ],
     });
 
     await wrapper
@@ -104,6 +125,7 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
     await targetPropSelect.setValue("class");
     await wrapper.find("input[placeholder='\$.item.name']").setValue("$.item.name");
     await wrapper.find("select").setValue("default");
+    await waitForFormKitDebounce();
 
     const emitted = wrapper.emitted("update:slotsPropsPropsMap");
     expect(emitted![emitted!.length - 1][0]).toEqual({
@@ -117,12 +139,9 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
       slotsPropsPropsMap: { default: { legacyProp: "$.item.name" } },
     };
 
-    const wrapper = mount(CraftEditorPanelNodeSlotPropsSettings, {
-      props: {
-        craftNode: nodeWithLegacyMapping,
-        availableSlots: ["default"],
-        availableProps: [{ value: "label", label: "Label" }],
-      },
+    const wrapper = mountPanel({
+      craftNode: nodeWithLegacyMapping,
+      availableProps: [{ value: "label", label: "Label" }],
     });
 
     const targetPropSelect = wrapper.findAll("select")[1];
@@ -133,52 +152,28 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
     expect(optionValues).toContain("legacyProp");
   });
 
-  it("hides the Slot Context section when the component declares no slots", () => {
-    const leafNode: CraftNode = {
-      uuid: uuidv4(),
-      componentName: "CraftComponentSimpleText",
-      props: {},
-      slots: {},
-    };
-
-    const wrapper = mount(CraftEditorPanelNodeSlotPropsSettings, {
-      props: { craftNode: leafNode, availableSlots: [] },
-    });
+  it("does not render a Slot Context section - slotsProps is resolver-owned, not editable per instance", () => {
+    const wrapper = mountPanel({ craftNode: textNode });
 
     expect(wrapper.text()).not.toContain("Slot Context");
-    expect(wrapper.find(".v-craft-slot-props-row").exists()).toBe(false);
-    // Props Mapping stays available regardless - a leaf node can still
-    // consume an ancestor's exposed context.
     expect(wrapper.text()).toContain("Props Mapping");
   });
 
-  it("shows the Slot Context section when availableSlots is non-empty", () => {
-    const wrapper = mount(CraftEditorPanelNodeSlotPropsSettings, {
-      props: { craftNode: textNode, availableSlots: ["default"] },
-    });
+  it("offers the reserved data bucket when an ancestor has a nodeDataMap entry", async () => {
+    editor.setNodeData(
+      editor.nodeMap.get(textNode.parentUuid!)!.uuid,
+      { type: "single", item: { title: "Alice", price: 9.99 } },
+    );
 
-    expect(wrapper.text()).toContain("Slot Context");
-    expect(wrapper.find(".v-craft-slot-props-row").exists()).toBe(true);
-  });
+    const wrapper = mountPanel({ craftNode: textNode });
 
-  it("emits update:slotsProps from the exposed-keys input", async () => {
-    const listNode: CraftNode = {
-      uuid: uuidv4(),
-      componentName: "ScopedListComponent",
-      props: {},
-      slots: {},
-    };
+    await wrapper
+      .findAll("button")
+      .find((b) => b.text() === "+ Add mapping group")!
+      .trigger("click");
 
-    const wrapper = mount(CraftEditorPanelNodeSlotPropsSettings, {
-      props: { craftNode: listNode, availableSlots: ["default"] },
-    });
-
-    await wrapper.find("input").setValue("item, index");
-
-    const emitted = wrapper.emitted("update:slotsProps");
-    expect(emitted).toBeTruthy();
-    expect(emitted![emitted!.length - 1][0]).toEqual({
-      default: ["item", "index"],
-    });
+    const options = wrapper.findAll("option").map((o) => o.text());
+    expect(options.some((o) => o.includes("data"))).toBe(true);
+    expect(options.some((o) => o.includes("title, price"))).toBe(true);
   });
 });
