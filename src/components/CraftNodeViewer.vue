@@ -59,8 +59,8 @@ const props = defineProps<{
 
 const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, resolver, componentToRender, props: nodeProps } =
-  useResolveCraftNode(craftNode, () => props.context || {});
+const { resolvedNode, defaultProps, resolver, componentToRender } =
+  useResolveCraftNode(craftNode);
 
 provide("resolver", resolver);
 
@@ -189,7 +189,6 @@ const computeDataNodes = (
               ...(item || {}),
             },
           },
-          dataItem: item || {},
         })),
       );
     }, [] as ComputedDataNode[]);

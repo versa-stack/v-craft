@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useAttrs, useSlots, watch } from "vue";
+import { computed, useAttrs, useSlots } from "vue";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
 import { CraftNode } from "../lib/craftNode";
 

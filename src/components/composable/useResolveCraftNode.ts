@@ -63,11 +63,6 @@ export const useResolveCraftNode = <T extends FormKitSchemaDefinition = FormKitS
 
   const { props: contextProps } = useResolveCraftNodeProps(craftNode, context);
 
-  // contextProps only ever contains keys the user explicitly targeted via
-  // slotsPropsPropsMap, so it's placed last: a configured mapping is an
-  // active choice and should win over whatever static value happens to sit
-  // in craftNode.props for that same key (e.g. a blueprint's placeholder
-  // default) - props the user didn't map are untouched either way.
   const props = computed(() => ({
     ...defaultProps.value,
     ...craftNode.value?.props,
