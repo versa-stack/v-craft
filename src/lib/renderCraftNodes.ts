@@ -1,8 +1,11 @@
+import { FormKitSchemaDefinition } from "@formkit/core";
 import { h, VNode } from "vue";
 import { CraftNode, CraftNodeDatasource, isVisible } from "./craftNode";
 import CraftNodeResolver, { CraftNodeResolverMap } from "./CraftNodeResolver";
 
-export interface RenderOptions<T extends object> {
+export interface RenderOptions<
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+> {
   resolverMap: CraftNodeResolverMap<T>;
   componentRegistry?: Record<string, any>;
   nodeDataMap?: Record<string, CraftNodeDatasource | null>;
@@ -11,7 +14,7 @@ export interface RenderOptions<T extends object> {
 
 function buildEventHandlers(
   node: CraftNode,
-  eventsContext: Record<string, any>
+  eventsContext: Record<string, any>,
 ): Record<string, (...args: any[]) => void> {
   const handlers: Record<string, (...args: any[]) => void> = {};
 
@@ -24,10 +27,18 @@ function buildEventHandlers(
 
     handlers[eventName] = (...args: any[]) => {
       try {
-        const eventHandler = new Function("ctx", "craftNode", "args", eventCode);
+        const eventHandler = new Function(
+          "ctx",
+          "craftNode",
+          "args",
+          eventCode,
+        );
         eventHandler(eventsContext, node, ...args);
       } catch (e) {
-        console.error(`Event code execution failed with code:\n${eventCode}\n\nError:`, e);
+        console.error(
+          `Event code execution failed with code:\n${eventCode}\n\nError:`,
+          e,
+        );
       }
     };
   });
@@ -38,7 +49,7 @@ function buildEventHandlers(
 function computeDataChildren(
   node: CraftNode,
   data: CraftNodeDatasource,
-  slotName: string = 'default'
+  slotName: string = "default",
 ): CraftNode[] {
   if (!node.slots || !node.slots[slotName]) return [];
 
@@ -58,19 +69,21 @@ function computeDataChildren(
         ...child,
         uuid: `${child.uuid}-data-${index}`,
         props: { ...child.props, ...(item || {}) },
-      }))
+      })),
     );
   }
 
   return [];
 }
 
-export function renderCraftNodeToVNode<T extends object>(
+export function renderCraftNodeToVNode<
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
   node: CraftNode,
   resolver: CraftNodeResolver<T>,
   componentRegistry?: Record<string, any>,
   nodeDataMap?: Record<string, CraftNodeDatasource | null>,
-  eventsContext?: Record<string, any>
+  eventsContext?: Record<string, any>,
 ): VNode | null {
   if (!isVisible(node)) {
     return null;
@@ -85,30 +98,51 @@ export function renderCraftNodeToVNode<T extends object>(
     ...node.props,
   };
 
-  const eventHandlers = eventsContext ? buildEventHandlers(node, eventsContext) : {};
+  const eventHandlers = eventsContext
+    ? buildEventHandlers(node, eventsContext)
+    : {};
 
   const nodeData = nodeDataMap?.[node.uuid];
   let children: VNode[] | undefined;
 
   if (nodeData?.type) {
-    const dataChildren = computeDataChildren(node, nodeData, nodeData.slotName || 'default');
+    const dataChildren = computeDataChildren(
+      node,
+      nodeData,
+      nodeData.slotName || "default",
+    );
     children = dataChildren
-      .map((child) => renderCraftNodeToVNode(child, resolver, componentRegistry, nodeDataMap, eventsContext))
+      .map((child) =>
+        renderCraftNodeToVNode(
+          child,
+          resolver,
+          componentRegistry,
+          nodeDataMap,
+          eventsContext,
+        ),
+      )
       .filter((v): v is VNode => v !== null);
   } else if (node.slots) {
     children = Object.values(node.slots)
       .flat()
-      .map((child) => renderCraftNodeToVNode(child, resolver, componentRegistry, nodeDataMap, eventsContext))
+      .map((child) =>
+        renderCraftNodeToVNode(
+          child,
+          resolver,
+          componentRegistry,
+          nodeDataMap,
+          eventsContext,
+        ),
+      )
       .filter((v): v is VNode => v !== null);
   }
 
   return h(component, { key: node.uuid, ...props, ...eventHandlers }, children);
 }
 
-export function renderCraftNodesToVNodes<T extends object>(
-  nodes: CraftNode[],
-  options: RenderOptions<T>
-): VNode[] {
+export function renderCraftNodesToVNodes<
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(nodes: CraftNode[], options: RenderOptions<T>): VNode[] {
   const resolver = new CraftNodeResolver(options.resolverMap);
   return nodes
     .map((node) =>
@@ -117,8 +151,8 @@ export function renderCraftNodesToVNodes<T extends object>(
         resolver,
         options.componentRegistry,
         options.nodeDataMap,
-        options.eventsContext
-      )
+        options.eventsContext,
+      ),
     )
     .filter((v): v is VNode => v !== null);
 }

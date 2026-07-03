@@ -7,13 +7,12 @@
     <slot></slot>
   </div>
 </template>
-<script lang="ts" setup generic="T extends object">
+<script lang="ts" setup generic="T extends FormKitSchemaDefinition">
+import type { FormKitSchemaDefinition } from '@formkit/core';
 import { CraftNode } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
-import { useIndicator } from "../store/indicator";
 
 const editor = useEditor();
-const indicator = useIndicator();
 
 defineOptions({
   name: "CraftEditorBlueprint",
@@ -34,6 +33,5 @@ const handleDragEnd = (e: MouseEvent) => {
   e.stopPropagation();
 
   editor.dragNode(null);
-  indicator.hide();
 };
 </script>

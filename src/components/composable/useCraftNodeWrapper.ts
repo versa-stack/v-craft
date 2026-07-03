@@ -1,11 +1,9 @@
 import { storeToRefs } from "pinia";
+import { computed, provide, readonly, Ref } from "vue";
+import type { CraftNode } from "../../lib/craftNode";
 import { useEditor } from "../../store/editor";
-import { computed, provide, readonly, Ref, toRef, ref } from "vue";
-import { CraftNode } from "../../lib/craftNode";
 
-export const useCraftNodeWrapper = <T extends object>(
-  craftNode: Ref<CraftNode>
-) => {
+export const useCraftNodeWrapper = (craftNode: Ref<CraftNode>) => {
   const editor = (() => {
     try {
       return useEditor();

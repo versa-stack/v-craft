@@ -42,7 +42,7 @@ export {
   Utils,
 };
 
-export type CraftDataListItem<T extends object> = {
+export type CraftDataListItem = {
   dataItem: any;
   dataIndex: number;
   childNode: CraftNode;

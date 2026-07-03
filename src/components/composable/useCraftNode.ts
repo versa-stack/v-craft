@@ -1,8 +1,8 @@
 import { inject, Ref } from "vue";
-import { CraftNode } from "../../lib/craftNode";
+import type { CraftNode } from "../../lib/craftNode";
 import { useResolveCraftNode } from "./useResolveCraftNode";
 
-export const useCraftNode = <T extends object>() => {
+export const useCraftNode = () => {
   const craftNode = inject<Ref<CraftNode, CraftNode>>("craftNode")!;
   if (!craftNode) {
     throw new Error("craftNode or resolver not provided");

@@ -235,7 +235,7 @@ const Container = {
     borderWidth: 1,
     borderColor: "#dee2e6"
   },
-  slots: {} // Always empty - CraftCanvas handles user-dropped children
+  slots: { default: [] } // slot names mirror the component's Vue slots
 }
 ```
 
@@ -273,7 +273,7 @@ const Card = {
     padding: 20,
     maxWidth: 300
   },
-  slots: {} // This card is self-contained
+  slots: { default: [] } // This card is self-contained
 }
 ```
 
@@ -476,7 +476,7 @@ const createHtmlElementBlueprints = () => {
         ...value.defaultProps,
         componentName: value.componentName, // "div" gets passed as prop
       },
-      slots: {}, // Empty because CraftCanvas handles children
+      slots: { default: [] },
     };
   });
   return blueprints;
@@ -542,7 +542,7 @@ const createHtmlElementBlueprints = () => {
         ...value.defaultProps,
         componentName: value.componentName, // Pass the actual element name
       },
-      slots: {}, // Always empty - CraftCanvas handles children
+      slots: { default: [] },
     };
   });
   return blueprints;
@@ -553,7 +553,7 @@ const createHtmlElementBlueprints = () => {
 
 1. **CraftCanvas Component**: A special wrapper component that enables container behavior
 2. **componentName prop**: Tells CraftCanvas which actual component to render
-3. **slots: {}**: Always empty in blueprints - CraftCanvas manages child components automatically
+3. **slots**: Mirror the Vue slot names of the actual component (e.g. `{ default: [], header: [], body: [] }`)
 4. **User-dropped children**: Handled by CraftCanvas, not the blueprint
 
 ### Creating Your Own Container
@@ -570,7 +570,7 @@ const MyContainer = {
     backgroundColor: "#f8f9fa",
     padding: 20
   },
-  slots: {} // Always empty
+  slots: { default: [] }
 }
 ```
 
@@ -606,11 +606,11 @@ Make your life easier with this helper:
 ```javascript
 // blueprint-generator.js
 
-export const createBlueprint = (name, label, props, hasChildren = false) => ({
+export const createBlueprint = (name, label, props, slots = { default: [] }) => ({
   label,
   componentName: name,
   props: props || {},
-  slots: hasChildren ? {} : {}
+  slots,
 })
 
 // Usage:
@@ -622,7 +622,7 @@ const Button = createBlueprint('ActionButton', 'Click Button', {
 const Container = createBlueprint('ContainerBox', 'Box Container', {
   padding: 20,
   background: '#f8f9fa'
-}, true) // true = includes slots object for component tree
+}, { default: [], header: [] }) // pass slot names matching the component's Vue slots
 ```
 
 ## Next Steps

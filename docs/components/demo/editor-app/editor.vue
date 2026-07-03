@@ -1,8 +1,11 @@
 <template>
   <CraftEditor
     :config="config"
-    :inheritStyles="true"
-    :useIframe="true"
+    :iframe="{
+      inheritStyles: true,
+      wrapperClass: 'w-full h-[100vh]',
+      iframeClass: 'w-full h-[100vh]',
+    }"
     @iframe-load="onIframeLoad"
   >
     <CraftCanvas componentName="div" />
@@ -19,7 +22,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { CraftEditorConfig, useEditor } from "@versa-stack/v-craft";
+import { CraftEditorConfig, useEditor, buildCraftNodeTree } from "@versa-stack/v-craft";
 import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
 import { demoContent } from "./demo-content";
@@ -29,7 +32,7 @@ const editor = useEditor();
 
 onBeforeMount(() => {
   if (!editor.hasNodes) {
-    editor.setNodes(demoContent);
+    editor.setNodes(buildCraftNodeTree(demoContent));
   }
 });
 

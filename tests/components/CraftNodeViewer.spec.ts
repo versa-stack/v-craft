@@ -1,9 +1,9 @@
-import { FormKitSchemaFormKit } from "@formkit/core";
-import { mount } from "@vue/test-utils";
+import { FormKitSchemaDefinition } from "@formkit/core";
+import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
-import { nextTick, ref } from "vue";
+import { defineComponent, nextTick, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
@@ -16,7 +16,7 @@ import { useEditor } from "../../src/store/editor";
 
 const createSimpleText = (
   content: string = "Hello World",
-  componentName: string = "h1"
+  componentName: string = "h1",
 ) => {
   return {
     componentName: "CraftComponentSimpleText",
@@ -29,13 +29,15 @@ const createSimpleText = (
   };
 };
 
-const createCanvas = <T extends object = FormKitSchemaFormKit>(
-  children: CraftNode<T>[]
+const createCanvas = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
+  children: CraftNode[],
 ) => {
   return {
     componentName: "CraftCanvas",
     props: {
-      componentName: "div"
+      componentName: "div",
     },
     slots: {
       default: children,
@@ -43,6 +45,13 @@ const createCanvas = <T extends object = FormKitSchemaFormKit>(
     uuid: uuidv4(),
   };
 };
+
+const AsyncLeaf = defineComponent({
+  name: "AsyncLeaf",
+  template: `<div class="async-leaf">async leaf</div>`,
+});
+
+const asyncLeafFactory = () => Promise.resolve(AsyncLeaf);
 
 describe("CraftNodeViewer", () => {
   beforeEach(() => {
@@ -55,7 +64,7 @@ describe("CraftNodeViewer", () => {
     const resolver = ref(
       new CraftNodeResolver({
         CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeViewer, {
@@ -74,14 +83,14 @@ describe("CraftNodeViewer", () => {
     });
 
     expect(
-      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
     ).toBe(true);
     expect(
       wrapper
         .findComponent({
           name: "CraftComponentSimpleText",
         })
-        .element.tagName.toLowerCase()
+        .element.tagName.toLowerCase(),
     ).toBe("h1");
     expect(wrapper.text()).toContain("Hello World");
 
@@ -93,7 +102,7 @@ describe("CraftNodeViewer", () => {
         .findComponent({
           name: "CraftComponentSimpleText",
         })
-        .element.tagName.toLowerCase()
+        .element.tagName.toLowerCase(),
     ).toBe("p");
   });
 
@@ -107,9 +116,9 @@ describe("CraftNodeViewer", () => {
         CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
         CraftCanvas: defaultResolvers.CraftCanvas,
         div: {
-          componentName: "div"
-        }
-      } as CraftNodeResolverMap<any>)
+          componentName: "div",
+        },
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeViewer, {
@@ -128,12 +137,10 @@ describe("CraftNodeViewer", () => {
       },
     });
 
+    expect(wrapper.findComponent({ name: "CraftCanvas" }).exists()).toBe(true);
+
     expect(
-      wrapper.findComponent({ name: "CraftCanvas" }).exists()
-    ).toBe(true);
-    
-    expect(
-      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
     ).toBe(true);
 
     expect(
@@ -141,7 +148,7 @@ describe("CraftNodeViewer", () => {
         .findComponent({
           name: "CraftComponentSimpleText",
         })
-        .element.tagName.toLowerCase()
+        .element.tagName.toLowerCase(),
     ).toBe("h1");
     expect(wrapper.text()).toContain("Hello World");
 
@@ -153,7 +160,7 @@ describe("CraftNodeViewer", () => {
         .findComponent({
           name: "CraftComponentSimpleText",
         })
-        .element.tagName.toLowerCase()
+        .element.tagName.toLowerCase(),
     ).toBe("p");
   });
 
@@ -168,7 +175,7 @@ describe("CraftNodeViewer", () => {
     const resolver = ref(
       new CraftNodeResolver({
         div: { componentName: "div" },
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeViewer, {
@@ -186,7 +193,9 @@ describe("CraftNodeViewer", () => {
     });
 
     expect(wrapper.find("div").exists()).toBe(true);
-    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(0);
+    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(
+      0,
+    );
   });
 
   it("renders slot templates for canvas nodes with empty slots", () => {
@@ -196,7 +205,7 @@ describe("CraftNodeViewer", () => {
       new CraftNodeResolver({
         CraftCanvas: defaultResolvers.CraftCanvas,
         div: { componentName: "div" },
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeViewer, {
@@ -229,7 +238,7 @@ describe("CraftNodeViewer", () => {
       new CraftNodeResolver({
         div: { componentName: "div" },
         CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeViewer, {
@@ -248,7 +257,9 @@ describe("CraftNodeViewer", () => {
     });
 
     expect(wrapper.find("div").exists()).toBe(true);
-    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
+    expect(
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
+    ).toBe(true);
   });
 
   it("does not render slot templates for void HTML elements with empty slots", () => {
@@ -262,7 +273,7 @@ describe("CraftNodeViewer", () => {
     const resolver = ref(
       new CraftNodeResolver({
         img: { componentName: "img" },
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeViewer, {
@@ -280,6 +291,82 @@ describe("CraftNodeViewer", () => {
     });
 
     expect(wrapper.find("img").exists()).toBe(true);
-    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(0);
+    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(
+      0,
+    );
+  });
+
+  it("renders a leaf node from an async component factory", async () => {
+    const craftNode = ref({
+      componentName: "AsyncLeaf",
+      props: {},
+      slots: {},
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        AsyncLeaf: { componentName: "AsyncLeaf", component: asyncLeafFactory },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    const wrapper = mount(CraftNodeViewer, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.find(".async-leaf").exists()).toBe(true);
+    expect(wrapper.text()).toBe("async leaf");
+  });
+
+  it("renders child nodes of an async leaf node", async () => {
+    const AsyncParent = defineComponent({
+      name: "AsyncParent",
+      template: `<div class="async-parent"><slot /></div>`,
+    });
+
+    const craftNode = ref({
+      componentName: "AsyncParent",
+      props: {},
+      slots: {
+        default: [
+          {
+            componentName: "AsyncLeaf",
+            props: {},
+            slots: {},
+            uuid: uuidv4(),
+          },
+        ],
+      },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        AsyncParent: {
+          componentName: "AsyncParent",
+          component: () => Promise.resolve(AsyncParent),
+        },
+        AsyncLeaf: { componentName: "AsyncLeaf", component: asyncLeafFactory },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    const wrapper = mount(CraftNodeViewer, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.find(".async-parent").exists()).toBe(true);
+    expect(wrapper.find(".async-leaf").exists()).toBe(true);
   });
 });

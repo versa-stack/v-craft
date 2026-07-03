@@ -5,11 +5,12 @@ import drag from "../../lib/dragCraftNode";
 import { useEditor } from "../../store/editor";
 import { useIndicator } from "../../store/indicator";
 import { debounce } from "lodash-es";
+import { FormKitSchemaDefinition } from "@formkit/core";
 
-export default <T extends object>(
+export default <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
   craftNode: Ref<CraftNode>,
   nodeRef: Ref<any>,
-  resolver: CraftNodeResolver<T>
+  resolver: CraftNodeResolver<T>,
 ): {
   handleDragStart: (e: MouseEvent) => void;
   handleDragOver: (e: MouseEvent) => void;
@@ -63,7 +64,6 @@ export default <T extends object>(
       return;
     }
     editor.dragNode(null);
-    indicator.hide();
   };
 
   return {

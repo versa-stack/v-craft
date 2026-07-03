@@ -2,14 +2,17 @@ import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
-import { h, defineComponent, nextTick } from "vue";
+import { h, defineComponent, nextTick, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
-import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
+import CraftNodeStatic from "../../src/components/CraftNodeStatic.vue";
 import CraftStaticRenderer from "../../src/components/CraftStaticRenderer.vue";
 import { CraftNode } from "../../src/lib/craftNode";
-import { CraftNodeResolverMap } from "../../src/lib/CraftNodeResolver";
+import CraftNodeResolver, {
+  CraftNodeResolverMap,
+} from "../../src/lib/CraftNodeResolver";
 import { defaultResolvers } from "../../src/resolvers/default";
+import { writeFileSync } from "fs";
 
 const TestComponent = defineComponent({
   name: "TestComponent",
@@ -17,7 +20,8 @@ const TestComponent = defineComponent({
     text: { type: String, default: "" },
   },
   setup(props, { slots }) {
-    return () => h("div", { class: "test-component" }, [props.text, slots.default?.()]);
+    return () =>
+      h("div", { class: "test-component" }, [props.text, slots.default?.()]);
   },
 });
 
@@ -26,6 +30,11 @@ const TestContainer = defineComponent({
   setup(_, { slots }) {
     return () => h("section", { class: "test-container" }, slots.default?.());
   },
+});
+
+const ResolverComponent = defineComponent({
+  name: "ResolverComponent",
+  template: `<div class="resolver-component">resolver component</div>`,
 });
 
 describe("CraftStaticRenderer", () => {
@@ -56,7 +65,7 @@ describe("CraftStaticRenderer", () => {
           TestComponent,
           TestContainer,
           CraftStaticRenderer,
-          CraftNodeViewer,
+          CraftNodeStatic,
           CraftComponentSimpleText,
           CraftCanvas,
         },
@@ -138,7 +147,9 @@ describe("CraftStaticRenderer", () => {
     ];
 
     const wrapper = createWrapper(nodes);
-    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
+    expect(
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
+    ).toBe(true);
   });
 
   it("overrides default props with node props", () => {
@@ -184,7 +195,7 @@ describe("CraftStaticRenderer", () => {
     expect(wrapper.text()).not.toContain("Hidden");
   });
 
-  it("renders CraftNodeViewer for each node", () => {
+  it("renders CraftNodeStatic for each node", () => {
     const nodes: CraftNode[] = [
       {
         uuid: uuidv4(),
@@ -201,7 +212,11 @@ describe("CraftStaticRenderer", () => {
     ];
 
     const wrapper = createWrapper(nodes);
-    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(2);
+
+    writeFileSync("hello.txt", wrapper.html());
+    expect(wrapper.findAllComponents({ name: "CraftNodeStatic" })).toHaveLength(
+      2,
+    );
   });
 
   it("provides resolver to child components", () => {
@@ -225,7 +240,9 @@ describe("CraftStaticRenderer", () => {
 
     const wrapper = createWrapper(nodes);
     expect(wrapper.findComponent({ name: "CraftCanvas" }).exists()).toBe(true);
-    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
+    expect(
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
+    ).toBe(true);
     expect(wrapper.text()).toContain("Canvas Child");
   });
 
@@ -259,7 +276,9 @@ describe("CraftStaticRenderer", () => {
 
     const wrapper = createWrapper(nodes);
     expect(wrapper.findAll(".test-container")).toHaveLength(2);
-    expect(wrapper.find(".test-container .test-container .test-component").exists()).toBe(true);
+    expect(
+      wrapper.find(".test-container .test-container .test-component").exists(),
+    ).toBe(true);
     expect(wrapper.text()).toContain("Deep");
   });
 
@@ -378,7 +397,10 @@ describe("CraftStaticRenderer", () => {
                               {
                                 uuid: "paragraph",
                                 componentName: "CraftComponentSimpleText",
-                                props: { content: "Article content here", componentName: "p" },
+                                props: {
+                                  content: "Article content here",
+                                  componentName: "p",
+                                },
                                 slots: {},
                               },
                             ],
@@ -421,11 +443,187 @@ describe("CraftStaticRenderer", () => {
     expect(html).toContain("<article>");
     expect(html).toContain("<footer>");
 
-    expect(wrapper.find("div.container > header.bg-black > nav > h1").exists()).toBe(true);
-    expect(wrapper.find("div.container > header.bg-black > nav > h1").text()).toBe("Site Title");
-    expect(wrapper.find("div.container > main > section > article > p").exists()).toBe(true);
-    expect(wrapper.find("div.container > main > section > article > p").text()).toBe("Article content here");
+    expect(
+      wrapper.find("div.container > header.bg-black > nav > h1").exists(),
+    ).toBe(true);
+    expect(
+      wrapper.find("div.container > header.bg-black > nav > h1").text(),
+    ).toBe("Site Title");
+    expect(
+      wrapper.find("div.container > main > section > article > p").exists(),
+    ).toBe(true);
+    expect(
+      wrapper.find("div.container > main > section > article > p").text(),
+    ).toBe("Article content here");
     expect(wrapper.find("div.container > footer > span").exists()).toBe(true);
     expect(wrapper.find("div.container > footer > span").text()).toBe("© 2025");
+  });
+
+  it("uses provided resolver instance from props", () => {
+    const resolver = new CraftNodeResolver({
+      TestComponent: {
+        componentName: "TestComponent",
+        component: TestComponent,
+      },
+    } as CraftNodeResolverMap<any>);
+
+    const nodes: CraftNode[] = [
+      {
+        uuid: uuidv4(),
+        componentName: "TestComponent",
+        props: { text: "Hello" },
+        slots: {},
+      },
+    ];
+
+    const wrapper = mount(CraftStaticRenderer, {
+      props: {
+        nodes,
+        resolver,
+      },
+      global: {
+        components: {
+          TestComponent,
+          CraftStaticRenderer,
+          CraftNodeStatic,
+        },
+      },
+    });
+
+    expect(wrapper.vm).toBeTruthy();
+    expect(wrapper.find(".test-component").exists()).toBe(true);
+  });
+
+  it("creates new resolver from resolverMap when resolver not provided", () => {
+    const testResolverMap: CraftNodeResolverMap<any> = {
+      TestComponent: {
+        componentName: "TestComponent",
+        component: TestComponent,
+      },
+    };
+
+    const nodes: CraftNode[] = [
+      {
+        uuid: uuidv4(),
+        componentName: "TestComponent",
+        props: { text: "Hello" },
+        slots: {},
+      },
+    ];
+
+    const wrapper = mount(CraftStaticRenderer, {
+      props: {
+        nodes,
+        resolverMap: testResolverMap,
+      },
+      global: {
+        components: {
+          TestComponent,
+          CraftStaticRenderer,
+          CraftNodeStatic,
+        },
+      },
+    });
+
+    expect(wrapper.vm).toBeTruthy();
+    expect(wrapper.find(".test-component").exists()).toBe(true);
+  });
+
+  it("preserves resolver hooks when using provided resolver instance", () => {
+    const hookCalled = ref(false);
+
+    const resolver = new CraftNodeResolver({
+      ResolverComponent: {
+        componentName: "ResolverComponent",
+        component: ResolverComponent,
+      },
+    } as CraftNodeResolverMap<any>);
+
+    resolver.onResolveComponent((craftNode, defaultResolver) => {
+      hookCalled.value = true;
+      if (craftNode.componentName === "ResolverComponent") {
+        return ResolverComponent;
+      }
+      return defaultResolver(craftNode.componentName);
+    });
+
+    const nodes: CraftNode[] = [
+      {
+        uuid: uuidv4(),
+        componentName: "ResolverComponent",
+        props: {},
+        slots: {},
+      },
+    ];
+
+    const wrapper = mount(CraftStaticRenderer, {
+      props: {
+        nodes,
+        resolver,
+      },
+      global: {
+        components: {
+          ResolverComponent,
+          CraftStaticRenderer,
+          CraftNodeStatic,
+        },
+      },
+    });
+
+    expect(wrapper.vm).toBeTruthy();
+
+    const testNode: CraftNode = {
+      uuid: uuidv4(),
+      componentName: "ResolverComponent",
+      props: {},
+      slots: {},
+    };
+
+    const resolved = resolver.resolveComponent(testNode);
+    expect(resolved).toBe(ResolverComponent);
+    expect(hookCalled.value).toBe(true);
+  });
+
+  it("prioritizes resolver instance over resolverMap when both provided", () => {
+    const instanceResolver = new CraftNodeResolver({
+      TestComponent: {
+        componentName: "TestComponent",
+        component: TestComponent,
+      },
+    } as CraftNodeResolverMap<any>);
+
+    const mapResolver: CraftNodeResolverMap<any> = {
+      ResolverComponent: {
+        componentName: "ResolverComponent",
+        component: ResolverComponent,
+      },
+    };
+
+    const nodes: CraftNode[] = [
+      {
+        uuid: uuidv4(),
+        componentName: "TestComponent",
+        props: { text: "Hello" },
+        slots: {},
+      },
+    ];
+
+    const wrapper = mount(CraftStaticRenderer, {
+      props: {
+        nodes,
+        resolver: instanceResolver,
+        resolverMap: mapResolver,
+      },
+      global: {
+        components: {
+          TestComponent,
+          CraftStaticRenderer,
+          CraftNodeStatic,
+        },
+      },
+    });
+
+    expect(wrapper.vm).toBeTruthy();
+    expect(wrapper.find(".test-component").exists()).toBe(true);
   });
 });

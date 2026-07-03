@@ -12,7 +12,7 @@ export type IndicatorState = {
     height: number;
   };
   forbidden: boolean;
-}
+};
 
 export type IndicatorStoreType = ReturnType<typeof useIndicator>;
 
@@ -30,7 +30,7 @@ export const useIndicator = defineStore("indicator", {
         height: 0,
       },
       forbidden: false,
-    } as IndicatorState),
+    }) as IndicatorState,
   actions: {
     hide() {
       this.visible = false;
@@ -106,6 +106,14 @@ export const useIndicator = defineStore("indicator", {
 });
 
 function getPadding(e: HTMLElement) {
+  if (!(e instanceof HTMLElement)) {
+    return {
+      paddingTop: "0",
+      paddingLeft: "0",
+      paddingRight: "0",
+      paddingBottom: "0",
+    };
+  }
   const { paddingTop, paddingLeft, paddingRight, paddingBottom } =
     getComputedStyle(e);
   const padding = {

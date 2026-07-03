@@ -1,7 +1,12 @@
 <template>
   <component
     :is="componentName"
-    :class="{ 'pre-wrap': !isEditing, 'editable-text': enabled, 'is-editable': enabled, 'is-editing': isEditing }"
+    :class="{
+      'pre-wrap': !isEditing,
+      'editable-text': editorEnabled,
+      'is-editable': editorEnabled,
+      'is-editing': isEditing,
+    }"
     @dblclick="handleDoubleClick"
   >
     {{ isEditing ? "" : content }}
@@ -20,9 +25,9 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch, nextTick } from "vue";
+import { storeToRefs } from "pinia";
 import { useCraftNode } from "./composable/useCraftNode";
 import { useEditor } from "../store/editor";
-import { storeToRefs } from "pinia";
 
 interface Props {
   content?: string;
@@ -32,7 +37,6 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   content: "Lorem ipsum dolor sit amet...",
-  isEditable: true,
   placeholder: "",
   componentName: "div",
 });
@@ -41,25 +45,33 @@ const emit = defineEmits<{
   (e: "update:content", value: string): void;
 }>();
 
+const getEditor = () => {
+  try {
+    return useEditor()
+  } catch {
+    return null
+  }
+}
+
+const editor = getEditor();
+const enabled = editor ? storeToRefs(editor).enabled : ref(false);
+
 const isEditing = ref(false);
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 const originalValue = ref("");
-const editor = useEditor();
-const { enabled } = storeToRefs(editor);
 const { craftNode } = useCraftNode();
 
-const canEdit = computed(() => enabled.value && !isEditing.value);
+const editorEnabled = computed(() => !!editor && enabled.value);
+const canEdit = computed(() => editorEnabled.value && !isEditing.value);
 
 const handleDoubleClick = () => {
-  if (canEdit.value) {
-    startEditing();
-  }
+  if (canEdit.value) startEditing();
 };
 
 const startEditing = () => {
   originalValue.value = props.content;
   isEditing.value = true;
-  editor.disableDragging();
+  editor?.disableDragging();
   nextTick(() => {
     if (textareaRef.value) {
       textareaRef.value.focus();
@@ -76,26 +88,23 @@ const adjustTextareaHeight = () => {
 };
 
 const finishEditing = async () => {
-  editor.enableDragging();
-  if (isEditing.value) {
-    isEditing.value = false;
-    const newValue = textareaRef.value?.value.trim() || "";
-    if (newValue !== props.content) {
-      if (!craftNode.value?.uuid) {
-        return;
-      }
+  editor?.enableDragging();
+  if (!isEditing.value) return;
 
-      editor.nodeMap.set(craftNode.value.uuid, {
-        ...craftNode.value,
-        props: {
-          ...craftNode.value.props,
-          content: newValue,
-        },
-      });
+  isEditing.value = false;
+  const newValue = textareaRef.value?.value.trim() ?? "";
 
-      await nextTick();
-      emit("update:content", newValue);
-    }
+  if (newValue !== props.content && craftNode.value?.uuid) {
+    editor?.nodeMap.set(craftNode.value.uuid, {
+      ...craftNode.value,
+      props: {
+        ...craftNode.value.props,
+        content: newValue,
+      },
+    });
+
+    await nextTick();
+    emit("update:content", newValue);
   }
 };
 
@@ -104,11 +113,11 @@ const cancelEditing = () => {
   emit("update:content", originalValue.value);
 };
 
-watch(enabled, (newValue) => {
-  if (!newValue && isEditing.value) {
-    cancelEditing();
-  }
-});
+if (editor) {
+  watch(enabled, (newValue) => {
+    if (!newValue && isEditing.value) cancelEditing();
+  });
+}
 </script>
 
 <style lang="scss">

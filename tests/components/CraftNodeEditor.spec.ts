@@ -1,9 +1,9 @@
-import { FormKitSchemaFormKit } from "@formkit/core";
-import { mount } from "@vue/test-utils";
+import { FormKitSchemaDefinition } from "@formkit/core";
+import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
-import { nextTick, ref } from "vue";
+import { defineComponent, nextTick, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeEditor from "../../src/components/CraftNodeEditor.vue";
@@ -17,7 +17,7 @@ import { useEditor } from "../../src/store/editor";
 
 const createSimpleText = (
   content: string = "Hello World",
-  componentName: string = "h1"
+  componentName: string = "h1",
 ) => {
   return {
     componentName: "CraftComponentSimpleText",
@@ -30,13 +30,15 @@ const createSimpleText = (
   };
 };
 
-const createCanvas = <T extends object = FormKitSchemaFormKit>(
-  children: CraftNode<T>[]
+const createCanvas = <
+  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+>(
+  children: CraftNode[],
 ) => {
   return {
     componentName: "CraftCanvas",
     props: {
-      componentName: "div"
+      componentName: "div",
     },
     slots: {
       default: children,
@@ -44,6 +46,11 @@ const createCanvas = <T extends object = FormKitSchemaFormKit>(
     uuid: uuidv4(),
   };
 };
+
+const AsyncLeaf = defineComponent({
+  name: "AsyncLeaf",
+  template: `<div class="async-leaf">async leaf</div>`,
+});
 
 describe("CraftNodeEditor", () => {
   beforeEach(() => {
@@ -56,7 +63,7 @@ describe("CraftNodeEditor", () => {
     const resolver = ref(
       new CraftNodeResolver({
         CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeEditor, {
@@ -75,14 +82,14 @@ describe("CraftNodeEditor", () => {
     });
 
     expect(
-      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
     ).toBe(true);
     expect(
       wrapper
         .findComponent({
           name: "CraftComponentSimpleText",
         })
-        .element.tagName.toLowerCase()
+        .element.tagName.toLowerCase(),
     ).toBe("h1");
     expect(wrapper.text()).toContain("Hello World");
 
@@ -94,7 +101,7 @@ describe("CraftNodeEditor", () => {
         .findComponent({
           name: "CraftComponentSimpleText",
         })
-        .element.tagName.toLowerCase()
+        .element.tagName.toLowerCase(),
     ).toBe("p");
   });
 
@@ -108,9 +115,9 @@ describe("CraftNodeEditor", () => {
         CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
         CraftCanvas: defaultResolvers.CraftCanvas,
         div: {
-          componentName: "div"
-        }
-      } as CraftNodeResolverMap<any>)
+          componentName: "div",
+        },
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeEditor, {
@@ -129,12 +136,10 @@ describe("CraftNodeEditor", () => {
       },
     });
 
+    expect(wrapper.findComponent({ name: "CraftCanvas" }).exists()).toBe(true);
+
     expect(
-      wrapper.findComponent({ name: "CraftCanvas" }).exists()
-    ).toBe(true);
-    
-    expect(
-      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
     ).toBe(true);
 
     expect(
@@ -142,7 +147,7 @@ describe("CraftNodeEditor", () => {
         .findComponent({
           name: "CraftComponentSimpleText",
         })
-        .element.tagName.toLowerCase()
+        .element.tagName.toLowerCase(),
     ).toBe("h1");
     expect(wrapper.text()).toContain("Hello World");
 
@@ -154,7 +159,7 @@ describe("CraftNodeEditor", () => {
         .findComponent({
           name: "CraftComponentSimpleText",
         })
-        .element.tagName.toLowerCase()
+        .element.tagName.toLowerCase(),
     ).toBe("p");
   });
 
@@ -165,8 +170,8 @@ describe("CraftNodeEditor", () => {
 
     const simpleText = createSimpleText();
     editor.setNodes([simpleText]);
-    const craftNode = ref<CraftNode<any> | null>(
-      editor.nodeMap.get(simpleText.uuid) || null
+    const craftNode = ref<CraftNode | null>(
+      editor.nodeMap.get(simpleText.uuid) || null,
     );
 
     if (!craftNode) {
@@ -176,12 +181,12 @@ describe("CraftNodeEditor", () => {
     const resolver = ref(
       new CraftNodeResolver<any>({
         CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
-      })
+      }),
     );
 
     const wrapper = mount(CraftNodeEditor, {
       props: {
-        craftNode: craftNode.value as CraftNode<any>,
+        craftNode: craftNode.value as CraftNode,
       },
       global: {
         components: {
@@ -213,7 +218,7 @@ describe("CraftNodeEditor", () => {
     const resolver = ref(
       new CraftNodeResolver({
         div: { componentName: "div" },
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeEditor, {
@@ -231,7 +236,9 @@ describe("CraftNodeEditor", () => {
     });
 
     expect(wrapper.find("div").exists()).toBe(true);
-    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(0);
+    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(
+      0,
+    );
   });
 
   it("renders slot templates for canvas nodes with empty slots", () => {
@@ -243,7 +250,7 @@ describe("CraftNodeEditor", () => {
       new CraftNodeResolver({
         CraftCanvas: defaultResolvers.CraftCanvas,
         div: { componentName: "div" },
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeEditor, {
@@ -265,6 +272,93 @@ describe("CraftNodeEditor", () => {
     expect(wrapper.find(".v-craft-drop-text").exists()).toBe(true);
   });
 
+  it("renders drop text for HTML canvas elements with empty slots", () => {
+    const craftNode = ref({
+      componentName: "CraftCanvas",
+      props: {
+        componentName: "footer",
+      },
+      slots: {
+        default: [],
+      },
+      uuid: uuidv4(),
+    });
+    const editor = useEditor();
+    editor.enable();
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        CraftCanvas: defaultResolvers.CraftCanvas,
+        footer: {
+          componentName: "craftCanvas",
+          props: { componentName: "footer" },
+          slots: ["default"],
+        },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: {
+        craftNode: craftNode.value,
+      },
+      global: {
+        components: {
+          CraftNodeViewer,
+          CraftCanvas,
+        },
+        provide: {
+          resolver,
+        },
+      },
+    });
+
+    expect(wrapper.find("footer").exists()).toBe(true);
+    expect(wrapper.find(".v-craft-drop-text").exists()).toBe(true);
+  });
+
+  it("does NOT render drop text for HTML canvas elements without slots property", () => {
+    const craftNode = ref({
+      componentName: "CraftCanvas",
+      props: {
+        componentName: "footer",
+      },
+      uuid: uuidv4(),
+      slots: {
+      },
+    });
+    const editor = useEditor();
+    editor.enable();
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        CraftCanvas: defaultResolvers.CraftCanvas,
+        footer: {
+          componentName: "CraftCanvas",
+          props: { componentName: "footer" },
+          slots: ["default"],
+        },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: {
+        craftNode: craftNode.value,
+      },
+      global: {
+        components: {
+          CraftNodeViewer,
+          CraftCanvas,
+        },
+        provide: {
+          resolver,
+        },
+      },
+    });
+
+    expect(wrapper.find("footer").exists()).toBe(true);
+    expect(wrapper.find(".v-craft-drop-text").exists()).toBe(false);
+  });
+
   it("renders slot templates for non-canvas nodes with non-empty slots", () => {
     const craftNode = ref({
       componentName: "div",
@@ -277,7 +371,7 @@ describe("CraftNodeEditor", () => {
       new CraftNodeResolver({
         div: { componentName: "div" },
         CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeEditor, {
@@ -296,7 +390,9 @@ describe("CraftNodeEditor", () => {
     });
 
     expect(wrapper.find("div").exists()).toBe(true);
-    expect(wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists()).toBe(true);
+    expect(
+      wrapper.findComponent({ name: "CraftComponentSimpleText" }).exists(),
+    ).toBe(true);
   });
 
   it("does not render slot templates for void HTML elements with empty slots", () => {
@@ -310,7 +406,7 @@ describe("CraftNodeEditor", () => {
     const resolver = ref(
       new CraftNodeResolver({
         img: { componentName: "img" },
-      } as CraftNodeResolverMap<any>)
+      } as CraftNodeResolverMap<any>),
     );
 
     const wrapper = mount(CraftNodeEditor, {
@@ -328,6 +424,271 @@ describe("CraftNodeEditor", () => {
     });
 
     expect(wrapper.find("img").exists()).toBe(true);
-    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(0);
+    expect(wrapper.findAllComponents({ name: "CraftNodeViewer" })).toHaveLength(
+      0,
+    );
+  });
+
+  it("renders a node from an async component factory", async () => {
+    const craftNode = ref({
+      componentName: "AsyncLeaf",
+      props: {},
+      slots: {},
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        AsyncLeaf: {
+          componentName: "AsyncLeaf",
+          component: () => Promise.resolve(AsyncLeaf),
+        },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.find(".async-leaf").exists()).toBe(true);
+    expect(wrapper.text()).toBe("async leaf");
+  });
+
+  it("renders child nodes inside an async parent component", async () => {
+    const editor = useEditor();
+    editor.enable();
+
+    const AsyncParent = defineComponent({
+      name: "AsyncParent",
+      template: `<div class="async-parent"><slot /></div>`,
+    });
+
+    const craftNode = ref({
+      componentName: "AsyncParent",
+      props: {},
+      slots: {
+        default: [
+          {
+            componentName: "AsyncLeaf",
+            props: {},
+            slots: {},
+            uuid: uuidv4(),
+          },
+        ],
+      },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        AsyncParent: {
+          componentName: "AsyncParent",
+          component: () => Promise.resolve(AsyncParent),
+        },
+        AsyncLeaf: {
+          componentName: "AsyncLeaf",
+          component: () => Promise.resolve(AsyncLeaf),
+        },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer, CraftNodeEditor },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.find(".async-parent").exists()).toBe(true);
+    expect(wrapper.find(".async-leaf").exists()).toBe(true);
+  });
+
+  it("uses custom component resolution hook when provided", async () => {
+    const CustomComponent = defineComponent({
+      name: "CustomComponent",
+      template: `<div class="custom-hook">custom hook</div>`,
+    });
+
+    const craftNode = ref({
+      componentName: "CustomComponent",
+      props: {},
+      slots: {},
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        CustomComponent: { componentName: "CustomComponent" },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    resolver.value.onResolveComponent((craftNode, defaultResolver) => {
+      if (craftNode.componentName === "CustomComponent") {
+        return CustomComponent;
+      }
+      return defaultResolver(craftNode.componentName);
+    });
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    expect(wrapper.find(".custom-hook").exists()).toBe(true);
+    expect(wrapper.text()).toBe("custom hook");
+  });
+
+  it("falls back to default resolver when hook returns undefined", async () => {
+    const DefaultComponent = defineComponent({
+      name: "DefaultComponent",
+      template: `<div class="default">default</div>`,
+    });
+
+    const craftNode = ref({
+      componentName: "DefaultComponent",
+      props: {},
+      slots: {},
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        DefaultComponent: {
+          componentName: "DefaultComponent",
+          component: DefaultComponent,
+        },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    resolver.value.onResolveComponent((craftNode, defaultResolver) => {
+      if (craftNode.componentName === "NonExistent") {
+        return DefaultComponent;
+      }
+      return defaultResolver(craftNode.componentName);
+    });
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer },
+        provide: { resolver },
+      },
+    });
+
+    expect(wrapper.find(".default").exists()).toBe(true);
+    expect(wrapper.text()).toBe("default");
+  });
+
+  it("renders drop text for canvas nodes with empty slots when content is loaded", async () => {
+    const MultiSlotComponent = defineComponent({
+      name: "MultiSlotComponent",
+      template: `
+        <div>
+          <header><slot name="header" /></header>
+          <main><slot name="body" /></main>
+        </div>
+      `,
+    });
+
+    const craftNode = ref({
+      componentName: "CraftCanvas",
+      props: {
+        componentName: "MultiSlotComponent",
+      },
+      slots: {
+        header: [],
+        body: [],
+      },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        ...defaultResolvers,
+        MultiSlotComponent: {
+          componentName: "MultiSlotComponent",
+          slots: ["header", "body"],
+        },
+      } as CraftNodeResolverMap<any>),
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer, MultiSlotComponent, CraftCanvas },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+    await nextTick();
+
+    // Verify drop text is rendered in both slots
+    const dropTextElements = wrapper.findAll(".v-craft-drop-text");
+    expect(dropTextElements.length).toBe(2);
+
+    // Verify drop text has correct slot names
+    const headerDropText = dropTextElements.find(
+      (el) => el.attributes("data-slot-name") === "header",
+    );
+    const bodyDropText = dropTextElements.find(
+      (el) => el.attributes("data-slot-name") === "body",
+    );
+
+    expect(headerDropText).toBeDefined();
+    expect(bodyDropText).toBeDefined();
+    expect(headerDropText?.text()).toContain("Drop a component here");
+    expect(headerDropText?.text()).toContain("header");
+    expect(bodyDropText?.text()).toContain("Drop a component here");
+    expect(bodyDropText?.text()).toContain("body");
+  });
+
+  it("renders drop text for canvas node with default slot when content is loaded", async () => {
+    const craftNode = ref({
+      componentName: "CraftCanvas",
+      props: {
+        componentName: "div",
+      },
+      slots: {
+        default: [],
+      },
+      uuid: uuidv4(),
+    });
+
+    const resolver = ref(
+      new CraftNodeResolver({
+        ...defaultResolvers,
+      } as CraftNodeResolverMap<any>),
+    );
+
+    const wrapper = mount(CraftNodeEditor, {
+      props: { craftNode: craftNode.value },
+      global: {
+        components: { CraftNodeViewer, CraftCanvas },
+        provide: { resolver },
+      },
+    });
+
+    await flushPromises();
+    await nextTick();
+
+    // Verify drop text is rendered in default slot
+    const dropTextElement = wrapper.find(".v-craft-drop-text");
+    expect(dropTextElement.exists()).toBe(true);
+    expect(dropTextElement.attributes("data-slot-name")).toBe("default");
+    expect(dropTextElement.text()).toContain("Drop a component here");
+    expect(dropTextElement.text()).toContain("default");
   });
 });

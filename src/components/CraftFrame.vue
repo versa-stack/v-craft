@@ -1,17 +1,15 @@
 <template>
   <div class="v-craft-frame">
     <CraftIframe
-      v-if="useIframe"
-      @iframe-load="onIframeLoad"
-      :inheritStyles="inheritStyles"
-      :styles="[
-        ...iFrameStyles,
-      ]"
-      :iframe-style="iFrameStyle"
-      :iframe-class="iFrameClass"
-      :style-sheets="iFrameStyleSheets"
-      :width="iFrameWidth"
-      :height="iFrameHeight"
+      v-if="iframe"
+      @iframeLoad="onIframeLoad"
+      :inheritStyles="iframe?.inheritStyles"
+      :iframeStyle="iframe?.iframeStyle"
+      :iframeClass="iframe?.iframeClass"
+      :class="iframe?.wrapperClass"
+      :style="iframe?.wrapperStyle"
+      :styles="iframe?.styles"
+      :styleSheets="iframe?.styleSheets"
     >
       <CraftNodeViewer
         v-if="(viewOnly || !enabled) && hasNodes"
@@ -28,25 +26,31 @@
       <Indicator v-if="!viewOnly && enabled" />
     </CraftIframe>
     <CraftNodeViewer
-      v-if="!useIframe && (viewOnly || !enabled) && hasNodes"
+      v-if="!iframe && (viewOnly || !enabled) && hasNodes"
       v-for="craftNode in nodeTree"
       :key="`${craftNode.uuid}-view`"
       :craftNode="craftNode"
     />
     <CraftNodeEditor
-      v-if="!useIframe && !viewOnly && enabled && hasNodes"
+      v-if="!iframe && !viewOnly && enabled && hasNodes"
       v-for="craftNode in nodeTree"
       :key="`${craftNode.uuid}-edit`"
       :craftNode="craftNode"
     />
-    <Indicator v-if="!useIframe && !viewOnly && enabled" />
+    <Indicator v-if="!iframe && !viewOnly && enabled" />
   </div>
 </template>
 
-<script lang="ts" setup generic="T extends object">
+<script
+  lang="ts"
+  setup
+  generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
+>
+import { FormKitSchemaDefinition } from "@formkit/core";
 import { storeToRefs } from "pinia";
-import { StyleValue, toRefs, type HTMLAttributes } from "vue";
+import { toRefs } from "vue";
 import { CraftNodeResolverMap } from "../lib/CraftNodeResolver";
+import { type CraftFrameIFrameProps } from "../lib/model";
 import Indicator from "./CraftDropIndicator.vue";
 import CraftIframe from "./CraftIframe.vue";
 import { useCraftFrame } from "./composable/useCraftFrame";
@@ -57,30 +61,16 @@ defineOptions({
 
 const props = withDefaults(
   defineProps<{
-    iFrameHeight?: "auto" | number;
-    iFrameStyle?: StyleValue;
-    iFrameStyleSheets?: string[];
-    iFrameStyles?: string[];
-    iFrameWidth?: "auto" | number;
-    iFrameClass?: HTMLAttributes["class"];
-    inheritStyles?: boolean;
+    iframe?: CraftFrameIFrameProps;
     resolverMap?: CraftNodeResolverMap<T>;
-    useIframe?: boolean;
     viewOnly?: boolean;
   }>(),
   {
-    iFrameHeight: "auto",
-    iFrameStyle: () => ({}),
-    iFrameStyleSheets: () => [],
-    iFrameStyles: () => [],
-    iFrameWidth: "auto",
-    inheritStyles: false,
-    useIframe: false,
     viewOnly: false,
-  }
+  },
 );
 
-const { iFrameWidth, iFrameHeight } = toRefs(props);
+const { iframe } = toRefs(props);
 
 const onIframeLoad = (iframe: HTMLIFrameElement) => {
   emit("iframeLoad", iframe);
