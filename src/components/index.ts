@@ -8,9 +8,11 @@ import CraftEditorPanelBlueprints from "./CraftEditorPanelBlueprints.vue";
 import CraftEditorPanelForm from "./CraftEditorPanelForm.vue";
 import CraftEditorPanelLayers from "./CraftEditorPanelLayers.vue";
 import CraftEditorPanelLayout from "./CraftEditorPanelLayout.vue";
+import CraftEditorPanelNodeDataSourceSettings from "./CraftEditorPanelNodeDataSourceSettings.vue";
 import CraftEditorPanelNodeEventsSettings from "./CraftEditorPanelNodeEventsSettings.vue";
 import CraftEditorPanelNodeLayer from "./CraftEditorPanelNodeLayer.vue";
 import CraftEditorPanelNodeSettings from "./CraftEditorPanelNodeSettings.vue";
+import CraftEditorPanelNodeSlotPropsSettings from "./CraftEditorPanelNodeSlotPropsSettings.vue";
 import CraftEditorPanelSettings from "./CraftEditorPanelSettings.vue";
 import CraftFrame from "./CraftFrame.vue";
 import CraftNodeEditor from "./CraftNodeEditor.vue";
@@ -30,9 +32,11 @@ export {
   CraftEditorPanelForm,
   CraftEditorPanelLayers,
   CraftEditorPanelLayout,
+  CraftEditorPanelNodeDataSourceSettings,
   CraftEditorPanelNodeEventsSettings,
   CraftEditorPanelNodeLayer,
   CraftEditorPanelNodeSettings,
+  CraftEditorPanelNodeSlotPropsSettings,
   CraftEditorPanelSettings,
   CraftFrame,
   CraftIframe,

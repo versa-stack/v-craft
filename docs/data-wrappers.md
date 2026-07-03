@@ -1,796 +1,208 @@
-# Data Wrappers: Making Your Components Smart
+# Data Wrappers: Feeding External Data into the Tree
 
-Think of data wrappers as smart containers that can fetch information from the internet and then use that information to create multiple copies of a component. It's like having a magic box that:
-1. Gets data from somewhere (like weather, products, or news)
-2. Uses that data to create lots of cards, items, or sections
-3. Updates automatically when the data changes
+A **data wrapper** isn't a special v-craft concept with its own API — it's just an ordinary Vue component that:
 
-## What is a Data Wrapper?
+1. Fetches (or otherwise produces) some data
+2. Hands it to the `CraftNode` it's attached to, via `editor.setNodeData()`
+3. Lets its own children map whichever fields they need out of that data via [`slotsPropsPropsMap`](./editor#injecting-data-into-the-node-tree)
 
-A data wrapper is a special component that:
-- **Fetches data** from APIs, databases, or files
-- **Transforms data** into the format your components need
-- **Creates multiple instances** of child components using the data
-- **Updates automatically** when data changes
+That's the entire mechanism. You don't need to invent your own field-mapping props or duplication logic — v-craft already does field selection (JSONPath) and list duplication for you once the data reaches `nodeDataMap`. This page walks through building one, end to end. For the underlying mechanism itself (the `"data"` context bucket, `CraftNodeDatasource`, precedence rules), see [Injecting Data into the Node Tree](./editor#injecting-data-into-the-node-tree) — this page is the practical "how do I fetch something real and wire it up" walkthrough.
 
-## Your First Data Wrapper: Weather Display
+## The pieces you need
 
-Let's build a weather display that fetches real weather data and creates weather cards.
+- **`useCraftNode()`** — gives a component access to its own `CraftNode` (so it knows its `uuid`) when rendered inside the tree.
+- **`useEditor()`** and **`editor.setNodeData(uuid, datasource)`** — the store action that populates `nodeDataMap` for that node.
+- **`slotsPropsPropsMap`** on the *children* placed inside the wrapper's slot — declares which of their own props should be filled from which JSONPath into the data.
 
-### Step 1: Create the Data Wrapper
+## Worked example: Weather Cards
+
+This example fetches real weather data (via [Open-Meteo](https://open-meteo.com/), a free API that needs no key) for a list of cities and renders one card per city.
+
+### Step 1: The wrapper component
 
 ```vue
 <!-- WeatherWrapper.vue -->
 <template>
-  <div class="weather-display">
-    <!-- Show loading while fetching -->
-    <div v-if="loading" class="loading">
-      🌤️ Loading weather data...
-    </div>
-
-    <!-- Show error if something went wrong -->
-    <div v-else-if="error" class="error">
-      ⚠️ {{ error }}
-    </div>
-
-    <!-- Slot for child components -->
-    <!-- The renderer will duplicate these with data -->
-    <slot></slot>
+  <div class="weather-wrapper">
+    <div v-if="loading" class="weather-status">Loading weather…</div>
+    <div v-else-if="error" class="weather-status weather-error">{{ error }}</div>
+    <!-- Children are rendered by the tree itself (CraftNodeEditor/Static),
+         not by this component - this slot is just where they land. -->
+    <slot v-else />
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useEditorStore } from '@versa-stack/v-craft'
+<script setup lang="ts">
+import { onMounted, ref, watch } from "vue";
+import { useCraftNode, useEditor } from "@versa-stack/v-craft";
 
-// Props that users can configure
-const props = defineProps({
-  // Which cities to show weather for
-  cities: {
-    type: Array,
-    default: () => ['London', 'Paris', 'New York']
-  },
+const props = withDefaults(
+  defineProps<{ cities?: string[] }>(),
+  { cities: () => ["London", "Paris", "New York"] },
+);
 
-  // Temperature unit
-  unit: {
-    type: String,
-    default: 'celsius', // or 'fahrenheit'
-    validator: (value) => ['celsius', 'fahrenheit'].includes(value)
-  },
+const { craftNode } = useCraftNode();
+const editor = useEditor();
+const loading = ref(true);
+const error = ref("");
 
-  // API key for weather service
-  apiKey: {
-    type: String,
-    default: ''
-  },
-
-  // How often to refresh (in minutes)
-  refreshInterval: {
-    type: Number,
-    default: 30
-  },
-
-  // The CraftNode UUID (injected by renderer)
-  craftNodeUuid: String
-})
-
-const weatherData = ref([])
-const loading = ref(true)
-const error = ref(null)
-const editorStore = useEditorStore()
-
-// Function to fetch weather for one city
-const fetchWeatherForCity = async (city) => {
-  try {
-    // Using OpenWeatherMap API (free tier)
-    const apiKey = props.apiKey || 'demo-key'
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
-    )
-    
-    if (!response.ok) {
-      throw new Error(`Weather data for ${city} not found`)
-    }
-    
-    const data = await response.json()
-    
-    return {
-      city: data.name,
-      temperature: props.unit === 'fahrenheit' 
-        ? Math.round(data.main.temp * 9/5 + 32)
-        : Math.round(data.main.temp),
-      condition: data.weather[0].main,
-      icon: data.weather[0].icon,
-      humidity: data.main.humidity,
-      windSpeed: data.wind.speed
-    }
-  } catch (err) {
-    // Demo fallback data
-    return {
-      city: city,
-      temperature: Math.floor(Math.random() * 30) + 10,
-      condition: ['Sunny', 'Cloudy', 'Rainy'][Math.floor(Math.random() * 3)],
-      icon: '01d',
-      humidity: Math.floor(Math.random() * 100),
-      windSpeed: Math.floor(Math.random() * 20)
-    }
-  }
-}
-
-// Function to fetch all weather data
-const fetchWeatherData = async () => {
-  loading.value = true
-  error.value = null
+const fetchWeather = async () => {
+  loading.value = true;
+  error.value = "";
 
   try {
-    const promises = props.cities.map(city => fetchWeatherForCity(city))
-    const data = await Promise.all(promises)
+    const results = await Promise.all(
+      props.cities.map(async (city) => {
+        const geo = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`,
+        ).then((r) => r.json());
+        const { latitude, longitude } = geo.results?.[0] || {};
 
-    // Store data in the CraftNode's datasource
-    // The renderer will use this to duplicate slot children
-    if (props.craftNodeUuid) {
-      const craftNode = editorStore.nodes[props.craftNodeUuid]
-      if (craftNode) {
-        craftNode.datasource = {
-          type: 'list',
-          list: data
-        }
-      }
-    }
-  } catch (err) {
-    error.value = 'Failed to load weather data'
-    console.error(err)
+        const weather = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m`,
+        ).then((r) => r.json());
+
+        return { city, temperature: weather.current?.temperature_2m };
+      }),
+    );
+
+    // This is the entire integration point: hand the fetched data to this
+    // node's own uuid. Everything downstream (duplicating children, field
+    // mapping into their props) is handled by the renderer already.
+    editor.setNodeData(craftNode.value.uuid, { type: "list", list: results });
+  } catch (e) {
+    error.value = "Failed to load weather data";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-// Fetch data when component mounts
-onMounted(() => {
-  fetchWeatherData()
-
-  // Set up auto-refresh
-  if (props.refreshInterval > 0) {
-    setInterval(fetchWeatherData, props.refreshInterval * 60 * 1000)
-  }
-})
-
-// Re-fetch if cities change
-watch(() => props.cities, fetchWeatherData)
+onMounted(fetchWeather);
+watch(() => props.cities, fetchWeather);
 </script>
 
 <style scoped>
-.weather-display {
-  padding: 20px;
-}
-
-.loading, .error {
-  text-align: center;
-  padding: 40px;
-  font-size: 18px;
-}
-
-.error {
-  color: #e74c3c;
-}
-
-.weather-cards {
+.weather-wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1em;
+}
+.weather-status {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2em;
 }
 </style>
 ```
 
-### Step 2: Create the Child Component
+Note what's *not* here: no `craftNodeUuid` prop threaded in from outside, no custom `fieldMapping` prop, no duplication logic. `useCraftNode()` gives the component its own identity, and `setNodeData` is the one call that connects it to the tree.
+
+### Step 2: The child card
+
+The card is a plain component with plain props — it has no idea a fetch happened, or where its data came from:
 
 ```vue
 <!-- WeatherCard.vue -->
 <template>
   <div class="weather-card">
-    <div class="weather-header">
-      <h3>{{ city }}</h3>
-      <img :src="weatherIcon" :alt="condition" />
-    </div>
-    
-    <div class="weather-info">
-      <div class="temperature">{{ temperature }}°</div>
-      <div class="condition">{{ condition }}</div>
-      
-      <div class="weather-details">
-        <span>💧 {{ humidity }}%</span>
-        <span>💨 {{ windSpeed }} km/h</span>
-      </div>
-    </div>
+    <h3>{{ city }}</h3>
+    <div class="temperature">{{ temperature }}°C</div>
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  city: String,
-  temperature: Number,
-  condition: String,
-  icon: String,
-  humidity: Number,
-  windSpeed: Number
-})
-
-const weatherIcon = computed(() => 
-  `https://openweathermap.org/img/wn/${props.icon}@2x.png`
-)
+<script setup lang="ts">
+defineProps<{
+  city?: string;
+  temperature?: number;
+}>();
 </script>
-
-<style scoped>
-.weather-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.weather-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.weather-header h3 {
-  margin: 0;
-  color: #333;
-}
-
-.temperature {
-  font-size: 2.5em;
-  font-weight: bold;
-  color: #6366f1;
-  margin: 10px 0;
-}
-
-.condition {
-  font-size: 1.2em;
-  color: #666;
-  margin-bottom: 15px;
-}
-
-.weather-details {
-  display: flex;
-  justify-content: space-around;
-  color: #888;
-  font-size: 0.9em;
-}
-</style>
 ```
 
-### Step 3: Create the Blueprint
+### Step 3: Resolver entries
 
-```javascript
-// weather-blueprints.js
+```ts
+const resolverMap: CraftNodeResolverMap = {
+  WeatherWrapper: {
+    componentName: "WeatherWrapper",
+    component: WeatherWrapper,
+    slots: ["default"],
+    propsSchema: [
+      { $formkit: "text", name: "cities", label: "Cities (comma-separated)" },
+    ],
+  },
+  WeatherCard: {
+    componentName: "WeatherCard",
+    component: WeatherCard,
+  },
+};
+```
 
-export const weatherBlueprints = {
+### Step 4: The blueprint
+
+The mapping lives on the *card*, not the wrapper — it's per-instance data on the `CraftNode`, exactly like any other `slotsPropsPropsMap` usage:
+
+```ts
+export const weatherBlueprints: Blueprints = {
   WeatherWrapper: {
     label: "Weather Display",
     componentName: "WeatherWrapper",
     props: {
-      cities: ['London', 'Paris', 'Tokyo', 'New York'],
-      unit: 'celsius',
-      refreshInterval: 30,
-      apiKey: ''
+      cities: ["London", "Paris", "New York"],
     },
-    slots: {} // WeatherWrapper is a data wrapper, not a container
-  },
-  
-  WeatherCard: {
-    label: "Weather Card",
-    componentName: "WeatherCard",
-    props: {
-      city: 'London',
-      temperature: 20,
-      condition: 'Sunny',
-      icon: '01d',
-      humidity: 65,
-      windSpeed: 12
+    slots: {
+      default: [
+        {
+          label: "Weather Card",
+          componentName: "WeatherCard",
+          props: {},
+          slots: {},
+          slotsPropsPropsMap: {
+            data: {
+              city: "$.city",
+              temperature: "$.temperature",
+            },
+          },
+        },
+      ],
     },
-    slots: {}
-  }
-}
+  },
+};
 ```
 
-## Your Second Data Wrapper: Product Showcase
+Drop this blueprint onto the canvas, and `WeatherWrapper` fetches on mount, calls `setNodeData` with a `list` datasource, and the single `WeatherCard` template is cloned once per city — each clone reading its own `city`/`temperature` out of its own item via the `"data"` bucket. Nothing here duplicates logic that already exists in the mapping mechanism.
 
-Let's build a product showcase that fetches products from an API.
+## Choosing `single` vs `list`
 
-### Step 1: Product Data Wrapper
+- Fetching **one record** (a single product, a logged-in user's profile) → `editor.setNodeData(uuid, { type: "single", item })`. No duplication; children just read fields out of that one object.
+- Fetching **a collection** (search results, a product grid, a list of cities) → `type: "list"`. The wrapper's children are cloned once per item, as above.
+
+Both are covered in detail, including precedence rules and the underlying `CraftNodeDatasource` type, in [Injecting Data into the Node Tree](./editor#injecting-data-into-the-node-tree).
+
+## A non-fetching variant: static data
+
+A "data wrapper" doesn't have to fetch anything remote — it's just whatever calls `setNodeData`. For static/local data (e.g. content authored elsewhere, or data passed down as a prop), skip the fetch entirely:
 
 ```vue
-<!-- ProductWrapper.vue -->
-<template>
-  <div class="product-showcase">
-    <div v-if="loading" class="loading">
-      🛍️ Loading amazing products...
-    </div>
-    
-    <div v-else-if="error" class="error">
-      ⚠️ {{ error }}
-    </div>
-    
-    <div v-else class="products-grid">
-      <ProductCard
-        v-for="product in products"
-        :key="product.id"
-        :name="product.name"
-        :price="product.price"
-        :image="product.image"
-        :description="product.description"
-        :rating="product.rating"
-      />
-    </div>
-  </div>
-</template>
+<script setup lang="ts">
+import { onMounted, watch } from "vue";
+import { useCraftNode, useEditor } from "@versa-stack/v-craft";
 
-<script setup>
-import { ref, onMounted, computed } from 'vue'
+const props = defineProps<{ items: Record<string, any>[] }>();
+const { craftNode } = useCraftNode();
+const editor = useEditor();
 
-const props = defineProps({
-  // API endpoint
-  apiUrl: {
-    type: String,
-    default: 'https://fakestoreapi.com/products'
-  },
-  
-  // How many products to show
-  limit: {
-    type: Number,
-    default: 6
-  },
-  
-  // Filter by category
-  category: {
-    type: String,
-    default: '' // empty = all categories
-  },
-  
-  // Sort order
-  sortBy: {
-    type: String,
-    default: 'id', // id, price, rating, title
-    validator: (value) => ['id', 'price', 'rating', 'title'].includes(value)
-  },
-  
-  // Sort direction
-  sortOrder: {
-    type: String,
-    default: 'asc', // asc, desc
-    validator: (value) => ['asc', 'desc'].includes(value)
-  }
-})
+const sync = () =>
+  editor.setNodeData(craftNode.value.uuid, { type: "list", list: props.items });
 
-const products = ref([])
-const loading = ref(true)
-const error = ref(null)
-
-const fetchProducts = async () => {
-  loading.value = true
-  error.value = null
-  
-  try {
-    let url = props.apiUrl
-    
-    // Add category filter if specified
-    if (props.category) {
-      url += `/category/${props.category}`
-    }
-    
-    const response = await fetch(url)
-    let data = await response.json()
-    
-    // Limit results
-    data = data.slice(0, props.limit)
-    
-    // Sort products
-    data.sort((a, b) => {
-      let valueA = a[props.sortBy]
-      let valueB = b[props.sortBy]
-      
-      if (typeof valueA === 'string') {
-        valueA = valueA.toLowerCase()
-        valueB = valueB.toLowerCase()
-      }
-      
-      if (props.sortOrder === 'asc') {
-        return valueA > valueB ? 1 : -1
-      } else {
-        return valueA < valueB ? 1 : -1
-      }
-    })
-    
-    // Transform to our format
-    products.value = data.map(product => ({
-      id: product.id,
-      name: product.title,
-      price: product.price,
-      image: product.image,
-      description: product.description.substring(0, 100) + '...',
-      rating: product.rating.rate,
-      category: product.category
-    }))
-    
-  } catch (err) {
-    error.value = 'Failed to load products'
-    console.error(err)
-    
-    // Demo fallback
-    products.value = [
-      {
-        id: 1,
-        name: 'Premium Wireless Headphones',
-        price: 199.99,
-        image: 'https://via.placeholder.com/300x300?text=Headphones',
-        description: 'High-quality wireless headphones with noise cancellation...',
-        rating: 4.5,
-        category: 'electronics'
-      },
-      // ... more demo products
-    ]
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(fetchProducts)
-</script>
-
-<style scoped>
-.product-showcase {
-  padding: 20px;
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-</style>
-```
-
-### Step 2: Product Card Component
-
-```vue
-<!-- ProductCard.vue -->
-<template>
-  <div class="product-card">
-    <img :src="image" :alt="name" class="product-image" />
-    
-    <div class="product-info">
-      <h3 class="product-name">{{ name }}</h3>
-      <p class="product-description">{{ description }}</p>
-      
-      <div class="product-meta">
-        <div class="rating">
-          ⭐ {{ rating }}/5
-        </div>
-        <div class="price">
-          ${{ price }}
-        </div>
-      </div>
-      
-      <button class="add-to-cart">
-        Add to Cart
-      </button>
-    </div>
-  </div>
-</template>
-
-<script setup>
-const props = defineProps({
-  name: String,
-  price: Number,
-  image: String,
-  description: String,
-  rating: Number
-})
-</script>
-
-<style scoped>
-.product-card {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-}
-
-.product-card:hover {
-  transform: translateY(-2px);
-}
-
-.product-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
-.product-info {
-  padding: 15px;
-}
-
-.product-name {
-  margin: 0 0 8px 0;
-  font-size: 1.1em;
-  color: #333;
-}
-
-.product-description {
-  margin: 0 0 12px 0;
-  color: #666;
-  font-size: 0.9em;
-  line-height: 1.4;
-}
-
-.product-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.rating {
-  color: #f39c12;
-  font-weight: bold;
-}
-
-.price {
-  font-size: 1.3em;
-  font-weight: bold;
-  color: #27ae60;
-}
-
-.add-to-cart {
-  width: 100%;
-  padding: 10px;
-  background: #3498db;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.add-to-cart:hover {
-  background: #2980b9;
-}
-</style>
-```
-
-## Advanced Data Wrapper Features
-
-### 1. Pagination Support
-
-```javascript
-const props = defineProps({
-  page: { type: Number, default: 1 },
-  perPage: { type: Number, default: 10 },
-  totalPages: { type: Number, default: 1 }
-})
-```
-
-### 2. Search/Filter Support
-
-```javascript
-const props = defineProps({
-  searchTerm: { type: String, default: '' },
-  category: { type: String, default: '' },
-  minPrice: { type: Number, default: 0 },
-  maxPrice: { type: Number, default: 1000 }
-})
-```
-
-### 3. Custom Data Sources
-
-```javascript
-const props = defineProps({
-  dataSource: {
-    type: String,
-    default: 'api',
-    validator: (value) => ['api', 'json', 'csv', 'database'].includes(value)
-  },
-  
-  // For JSON data
-  jsonData: { type: String, default: '' },
-  
-  // For CSV data
-  csvUrl: { type: String, default: '' },
-  
-  // For database
-  connectionString: { type: String, default: '' }
-})
-```
-
-## Creating Reusable Data Templates
-
-### Step 1: Create a Generic Data Wrapper
-
-```vue
-<!-- GenericDataWrapper.vue -->
-<template>
-  <div class="data-wrapper">
-    <div v-if="loading" class="loading">{{ loadingText }}</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    
-    <component
-      v-for="(item, index) in processedData"
-      :key="index"
-      :is="childComponent"
-      v-bind="item"
-    />
-  </div>
-</template>
-
-<script setup>
-import { ref, onMounted, computed } from 'vue'
-
-const props = defineProps({
-  // Data source
-  dataUrl: String,
-  
-  // Child component to render
-  childComponent: String,
-  
-  // How to map data to props
-  fieldMapping: {
-    type: Object,
-    default: () => ({})
-  },
-  
-  // Loading text
-  loadingText: {
-    type: String,
-    default: 'Loading...'
-  }
-})
-
-const data = ref([])
-const loading = ref(true)
-const error = ref(null)
-
-const processedData = computed(() => {
-  return data.value.map(item => {
-    const mapped = {}
-    
-    // Map fields according to fieldMapping
-    Object.keys(props.fieldMapping).forEach(key => {
-      mapped[key] = item[props.fieldMapping[key]] || item[key]
-    })
-    
-    return mapped
-  })
-})
-
-const fetchData = async () => {
-  try {
-    const response = await fetch(props.dataUrl)
-    data.value = await response.json()
-  } catch (err) {
-    error.value = 'Failed to load data'
-    console.error(err)
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(fetchData)
+onMounted(sync);
+watch(() => props.items, sync);
 </script>
 ```
 
-### Step 2: Use It for Different Data Types
-
-```javascript
-// news-blueprints.js
-export const newsBlueprints = {
-  NewsList: {
-    label: "News Articles",
-    componentName: "GenericDataWrapper",
-    props: {
-      dataUrl: 'https://jsonplaceholder.typicode.com/posts',
-      childComponent: 'NewsCard',
-      fieldMapping: {
-        title: 'title',
-        description: 'body',
-        author: 'userId'
-      },
-      loadingText: '📰 Loading latest news...'
-    },
-    slots: {}
-  },
-  
-  NewsCard: {
-    label: "News Card",
-    componentName: "NewsCard",
-    props: {
-      title: 'Sample News',
-      description: 'News description here',
-      author: 'Anonymous',
-      date: '2024-01-01'
-    },
-    slots: {}
-  }
-}
-```
-
-## Testing Your Data Wrappers
-
-### Quick Test Method
-
-```vue
-<!-- TestDataWrapper.vue -->
-<template>
-  <div>
-    <h2>Data Wrapper Test</h2>
-    <ProductWrapper
-      :limit="3"
-      category="electronics"
-      sortBy="price"
-      sortOrder="desc"
-    />
-  </div>
-</template>
-
-<script setup>
-import ProductWrapper from './ProductWrapper.vue'
-</script>
-```
-
-## Common Data Wrapper Patterns
-
-### 1. Blog Post List
-
-```javascript
-const blogWrapper = {
-  label: "Blog Posts",
-  componentName: "BlogWrapper",
-  props: {
-    apiUrl: 'https://jsonplaceholder.typicode.com/posts',
-    postsPerPage: 6,
-    showExcerpt: true,
-    showDate: true,
-    showAuthor: true
-  }
-}
-```
-
-### 2. Team Members
-
-```javascript
-const teamWrapper = {
-  label: "Team Members",
-  componentName: "TeamWrapper",
-  props: {
-    apiUrl: '/api/team',
-    layout: 'grid', // grid, list, carousel
-    showSocial: true,
-    showBio: false
-  }
-}
-```
-
-### 3. Testimonials
-
-```javascript
-const testimonialsWrapper = {
-  label: "Customer Testimonials",
-  componentName: "TestimonialsWrapper",
-  props: {
-    apiUrl: '/api/testimonials',
-    autoRotate: true,
-    rotationSpeed: 5000,
-    showStars: true
-  }
-}
-```
+Same integration point, same downstream behavior — the only difference is where the data comes from.
 
 ## Next Steps
 
-Now that you understand data wrappers:
-1. Explore [Resolvers](./resolvers) for component configuration
-2. Create your own data sources and APIs
+- [Injecting Data into the Node Tree](./editor#injecting-data-into-the-node-tree) — the underlying mechanism: `CraftNodeDatasource`, the `"data"` context bucket, and how it composes with scoped-slot data.
+- [Resolvers](./resolvers) — declaring components and their schemas.
+- [Blueprints](./blueprints) — defining reusable, pre-configured component trees like the one above.

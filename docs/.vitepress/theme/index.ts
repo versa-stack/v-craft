@@ -6,6 +6,7 @@ import DefaultTheme from "vitepress/theme";
 import DemoContainer from "../components/DemoContainer.vue";
 import CraftContainerExample from "../../components/CraftContainerExample.vue";
 import CraftContainerSingleSlot from "../../components/CraftContainerSingleSlot.vue";
+import CraftListExample from "../../components/CraftListExample.vue";
 import { rootClasses } from "../../../formkit.theme";
 import "./style.css";
 import "./custom.css";
@@ -29,6 +30,7 @@ const theme: Theme = {
     app.component("DemoContainer", DemoContainer);
     app.component("CraftContainerExample", CraftContainerExample);
     app.component("CraftContainerSingleSlot", CraftContainerSingleSlot);
+    app.component("CraftListExample", CraftListExample);
   },
 };
 

@@ -29,5 +29,5 @@ const craftNode = computed<CraftNode>(() => ({
   uuid: "",
 }));
 
-const { componentToRender } = useResolveCraftNode(craftNode as any);
+const { componentToRender } = useResolveCraftNode(craftNode);
 </script>

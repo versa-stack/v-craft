@@ -35,6 +35,8 @@
             handlePropsUpdate,
             eventsSchema,
             handleEventsUpdate,
+            handleSlotsPropsPropsMapUpdate,
+            handleNodeDataUpdate,
             deleteable,
             removeNode,
           }"
@@ -52,6 +54,18 @@
                 :craftNode="selectedNode"
                 :schema="eventsSchema"
                 @update:events="handleEventsUpdate"
+              />
+            </div>
+            <div class="w-auto">
+              <CraftEditorPanelNodeSlotPropsSettings
+                :craftNode="selectedNode"
+                @update:slotsPropsPropsMap="handleSlotsPropsPropsMapUpdate"
+              />
+            </div>
+            <div class="w-auto">
+              <LoremDataPanel
+                :craftNode="selectedNode"
+                :handleNodeDataUpdate="handleNodeDataUpdate"
               />
             </div>
             <div class="w-auto" data-type="button">
@@ -81,6 +95,7 @@
 </template>
 <script lang="ts" setup>
 import { CraftEditorConfig, useEditor, Utils } from "@versa-stack/v-craft";
+import LoremDataPanel from "./LoremDataPanel.vue";
 import { onBeforeMount, ref, watch } from "vue";
 import blueprintsLibrary from "./blueprints";
 import { resolverMap } from "./resolvermap";
@@ -237,6 +252,40 @@ onBeforeMount(() => {
               parentUuid: "f0e246b7-73df-4fcb-bf37-b7df25e50e14",
             },
             {
+              label: "Lorem API Demo",
+              componentName: "CraftCanvas",
+              props: {
+                componentName: "section",
+                class: "lorem-api-demo-section",
+              },
+              slots: {
+                default: [
+                  {
+                    label: "Text (mapped from Lorem API)",
+                    componentName: "CraftComponentSimpleText",
+                    props: {
+                      content:
+                        "Select this section, set a paragraph count, and click \"Fetch from Lorem API\" - this placeholder text will be replaced by the mapped result.",
+                      componentName: "p",
+                    },
+                    slots: {},
+                    // The mapping is pre-wired: once the parent section has
+                    // a "data" datasource (via the Lorem API panel), this
+                    // node's own content prop is filled from $.text - and,
+                    // per the precedence rule, the mapping wins over the
+                    // static placeholder above.
+                    slotsPropsPropsMap: {
+                      data: { content: "$.text" },
+                    },
+                    uuid: "7f9a9d3e-6f2b-4b3a-9f1a-4a5b6c7d8e9f",
+                    parentUuid: "2c1e6a3d-8b4f-4a9c-b2d1-9e3f5a6c7d8b",
+                  },
+                ],
+              },
+              uuid: "2c1e6a3d-8b4f-4a9c-b2d1-9e3f5a6c7d8b",
+              parentUuid: "f0e246b7-73df-4fcb-bf37-b7df25e50e14",
+            },
+            {
               label: "HTML <footer>",
               componentName: "CraftCanvas",
               props: {
@@ -300,5 +349,13 @@ const config: CraftEditorConfig = {
   text-transform: uppercase;
   font-weight: bold;
   color: var(--v-craft-gray-darker);
+}
+
+:deep(.lorem-api-demo-section) {
+  display: block;
+  padding: 1em;
+  margin: 0.5em 0;
+  border: 1px dashed var(--v-craft-gray-medium);
+  border-radius: 4px;
 }
 </style>
