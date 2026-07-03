@@ -59,8 +59,8 @@ const props = defineProps<{
 
 const craftNode = toRef(props, "craftNode");
 const { editor, visible } = useCraftNodeWrapper(craftNode);
-const { resolvedNode, defaultProps, resolver, componentToRender } =
-  useResolveCraftNode(craftNode);
+const { resolvedNode, resolver, componentToRender, props: nodeProps } =
+  useResolveCraftNode(craftNode, () => props.context || {});
 
 provide("resolver", resolver);
 
