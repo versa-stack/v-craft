@@ -14,16 +14,17 @@
       <div class="v-craft-panel-center flex grow" @click.stop="deselectNodes">
         <slot></slot>
       </div>
-      <div class="v-craft-grid-panel v-craft-panel-right shrink">
+      <div class="v-craft-grid-panel v-craft-panel-right shrink max-w-[20vw]">
         <CraftEditorPanelLayers />
         <CraftEditorPanelSettings />
       </div>
     </div>
   </div>
 </template>
-<script lang="ts" setup generic="T extends object">
-import { BlueprintsLibrary } from "../lib/model";
+<script lang="ts" setup generic="T extends FormKitSchemaDefinition">
+import type { BlueprintsLibrary } from "../lib/model";
 import { useEditor } from "../store/editor";
+import type { FormKitSchemaDefinition } from "@formkit/core";
 
 defineProps<{
   blueprints: BlueprintsLibrary;
@@ -39,9 +40,13 @@ const deselectNodes = () => {
   .v-craft-panel {
     padding: 0.75em;
     margin-bottom: 1.25em;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.034), 0 4px 4px rgba(0, 0, 0, 0.048),
-      0 6px 6px rgba(0, 0, 0, 0.06), 0 8px 8px rgba(0, 0, 0, 0.072),
-      0 10px 10px rgba(0, 0, 0, 0.086), 0 15px 15px rgba(0, 0, 0, 0.12);
+    box-shadow:
+      0 2px 2px rgba(0, 0, 0, 0.034),
+      0 4px 4px rgba(0, 0, 0, 0.048),
+      0 6px 6px rgba(0, 0, 0, 0.06),
+      0 8px 8px rgba(0, 0, 0, 0.072),
+      0 10px 10px rgba(0, 0, 0, 0.086),
+      0 15px 15px rgba(0, 0, 0, 0.12);
     border-radius: 3px;
   }
 

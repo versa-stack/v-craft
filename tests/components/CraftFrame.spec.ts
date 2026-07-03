@@ -44,13 +44,13 @@ describe("CraftFrame", () => {
         uuid: "1",
         componentName: "CraftComponentSimpleText",
         props: {},
-        children: [],
+        slots: {},
       },
       {
         uuid: "2",
         componentName: "CraftComponentSimpleText",
         props: {},
-        children: [],
+        slots: {},
       },
     ]);
 
@@ -63,6 +63,7 @@ describe("CraftFrame", () => {
   });
 
   it("creates nodes from default slot when editor has no nodes", async () => {
+    const editor = useEditor();
     const wrapper = createWrapper(
       {},
       {
@@ -75,8 +76,7 @@ describe("CraftFrame", () => {
 
     await nextTick();
 
-    const editor = useEditor();
-    expect(editor.nodeMap).toHaveLength(2);
+    expect(editor.rootNodes).toHaveLength(2);
     expect(
       wrapper.findAllComponents({ name: "CraftNodeViewer" })
     ).toHaveLength(2);
@@ -89,7 +89,7 @@ describe("CraftFrame", () => {
         uuid: "1",
         componentName: "CraftComponentSimpleText",
         props: {},
-        children: [],
+        slots: {},
       },
     ]);
 

@@ -13,7 +13,7 @@ v-craft is a Vue.js 3 library that lets you build drag-and-drop page editors. Th
 Open your terminal and run:
 
 ```bash
-npm install @versa-stack/v-craft@alpha
+npm install @versa-stack/v-craft
 ```
 
 ### Step 2: Import what you need

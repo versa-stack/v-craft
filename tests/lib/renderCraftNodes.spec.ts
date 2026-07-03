@@ -143,5 +143,147 @@ describe("renderCraftNodes", () => {
       const vnodes = renderCraftNodesToVNodes([], { resolverMap });
       expect(vnodes).toHaveLength(0);
     });
+
+    it("filters out hidden nodes", () => {
+      const nodes: CraftNode[] = [
+        {
+          uuid: "1",
+          componentName: "TestComponent",
+          props: { text: "First" },
+          slots: {},
+        },
+        {
+          uuid: "2",
+          componentName: "TestComponent",
+          props: { text: "Second" },
+          slots: {},
+          visible: false,
+        },
+      ];
+
+      const vnodes = renderCraftNodesToVNodes(nodes, {
+        resolverMap,
+        componentRegistry: { TestComponent },
+      });
+
+      expect(vnodes).toHaveLength(1);
+      expect(vnodes[0].props?.text).toBe("First");
+    });
+
+    it("handles data binding with single type", () => {
+      const node: CraftNode = {
+        uuid: "1",
+        componentName: "TestComponent",
+        props: {},
+        slots: {
+          default: [
+            {
+              uuid: "2",
+              componentName: "TestComponent",
+              props: { text: "child" },
+              slots: {},
+            },
+          ],
+        },
+      };
+
+      const nodeDataMap = {
+        "1": {
+          type: "single" as const,
+          item: { text: "data-value" },
+          slotName: "default",
+        },
+      };
+
+      const resolver = new CraftNodeResolver(resolverMap);
+      const vnode = renderCraftNodeToVNode(node, resolver, { TestComponent }, nodeDataMap);
+
+      expect(vnode).not.toBeNull();
+      expect(vnode!.children).toHaveLength(1);
+      expect((vnode!.children as any[])[0].props?.text).toBe("data-value");
+    });
+
+    it("handles data binding with list type", () => {
+      const node: CraftNode = {
+        uuid: "1",
+        componentName: "TestComponent",
+        props: {},
+        slots: {
+          default: [
+            {
+              uuid: "2",
+              componentName: "TestComponent",
+              props: { text: "child" },
+              slots: {},
+            },
+          ],
+        },
+      };
+
+      const nodeDataMap = {
+        "1": {
+          type: "list" as const,
+          list: [{ text: "item1" }, { text: "item2" }],
+          slotName: "default",
+        },
+      };
+
+      const resolver = new CraftNodeResolver(resolverMap);
+      const vnode = renderCraftNodeToVNode(node, resolver, { TestComponent }, nodeDataMap);
+
+      expect(vnode).not.toBeNull();
+      expect(vnode!.children).toHaveLength(2);
+    });
+
+    it("handles event handlers", () => {
+      const node: CraftNode = {
+        uuid: "1",
+        componentName: "TestComponent",
+        props: {},
+        slots: {},
+        events: {
+          click: "ctx.value = 'clicked'",
+        },
+      };
+
+      const eventsContext = { value: "" };
+      const resolver = new CraftNodeResolver(resolverMap);
+      const vnode = renderCraftNodeToVNode(node, resolver, { TestComponent }, undefined, eventsContext);
+
+      expect(vnode).not.toBeNull();
+      expect(vnode!.props?.click).toBeDefined();
+    });
+
+    it("handles multiple named slots", () => {
+      const node: CraftNode = {
+        uuid: "1",
+        componentName: "TestComponent",
+        props: {},
+        slots: {
+          header: [
+            {
+              uuid: "2",
+              componentName: "TestComponent",
+              props: { text: "header" },
+              slots: {},
+            },
+          ],
+          body: [
+            {
+              uuid: "3",
+              componentName: "TestComponent",
+              props: { text: "body" },
+              slots: {},
+            },
+          ],
+        },
+      };
+
+      const resolver = new CraftNodeResolver(resolverMap);
+      const vnode = renderCraftNodeToVNode(node, resolver, { TestComponent });
+
+      expect(vnode).not.toBeNull();
+      expect(vnode!.children).toHaveLength(2);
+    });
   });
 });

@@ -20,7 +20,10 @@
       class="v-craft-node-layers nested-layers"
       v-if="craftNode.slots && Object.keys(craftNode.slots).length > 0"
     >
-      <template v-for="(slotChildren, slotName) in craftNode.slots" :key="slotName">
+      <template
+        v-for="(slotChildren, slotName) in craftNode.slots"
+        :key="slotName"
+      >
         <CraftEditorPanelNodeLayer
           v-for="(n, index) in slotChildren"
           :key="`${slotName}-${index}`"
@@ -32,11 +35,16 @@
     </ul>
   </li>
 </template>
-<script lang="ts" setup generic="T extends object">
+<script
+  lang="ts"
+  setup
+  generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
+>
 import { storeToRefs } from "pinia";
 import { computed, toRefs } from "vue";
 import { CraftNode, resolveNodeName } from "../lib/craftNode";
 import { useEditor } from "../store/editor";
+import { FormKitSchemaDefinition } from "@formkit/core";
 
 const props = withDefaults(
   defineProps<{
@@ -45,7 +53,7 @@ const props = withDefaults(
   }>(),
   {
     visible: true,
-  }
+  },
 );
 
 const { craftNode, visible } = toRefs(props);
@@ -53,7 +61,7 @@ const { craftNode, visible } = toRefs(props);
 const isVisible = computed(
   () =>
     (visible.value && craftNode.value.visible === undefined) ||
-    craftNode.value.visible
+    craftNode.value.visible,
 );
 
 const emit = defineEmits(["layer-click"]);
@@ -62,7 +70,7 @@ const { selectedNode } = storeToRefs(editor);
 
 const componentName = computed(() => resolveNodeName(craftNode.value));
 const isSelected = computed(
-  () => selectedNode?.value?.uuid === craftNode.value.uuid
+  () => selectedNode?.value?.uuid === craftNode.value.uuid,
 );
 
 const iconClick = () => {

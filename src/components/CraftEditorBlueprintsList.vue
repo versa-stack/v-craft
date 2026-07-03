@@ -20,7 +20,12 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup generic="T extends object">
+<script
+  lang="ts"
+  setup
+  generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
+>
+import type { FormKitSchemaDefinition } from "@formkit/core";
 import { ComputedRef, inject } from "vue";
 import CraftNodeResolver from "../lib/CraftNodeResolver";
 import { BlueprintsLibrary } from "../lib/model";

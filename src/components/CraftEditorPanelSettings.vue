@@ -7,6 +7,10 @@
     :schema="schema"
     :eventsSchema="eventsSchema"
     :handleEventsUpdate="handleEventsUpdate"
+    :availableProps="availableProps"
+    :handleSlotsPropsPropsMapUpdate="handleSlotsPropsPropsMapUpdate"
+    :nodeData="nodeData"
+    :handleNodeDataUpdate="handleNodeDataUpdate"
     :deleteable="deleteable"
     :removeNode="removeNode"
   >
@@ -39,6 +43,20 @@
             @update:events="handleEventsUpdate"
           />
         </div>
+        <div v-if="selectedNode" class="v-craft-settings">
+          <CraftEditorPanelNodeSlotPropsSettings
+            :craftNode="selectedNode"
+            :availableProps="availableProps"
+            @update:slotsPropsPropsMap="handleSlotsPropsPropsMapUpdate"
+          />
+        </div>
+        <div v-if="selectedNode" class="v-craft-settings">
+          <CraftEditorPanelNodeDataSourceSettings
+            :craftNode="selectedNode"
+            :nodeData="nodeData"
+            @update:nodeData="handleNodeDataUpdate"
+          />
+        </div>
         <div class="v-craft-actions" data-type="button">
           <button
             class="formkit-input v-craft-delete"
@@ -53,14 +71,17 @@
   </slot>
 </template>
 
-<script lang="ts" setup generic="T extends object">
+<script lang="ts" setup generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition">
 import { storeToRefs } from "pinia";
 import { computed, inject, type ComputedRef } from "vue";
 import CoreResolver from "../lib/CraftNodeResolver";
+import type { CraftNodeDatasource } from "../lib/craftNode";
+import { extractSchemaFieldNames } from "../lib/extractSchemaFieldNames";
 import { useEditor } from "../store/editor";
+import type { FormKitSchemaDefinition } from '@formkit/core';
 
 const editor = useEditor();
-const { selectedNode } = storeToRefs(editor);
+const { selectedNode, nodeDataMap } = storeToRefs(editor);
 const resolver = inject<ComputedRef<CoreResolver<T>>>("resolver");
 
 const schema = computed(() => {
@@ -75,6 +96,8 @@ const eventsSchema = computed(() => {
   }
   return resolver.value.getEventsSchema(selectedNode.value);
 });
+
+const availableProps = computed(() => extractSchemaFieldNames(schema.value));
 
 const deleteable = computed(
   () => selectedNode.value && selectedNode.value.parentUuid
@@ -104,6 +127,29 @@ const handlePropsUpdate = (newProps: Record<string, any>) => {
 const handleEventsUpdate = (newEvents: Record<string, any>) => {
   if (selectedNode.value && newEvents) {
     editor.updateNodeEvents(selectedNode.value.uuid, newEvents);
+  }
+};
+
+const handleSlotsPropsPropsMapUpdate = (
+  slotsPropsPropsMap: Record<string, Record<string, string>>,
+) => {
+  if (selectedNode.value) {
+    editor.updateNodeSlotsPropsPropsMap(
+      selectedNode.value.uuid,
+      slotsPropsPropsMap,
+    );
+  }
+};
+
+const nodeData = computed<CraftNodeDatasource | null>(() =>
+  selectedNode.value
+    ? nodeDataMap.value[selectedNode.value.uuid] ?? null
+    : null,
+);
+
+const handleNodeDataUpdate = (data: CraftNodeDatasource | null) => {
+  if (selectedNode.value) {
+    editor.setNodeData(selectedNode.value.uuid, data);
   }
 };
 </script>

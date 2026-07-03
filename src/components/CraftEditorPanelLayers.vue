@@ -13,10 +13,15 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup generic="T extends object">
+<script
+  lang="ts"
+  setup
+  generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
+>
 import { storeToRefs } from "pinia";
 import { useEditor } from "../store/editor";
 import { CraftNode } from "../lib/craftNode";
+import { FormKitSchemaDefinition } from "@formkit/core";
 
 defineOptions({
   name: "CraftEditorPanelLayers",

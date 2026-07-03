@@ -94,7 +94,7 @@ These are two different types and must NOT be confused:
   label: string;
   componentName: string;
   props: Record<string, any>;
-  children: Blueprint[];   // <-- Blueprint uses children
+  slots: Record<string, Blueprint[]>;  // <-- Blueprint uses slots, keyed by slot name
 }
 ```
 
@@ -112,7 +112,7 @@ These are two different types and must NOT be confused:
 }
 ```
 
-**Rule**: In all documentation and code examples, CraftNodes always use `slots`, never `children`. Blueprints always use `children`.
+**Rule**: In all documentation and code examples, both CraftNodes and Blueprints use `slots`. NEVER use `children` on either type.
 
 ### Multi-Slot Support
 

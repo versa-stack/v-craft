@@ -2,8 +2,6 @@ import {
   CraftNodeResolverMap,
   defaultResolvers,
 } from "@versa-stack/v-craft";
-import CraftContainerExample from "../../CraftContainerExample.vue";
-import CraftContainerSingleSlot from "../../CraftContainerSingleSlot.vue";
 
 const resolveHtmlElements = (elements: string[]) => {
   const mapped: Record<string, any> = {};
@@ -62,7 +60,11 @@ export const resolverMap: CraftNodeResolverMap = {
   CraftContainerSingleSlot: {
     componentName: "CraftContainerSingleSlot",
   },
-  CraftCanvas: {
-    componentName: "CraftCanvas",
+  CraftListExample: {
+    componentName: "CraftListExample",
+    slots: ["default"],
+    slotsProps: {
+      default: ["item", "index"],
+    },
   },
 };

@@ -1,5 +1,7 @@
-import { CraftNodeResolverMap } from "./CraftNodeResolver";
+import { HTMLAttributes, StyleValue } from "vue";
+import { CraftNodeResolver, CraftNodeResolverMap } from "./CraftNodeResolver";
 import { CraftNode } from "./craftNode";
+import { FormKitSchemaDefinition } from '@formkit/core';
 
 export type CraftBlueprintData = {
   label: string;
@@ -31,9 +33,10 @@ export type Blueprint = Omit<CraftNode, "parentUuid" | "uuid"> & {
   slots: Record<string, Blueprint[]>;
 };
 
-export type CraftEditorConfig<T extends object> = {
+export type CraftEditorConfig<T extends FormKitSchemaDefinition = FormKitSchemaDefinition> = {
   blueprintsLibrary: BlueprintsLibrary;
-  resolverMap: CraftNodeResolverMap<T>;
+  resolverMap?: CraftNodeResolverMap<T>;
+  resolver?: CraftNodeResolver<T>;
 };
 
 export type CraftDataPatch<V = any, D = any> = {
@@ -50,3 +53,18 @@ export type CraftDataWrapperPropMap<V = any, D = any> = {
   patches: CraftDataPatch<V, D>[];
   type: "single" | "list";
 };
+
+export type CraftNodeIFrameProps = {
+  iframeClass?: HTMLAttributes["class"];
+  iframeStyle?: StyleValue;
+  inheritStyles?: boolean;
+  styleSheets?: string[];
+  styles?: string[];
+  iframeId?: string;
+};
+
+
+export type CraftFrameIFrameProps = CraftNodeIFrameProps & {
+  wrapperClass?: HTMLAttributes["class"];
+  wrapperStyle?: StyleValue;
+}

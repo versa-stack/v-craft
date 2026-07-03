@@ -5,8 +5,9 @@ import { EditorStoreInstanceType } from "../../store/editor";
 
 export const useCraftNodeEvents = (
   craftNode: Ref<CraftNode>,
-  editor: EditorStoreInstanceType,
-  ctx: Record<string, any>
+  ctx: Record<string, any>,
+  getNodes?: () => Record<string, CraftNode>|null,
+  getNode?: (uuid: string) => CraftNode|null,
 ) => {
   const eventHandlersMap = new Map();
 
@@ -32,8 +33,8 @@ export const useCraftNodeEvents = (
             eventCode
           );
           eventHandler(
-            { ...ctx, editor },
-            editor.nodeMap.get(craftNode.value.uuid),
+            { ...ctx, getNodes, getNode },
+            craftNode.value.uuid,
             ...args
           );
         } catch (e) {

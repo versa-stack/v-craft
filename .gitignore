@@ -9,3 +9,4 @@ types
 .vscode/
 coverage/
 test-report.junit.xml
+hello.txt

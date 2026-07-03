@@ -120,7 +120,7 @@ const vnodes = renderCraftNodesToVNodes(nodes, {
 ### Options
 
 ```ts
-interface RenderOptions<T extends object> {
+interface RenderOptions<T> {
   resolverMap: CraftNodeResolverMap<T>
   componentRegistry?: Record<string, any>
 }

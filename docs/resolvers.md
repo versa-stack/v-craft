@@ -397,6 +397,156 @@ const DraggableSection = {
 }
 ```
 
+## Async Component Resolution
+
+The `component` field in a resolver map entry accepts either a **sync Vue component** or an **async factory function** (`() => Promise<Component>`). This enables lazy-loading components on demand — useful for code-splitting and optimizing bundle size.
+
+The `component` field is read by all rendering paths — `CraftNodeViewer`, `CraftNodeEditor`, and `CraftCanvas` — via the shared `useResolveCraftNode` composable. This means async loading works for **every node type**, not just container nodes.
+
+### Usage
+
+```typescript
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+
+const resolverMap: CraftNodeResolverMap<any> = {
+  HeroSection: {
+    componentName: "HeroSection",
+    component: () => import("./components/HeroSection.vue"),
+  },
+};
+```
+
+The factory is detected automatically and wrapped with Vue's `defineAsyncComponent`. No extra configuration is needed.
+
+### Sync vs Async
+
+```typescript
+import HeroSection from "./components/HeroSection.vue";
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+
+const resolverMap: CraftNodeResolverMap<any> = {
+  HeroSection: {
+    componentName: "HeroSection",
+    component: HeroSection,                                  // sync — imported at bundle time
+  },
+  LazyCard: {
+    componentName: "LazyCard",
+    component: () => import("./components/LazyCard.vue"),   // async — loaded on demand
+  },
+  PlainDiv: {
+    componentName: "div",                                    // no component — falls back to HTML tag
+  },
+};
+```
+
+| Scenario | `component` value |
+|---|---|
+| Standard Vue app | Sync import: `component: MyComponent` |
+| Code-split / lazy loading | Async factory: `component: () => import('./MyComponent.vue')` |
+| HTML element or globally registered | Omit `component`, use `componentName` only |
+
+### Complete Example
+
+The following shows a full setup with both sync and async components in the same resolver map:
+
+**`components/HeroSection.vue`**
+```vue
+<template>
+  <section :style="{ backgroundColor: bgColor, padding: '60px 20px', textAlign: 'center' }">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+  </section>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  title: string;
+  subtitle: string;
+  bgColor: string;
+}>();
+</script>
+```
+
+**`components/LazyCard.vue`**
+```vue
+<template>
+  <div class="card" :style="{ padding: '20px', border: '1px solid #eee', borderRadius: '8px' }">
+    <h3>{{ heading }}</h3>
+    <slot />
+  </div>
+</template>
+
+<script setup lang="ts">
+defineProps<{ heading: string }>();
+</script>
+```
+
+**`resolvers.ts`**
+```typescript
+import HeroSection from "./components/HeroSection.vue";
+import type { CraftNodeResolverMap } from "@versa-stack/v-craft";
+
+export const resolverMap: CraftNodeResolverMap<any> = {
+  HeroSection: {
+    componentName: "HeroSection",
+    component: HeroSection,                                 // sync
+    defaultProps: { title: "Hello", subtitle: "", bgColor: "#f0f0f0" },
+    propsSchema: [
+      { $formkit: "text", name: "title", label: "Title" },
+      { $formkit: "text", name: "subtitle", label: "Subtitle" },
+      { $formkit: "color", name: "bgColor", label: "Background" },
+    ],
+  },
+  LazyCard: {
+    componentName: "LazyCard",
+    component: () => import("./components/LazyCard.vue"), // async — loaded on demand
+    defaultProps: { heading: "Card" },
+    propsSchema: [
+      { $formkit: "text", name: "heading", label: "Heading" },
+    ],
+    slots: ["default"],
+  },
+};
+```
+
+**`App.vue`**
+```vue
+<template>
+  <CraftStaticRenderer :nodes="nodes" :resolverMap="resolverMap" />
+</template>
+
+<script setup lang="ts">
+import { CraftStaticRenderer } from "@versa-stack/v-craft";
+import { resolverMap } from "./resolvers";
+
+const nodes = [
+  {
+    uuid: "1",
+    componentName: "HeroSection",
+    props: { title: "Welcome", subtitle: "Built with v-craft", bgColor: "#6366f1" },
+    slots: {},
+  },
+  {
+    uuid: "2",
+    componentName: "LazyCard",
+    props: { heading: "Features" },
+    slots: {
+      default: [
+        {
+          uuid: "3",
+          componentName: "HeroSection",
+          props: { title: "Fast", subtitle: "Lazy loaded", bgColor: "#fff" },
+          slots: {},
+        },
+      ],
+    },
+  },
+];
+</script>
+```
+
+`LazyCard` is only fetched from the server when the renderer first encounters it. `HeroSection` is bundled synchronously. Both are configured identically from the resolver's perspective.
+
 ## Using the CraftNodeResolver Class
 
 The `CraftNodeResolver` class provides methods to work with your resolver map:
@@ -421,6 +571,139 @@ const eventsSchema = resolver.getEventsSchema(myCraftNode)
 
 // Get drag-and-drop rules for a CraftNode
 const rules = resolver.getRules(myCraftNode)
+```
+
+## Component Resolution Hook
+
+For frameworks that have their own component resolution systems (auto-imports, custom resolvers, etc.), you can use the `onResolveComponent` hook to override v-craft's default component resolution. This allows frameworks to handle component resolution their way while maintaining a graceful fallback to v-craft's default behavior.
+
+### Why Use the Hook?
+
+The hook allows you to:
+
+- Use framework-specific component resolution
+- Avoid static imports that might break SSR builds
+- Maintain backward compatibility with existing extensions
+- Provide progressive enhancement - apps opt-in without breaking changes
+
+### Basic Usage
+
+```typescript
+import { CraftNodeResolver } from '@versa-stack/v-craft'
+import { resolveComponent } from 'vue'
+
+const resolver = new CraftNodeResolver({
+  UFooter: {
+    componentName: "UFooter",
+    // No component field - hook will handle resolution
+  }
+})
+
+resolver.onResolveComponent((craftNode, defaultResolver) => {
+  const component = resolveComponent(craftNode.componentName)
+  
+  if (!component || typeof component === 'string') {
+    const fallback = defaultResolver(craftNode.componentName)
+    return fallback
+  }
+  
+  return component
+})
+```
+
+The hook receives:
+- `craftNode`: The full craft node, which includes the component name and can be used to check if the component is wrapped in a Canvas
+- `defaultResolver`: A function that uses v-craft's default resolution (from `resolverMap`)
+
+**Handling Canvas Components**: When a component is wrapped in a Canvas, the actual component name is in `craftNode.props.componentName` instead of `craftNode.componentName`. The resolver automatically handles this internally, so you don't need to check for Canvas nodes in your hook - just use `craftNode.componentName` and the resolver will extract the correct name:
+
+```typescript
+resolver.onResolveComponent((craftNode, defaultResolver) => {
+  // The resolver automatically handles Canvas nodes internally
+  const component = resolveComponent(craftNode.componentName)
+  
+  if (!component || typeof component === 'string') {
+    return defaultResolver(craftNode.componentName)
+  }
+  
+  return component
+})
+```
+
+Return the resolved component, or call `defaultResolver(craftNode.componentName)` to fall back to v-craft's default resolution.
+
+### Hook Signature
+
+```typescript
+type ResolveComponentHook = (
+  craftNode: CraftNode,
+  defaultResolver: (name: string) => Component | undefined
+) => Component | undefined
+```
+
+- **craftNode**: The full craft node being resolved
+- **defaultResolver**: Fallback function that uses v-craft's default resolution (from `resolverMap`)
+- **Returns**: A Vue component or `undefined` to trigger fallback
+
+### Providing Resolver to CraftEditor
+
+To use your resolver with the `onResolveComponent` hook in `CraftEditor`, provide it via the config:
+
+```typescript
+const config = {
+  blueprintsLibrary: mergedBlueprints,
+  resolver: resolver,  // Provide the resolver instance (not resolverMap)
+}
+
+<CraftEditor :config="config">
+  <!-- ... -->
+</CraftEditor>
+```
+
+`CraftEditor` will use the provided resolver instance instead of creating a new one from `resolverMap`. This preserves any hooks you've registered.
+
+### Providing Resolver to CraftStaticRenderer
+
+`CraftStaticRenderer` also supports providing a resolver instance:
+
+```typescript
+<CraftStaticRenderer
+  :nodes="nodes"
+  :resolver="resolver"
+  :nodeDataMap="nodeDataMap"
+/>
+```
+
+When `resolver` is provided, `CraftStaticRenderer` uses it directly. Otherwise, it creates a new resolver from `resolverMap`. This allows you to use the `onResolveComponent` hook in static rendering scenarios as well.
+
+### Backward Compatibility
+
+The hook is completely optional. If you don't call `onResolveComponent`, v-craft uses its default resolution unchanged. Existing extensions with static component imports continue to work without modification.
+
+### Mixed Resolution Strategy
+
+You can combine framework resolution with static imports for components that aren't auto-imported:
+
+```typescript
+import MyCustomComponent from './components/MyCustomComponent.vue'
+
+const resolver = new CraftNodeResolver({
+  AppHero: {
+    componentName: "AppHero",  // Framework auto-imported
+  },
+  MyCustomComponent: {
+    componentName: "MyCustomComponent",
+    component: MyCustomComponent,  // Static import
+  }
+})
+
+resolver.onResolveComponent((name, defaultResolver) => {
+  if (name === "AppHero") {
+    return resolveComponent(name)
+  }
+  // Use default resolver for everything else
+  return defaultResolver(name)
+})
 ```
 
 ## How Resolvers and Blueprints Work Together
