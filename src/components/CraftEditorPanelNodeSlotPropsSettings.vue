@@ -1,99 +1,114 @@
 <template>
-  <fieldset
-    v-if="craftNode"
-    class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
+  <slot
+    name="panel-content"
+    :craft-node="craftNode"
+    :mapping-groups="mappingGroups"
+    :bucket-options="bucketOptions"
+    :available-props="availableProps ?? []"
+    :target-prop-options-for="targetPropOptionsFor"
+    :add-group="addGroup"
+    :remove-group="removeGroup"
+    :update-bucket="updateBucket"
+    :add-field="addField"
+    :remove-field="removeField"
+    :update-field="updateField"
   >
-    <legend class="formkit-legend">Props Mapping</legend>
-    <p class="formkit-help">
-      Map fields from an ancestor slot's context into this component's own
-      props using JSONPath (e.g. <code>$.item.name</code>).
-    </p>
-
-    <p v-if="!mappingGroups.length" class="formkit-help">
-      No mappings configured.
-    </p>
-
-    <div
-      v-for="(group, groupIndex) in mappingGroups"
-      :key="group.id"
-      class="v-craft-slot-props-map-group"
+    <fieldset
+      v-if="craftNode"
+      class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
     >
-      <FormKit
-        type="select"
-        label="Context"
-        placeholder="Select context"
-        :options="bucketOptions"
-        :value="group.bucket"
-        @input="(value) => updateBucket(groupIndex, String(value ?? ''))"
-      />
+      <legend class="formkit-legend">Props Mapping</legend>
+      <p class="formkit-help">
+        Map fields from an ancestor slot's context into this component's own
+        props using JSONPath (e.g. <code>$.item.name</code>).
+      </p>
 
-      <template v-for="(field, fieldIndex) in group.fields" :key="field.id">
+      <p v-if="!mappingGroups.length" class="formkit-help">
+        No mappings configured.
+      </p>
+
+      <div
+        v-for="(group, groupIndex) in mappingGroups"
+        :key="group.id"
+        class="v-craft-slot-props-map-group"
+      >
         <FormKit
-          v-if="availableProps && availableProps.length"
           type="select"
-          label="Target Prop"
-          placeholder="target prop"
-          :options="targetPropOptionsFor(field.targetProp)"
-          :value="field.targetProp"
-          @input="
-            (value) =>
-              updateField(groupIndex, fieldIndex, 'targetProp', String(value ?? ''))
-          "
+          label="Context"
+          placeholder="Select context"
+          :options="bucketOptions"
+          :value="group.bucket"
+          @input="(value) => updateBucket(groupIndex, String(value ?? ''))"
         />
-        <FormKit
-          v-else
-          type="text"
-          label="Target Prop"
-          placeholder="target prop"
-          :value="field.targetProp"
-          @input="
-            (value) =>
-              updateField(groupIndex, fieldIndex, 'targetProp', String(value ?? ''))
-          "
-        />
-        <FormKit
-          type="text"
-          label="JSONPath"
-          placeholder="$.item.name"
-          :value="field.fromPath"
-          @input="
-            (value) =>
-              updateField(groupIndex, fieldIndex, 'fromPath', String(value ?? ''))
-          "
-        />
+
+        <template v-for="(field, fieldIndex) in group.fields" :key="field.id">
+          <FormKit
+            v-if="availableProps && availableProps.length"
+            type="select"
+            label="Target Prop"
+            placeholder="target prop"
+            :options="targetPropOptionsFor(field.targetProp)"
+            :value="field.targetProp"
+            @input="
+              (value) =>
+                updateField(groupIndex, fieldIndex, 'targetProp', String(value ?? ''))
+            "
+          />
+          <FormKit
+            v-else
+            type="text"
+            label="Target Prop"
+            placeholder="target prop"
+            :value="field.targetProp"
+            @input="
+              (value) =>
+                updateField(groupIndex, fieldIndex, 'targetProp', String(value ?? ''))
+            "
+          />
+          <FormKit
+            type="text"
+            label="JSONPath"
+            placeholder="$.item.name"
+            :value="field.fromPath"
+            @input="
+              (value) =>
+                updateField(groupIndex, fieldIndex, 'fromPath', String(value ?? ''))
+            "
+          />
+          <button
+            type="button"
+            class="formkit-input v-craft-slot-props-remove"
+            @click.prevent="removeField(groupIndex, fieldIndex)"
+          >
+            Remove field
+          </button>
+        </template>
+
+        <button
+          type="button"
+          class="formkit-input v-craft-slot-props-add"
+          @click.prevent="addField(groupIndex)"
+        >
+          + Add field
+        </button>
         <button
           type="button"
           class="formkit-input v-craft-slot-props-remove"
-          @click.prevent="removeField(groupIndex, fieldIndex)"
+          @click.prevent="removeGroup(groupIndex)"
         >
-          Remove field
+          Remove group
         </button>
-      </template>
+      </div>
 
       <button
         type="button"
         class="formkit-input v-craft-slot-props-add"
-        @click.prevent="addField(groupIndex)"
+        @click.prevent="addGroup"
       >
-        + Add field
+        + Add mapping group
       </button>
-      <button
-        type="button"
-        class="formkit-input v-craft-slot-props-remove"
-        @click.prevent="removeGroup(groupIndex)"
-      >
-        Remove group
-      </button>
-    </div>
-
-    <button
-      type="button"
-      class="formkit-input v-craft-slot-props-add"
-      @click.prevent="addGroup"
-    >
-      + Add mapping group
-    </button>
-  </fieldset>
+    </fieldset>
+  </slot>
 </template>
 
 <script lang="ts" setup>
