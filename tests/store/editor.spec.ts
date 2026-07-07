@@ -29,6 +29,8 @@ describe("useEditor", () => {
     expect(store.draggedNode).toBeNull();
     expect(store.enabled).toBe(false);
     expect(store.nodeRefsRecord).toEqual({});
+    expect(store.nodeRuntimeProps).toEqual({});
+    expect(store.pageState).toEqual({});
   });
 
   it("should set and clear nodes", () => {
@@ -319,5 +321,38 @@ describe("useEditor", () => {
     expect(updatedNode?.slots).toHaveProperty("body");
     expect(updatedNode?.slots.header).toEqual([]);
     expect(updatedNode?.slots.body).toEqual([]);
+  });
+
+  describe("setNodeRuntimeProps", () => {
+    it("creates a runtime props entry for a uuid with no prior entry", () => {
+      const store = useEditor();
+      store.setNodeRuntimeProps("node-1", { value: "typed" });
+      expect(store.nodeRuntimeProps["node-1"]).toEqual({ value: "typed" });
+    });
+
+    it("merges into an existing entry instead of replacing it", () => {
+      const store = useEditor();
+      store.setNodeRuntimeProps("node-1", { value: "typed" });
+      store.setNodeRuntimeProps("node-1", { disabled: true });
+      expect(store.nodeRuntimeProps["node-1"]).toEqual({
+        value: "typed",
+        disabled: true,
+      });
+    });
+
+    it("overwrites only the keys provided in the patch", () => {
+      const store = useEditor();
+      store.setNodeRuntimeProps("node-1", { value: "first" });
+      store.setNodeRuntimeProps("node-1", { value: "second" });
+      expect(store.nodeRuntimeProps["node-1"]).toEqual({ value: "second" });
+    });
+
+    it("keeps separate uuids independent", () => {
+      const store = useEditor();
+      store.setNodeRuntimeProps("node-1", { value: "a" });
+      store.setNodeRuntimeProps("node-2", { value: "b" });
+      expect(store.nodeRuntimeProps["node-1"]).toEqual({ value: "a" });
+      expect(store.nodeRuntimeProps["node-2"]).toEqual({ value: "b" });
+    });
   });
 });
