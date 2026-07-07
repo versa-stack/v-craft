@@ -26,6 +26,10 @@ export interface EditorState {
   eventsContext: Record<string, any>;
   nodeDataMap: Record<string, CraftNodeDatasource | null>;
   draggingDisabled: boolean;
+  /** Live runtime props written by event handlers or captured from value-bearing nodes, by uuid. */
+  nodeRuntimeProps: Record<string, Record<string, any>>;
+  /** Page-scoped bag shared across event handlers, e.g. a pending flag. */
+  pageState: Record<string, any>;
 }
 
 export const useEditor = defineStore("editor", {
@@ -40,6 +44,8 @@ export const useEditor = defineStore("editor", {
     eventsContext: {},
     nodeDataMap: {},
     draggingDisabled: false,
+    nodeRuntimeProps: {},
+    pageState: {},
   }),
 
   actions: {
@@ -399,6 +405,10 @@ export const useEditor = defineStore("editor", {
 
     setEventsContext(context: Record<string, any>) {
       this.eventsContext = context;
+    },
+
+    setNodeRuntimeProps(uuid: string, patch: Record<string, any>) {
+      this.nodeRuntimeProps[uuid] = { ...(this.nodeRuntimeProps[uuid] || {}), ...patch };
     },
   },
 

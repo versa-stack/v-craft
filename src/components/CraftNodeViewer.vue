@@ -3,8 +3,8 @@
     ref="nodeRef"
     v-if="visible && resolver && resolvedNode"
     :is="componentToRender"
-    v-bind="nodeProps"
-    v-on="eventHandlers"
+    v-bind="{ ...nodeProps, ...runtimeProps }"
+    v-on="finalEventHandlers"
   >
     <template
       v-for="slotName in availableSlots"
@@ -134,15 +134,40 @@ const nodeRef = ref<HTMLElement | null>(null);
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   props.eventsContext || editor?.eventsContext || {},
-  () =>
-    editor?.nodeMap
-      ? (Object.fromEntries(editor.nodeMap.entries()) as Record<
-          string,
-          CraftNode
-        >)
-      : null,
-  (uuid) => editor?.nodeMap[uuid] ?? null,
+  {
+    getNodes: () =>
+      editor?.nodeMap
+        ? (Object.fromEntries(editor.nodeMap.entries()) as Record<
+            string,
+            CraftNode
+          >)
+        : null,
+    getNode: (uuid) => editor?.nodeMap.get(uuid) ?? null,
+    nodeValues: editor?.nodeRuntimeProps,
+    setNodeProps: (uuid, patch) => editor?.setNodeRuntimeProps(uuid, patch),
+    state: editor?.pageState,
+  },
 );
+
+const runtimeProps = computed(() => editor?.nodeRuntimeProps[craftNode.value.uuid] || {});
+
+const captureNodeValue = (value: any) => {
+  editor?.setNodeRuntimeProps(craftNode.value.uuid, { value });
+};
+
+const finalEventHandlers = computed(() => {
+  const compose = (name: string, capture: (...args: any[]) => void) => (...args: any[]) => {
+    capture(...args);
+    (eventHandlers.value[name] as ((...a: any[]) => void) | undefined)?.(...args);
+  };
+
+  return {
+    ...eventHandlers.value,
+    input: compose("input", (e: Event) => captureNodeValue((e?.target as HTMLInputElement)?.value)),
+    change: compose("change", (e: Event) => captureNodeValue((e?.target as HTMLInputElement)?.value)),
+    "update:modelValue": compose("update:modelValue", (value: any) => captureNodeValue(value)),
+  };
+});
 
 onMounted(() => {
   if (nodeRef.value && craftNode.value && editor) {

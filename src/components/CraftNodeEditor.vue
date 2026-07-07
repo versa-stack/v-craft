@@ -4,9 +4,10 @@
     v-if="visible && craftNode && resolvedNode"
     v-bind="{
       ...nodeProps,
+      ...runtimeProps,
       [`data-craft-uuid`]: craftNode.uuid,
     }"
-    v-on="eventHandlers"
+    v-on="finalEventHandlers"
     :is="componentToRender"
     :class="{
       'v-craft-node-selected': isSelected,
@@ -163,15 +164,40 @@ const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   editor?.eventsContext || {},
-  () =>
-    editor?.nodeMap
-      ? (Object.fromEntries(editor.nodeMap.entries()) as Record<
-          string,
-          CraftNode
-        >)
-      : null,
-  (uuid) => editor?.nodeMap[uuid] ?? null,
+  {
+    getNodes: () =>
+      editor?.nodeMap
+        ? (Object.fromEntries(editor.nodeMap.entries()) as Record<
+            string,
+            CraftNode
+          >)
+        : null,
+    getNode: (uuid) => editor?.nodeMap.get(uuid) ?? null,
+    nodeValues: editor?.nodeRuntimeProps,
+    setNodeProps: (uuid, patch) => editor?.setNodeRuntimeProps(uuid, patch),
+    state: editor?.pageState,
+  },
 );
+
+const runtimeProps = computed(() => editor?.nodeRuntimeProps[craftNode.value.uuid] || {});
+
+const captureNodeValue = (value: any) => {
+  editor?.setNodeRuntimeProps(craftNode.value.uuid, { value });
+};
+
+const finalEventHandlers = computed(() => {
+  const compose = (name: string, capture: (...args: any[]) => void) => (...args: any[]) => {
+    capture(...args);
+    (eventHandlers.value[name] as ((...a: any[]) => void) | undefined)?.(...args);
+  };
+
+  return {
+    ...eventHandlers.value,
+    input: compose("input", (e: Event) => captureNodeValue((e?.target as HTMLInputElement)?.value)),
+    change: compose("change", (e: Event) => captureNodeValue((e?.target as HTMLInputElement)?.value)),
+    "update:modelValue": compose("update:modelValue", (value: any) => captureNodeValue(value)),
+  };
+});
 
 const nodeName = computed(() => {
   const resolved = resolver?.value?.resolve(craftNode.value.componentName);

@@ -6,6 +6,8 @@
     :nodeMap="nodeMap"
     :nodeDataMap="nodeDataMap"
     :eventsContext="eventsContext"
+    :nodeRuntimeProps="nodeRuntimeProps"
+    :pageState="pageState"
   />
 </template>
 
@@ -14,7 +16,7 @@
   setup
   generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
 >
-import { computed, provide, readonly } from "vue";
+import { computed, provide, reactive, readonly } from "vue";
 import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
@@ -57,4 +59,9 @@ const resolver = computed(
 provide("resolver", resolver);
 provide("nodeDataMap", props.nodeDataMap || {});
 provide("eventsContext", props.eventsContext || {});
+
+/** Live runtime props written by event handlers or captured from value-bearing nodes, by uuid. */
+const nodeRuntimeProps = reactive<Record<string, Record<string, any>>>({});
+/** Page-scoped bag shared across event handlers, e.g. a pending flag. */
+const pageState = reactive<Record<string, any>>({});
 </script>
