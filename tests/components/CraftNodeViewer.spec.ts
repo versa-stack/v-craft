@@ -369,4 +369,93 @@ describe("CraftNodeViewer", () => {
     expect(wrapper.find(".async-parent").exists()).toBe(true);
     expect(wrapper.find(".async-leaf").exists()).toBe(true);
   });
+
+  describe("runtime event ctx via the editor store (nodeValues, setNodeProps, state, getNode)", () => {
+    const mountNode = (
+      craftNode: CraftNode,
+      resolverMap: CraftNodeResolverMap<any>,
+    ) =>
+      mount(CraftNodeViewer, {
+        props: { craftNode },
+        global: {
+          components: { CraftNodeViewer, CraftComponentSimpleText },
+          provide: { resolver: ref(new CraftNodeResolver(resolverMap)) },
+        },
+      });
+
+    it("captures a native input's typed value and exposes it to another node's click handler via ctx.nodeValues, resolving the target through ctx.getNode", async () => {
+      const editor = useEditor();
+
+      const inputNode = { uuid: uuidv4(), componentName: "input", props: {}, slots: {} };
+      const outputNode = createSimpleText("before", "span");
+      const triggerNode = {
+        ...createSimpleText("trigger", "button"),
+        events: {
+          click: `if (ctx.getNode("${outputNode.uuid}") && Object.keys(ctx.getNodes() || {}).length > 0) ctx.setNodeProps("${outputNode.uuid}", { content: ctx.nodeValues["${inputNode.uuid}"]?.value ?? "" })`,
+        },
+      };
+
+      editor.setNodes([inputNode, outputNode, triggerNode]);
+
+      const resolverMap: CraftNodeResolverMap<any> = {
+        ...defaultResolvers,
+        input: { componentName: "input" },
+      };
+
+      const inputWrapper = mountNode(
+        editor.nodeMap.get(inputNode.uuid)!,
+        resolverMap,
+      );
+      const outputWrapper = mountNode(
+        editor.nodeMap.get(outputNode.uuid)!,
+        resolverMap,
+      );
+      const triggerWrapper = mountNode(
+        editor.nodeMap.get(triggerNode.uuid)!,
+        resolverMap,
+      );
+
+      await inputWrapper.find("input").setValue("typed value");
+      await triggerWrapper.trigger("click");
+      await nextTick();
+
+      expect(outputWrapper.text()).toBe("typed value");
+    });
+
+    it("shares ctx.state across separately mounted nodes", async () => {
+      const editor = useEditor();
+
+      const counterNode = createSimpleText("0", "span");
+      const makeIncrementNode = () => ({
+        ...createSimpleText("click", "button"),
+        events: {
+          click: `ctx.state.count = (ctx.state.count || 0) + 1; ctx.setNodeProps("${counterNode.uuid}", { content: String(ctx.state.count) })`,
+        },
+      });
+      const firstNode = makeIncrementNode();
+      const secondNode = makeIncrementNode();
+
+      editor.setNodes([counterNode, firstNode, secondNode]);
+
+      const resolverMap: CraftNodeResolverMap<any> = { ...defaultResolvers };
+      const counterWrapper = mountNode(
+        editor.nodeMap.get(counterNode.uuid)!,
+        resolverMap,
+      );
+      const firstWrapper = mountNode(
+        editor.nodeMap.get(firstNode.uuid)!,
+        resolverMap,
+      );
+      const secondWrapper = mountNode(
+        editor.nodeMap.get(secondNode.uuid)!,
+        resolverMap,
+      );
+
+      await firstWrapper.trigger("click");
+      await secondWrapper.trigger("click");
+      await nextTick();
+
+      expect(counterWrapper.text()).toBe("2");
+    });
+  });
 });

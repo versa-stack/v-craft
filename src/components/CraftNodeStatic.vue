@@ -7,8 +7,8 @@
       resolvedNode
     "
     :is="componentToRender"
-    v-bind="nodeProps"
-    v-on="eventHandlers"
+    v-bind="finalProps"
+    v-on="finalEventHandlers"
   >
     <template
       v-for="slotName in availableSlots"
@@ -23,6 +23,8 @@
           :nodeMap="nodeMap"
           :nodeDataMap="nodeDataMap"
           :eventsContext="eventsContext"
+          :nodeRuntimeProps="nodeRuntimeProps"
+          :pageState="pageState"
           :context="buildChildContext(slotName, slotProps)"
         />
       </template>
@@ -34,6 +36,8 @@
           :nodeMap="nodeMap"
           :nodeDataMap="nodeDataMap"
           :eventsContext="eventsContext"
+          :nodeRuntimeProps="nodeRuntimeProps"
+          :pageState="pageState"
           :context="buildChildContext(slotName, slotProps, item.dataItem)"
         />
       </template>
@@ -62,6 +66,8 @@ const props = defineProps<{
   nodeMap: Map<string, CraftNode>;
   nodeDataMap?: Record<string, CraftNodeDatasource>;
   eventsContext?: Record<string, any>;
+  nodeRuntimeProps?: Record<string, Record<string, any>>;
+  pageState?: Record<string, any>;
   context?: CraftNodePropsContext;
 }>();
 
@@ -134,12 +140,41 @@ const computedChildren = (children: CraftNode[], slotName: string) => {
   return computeDataNodes(data.value, children);
 };
 
+const setNodeRuntimeProps = (uuid: string, patch: Record<string, any>) => {
+  if (!props.nodeRuntimeProps) return;
+  props.nodeRuntimeProps[uuid] = { ...(props.nodeRuntimeProps[uuid] || {}), ...patch };
+};
+
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   props.eventsContext || {},
-  () => Object.fromEntries(nodeMap.value.entries()),
-  (uuid) => nodeMap.value[uuid] ?? null,
+  {
+    getNodes: () => Object.fromEntries(nodeMap.value.entries()),
+    getNode: (uuid) => nodeMap.value.get(uuid) ?? null,
+    nodeValues: props.nodeRuntimeProps,
+    setNodeProps: setNodeRuntimeProps,
+    state: props.pageState,
+  },
 );
+
+const finalProps = computed(() => ({
+  ...nodeProps.value,
+  ...(props.nodeRuntimeProps?.[craftNode.value.uuid] || {}),
+}));
+
+const finalEventHandlers = computed(() => {
+  const compose = (name: string, capture: (...args: any[]) => void) => (...args: any[]) => {
+    capture(...args);
+    (eventHandlers.value[name] as ((...a: any[]) => void) | undefined)?.(...args);
+  };
+
+  return {
+    ...eventHandlers.value,
+    input: compose("input", (e: Event) => setNodeRuntimeProps(craftNode.value.uuid, { value: (e?.target as HTMLInputElement)?.value })),
+    change: compose("change", (e: Event) => setNodeRuntimeProps(craftNode.value.uuid, { value: (e?.target as HTMLInputElement)?.value })),
+    "update:modelValue": compose("update:modelValue", (value: any) => setNodeRuntimeProps(craftNode.value.uuid, { value })),
+  };
+});
 
 type ComputedDataNode = {
   key: string;
