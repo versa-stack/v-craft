@@ -61,7 +61,11 @@ export const useResolveCraftNode = <T extends FormKitSchemaDefinition = FormKitS
     resolveComponent(resolver?.value, craftNode.value)
   );
 
-  const { props: contextProps } = useResolveCraftNodeProps(craftNode, context);
+  const { props: contextProps } = useResolveCraftNodeProps(
+    craftNode,
+    context,
+    () => resolver?.value,
+  );
 
   const props = computed(() => ({
     ...defaultProps.value,

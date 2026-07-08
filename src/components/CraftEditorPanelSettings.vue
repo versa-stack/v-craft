@@ -131,7 +131,7 @@ const handleEventsUpdate = (newEvents: Record<string, any>) => {
 };
 
 const handleSlotsPropsPropsMapUpdate = (
-  slotsPropsPropsMap: Record<string, Record<string, string>>,
+  slotsPropsPropsMap: Record<string, Record<string, unknown>>,
 ) => {
   if (selectedNode.value) {
     editor.updateNodeSlotsPropsPropsMap(

@@ -85,8 +85,8 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
     await wrapper.find("select").setValue("default");
 
     const inputs = wrapper.findAll("input");
-    await inputs[inputs.length - 2].setValue("label");
-    await inputs[inputs.length - 1].setValue("$.item.name");
+    await inputs[inputs.length - 1].setValue("label");
+    await wrapper.find("textarea").setValue("$.item.name");
     await waitForFormKitDebounce();
 
     const emitted = wrapper.emitted("update:slotsPropsPropsMap");
@@ -123,7 +123,7 @@ describe("CraftEditorPanelNodeSlotPropsSettings", () => {
     );
 
     await targetPropSelect.setValue("class");
-    await wrapper.find("input[placeholder='\$.item.name']").setValue("$.item.name");
+    await wrapper.find("textarea").setValue("$.item.name");
     await wrapper.find("select").setValue("default");
     await waitForFormKitDebounce();
 
