@@ -7,7 +7,9 @@ import CraftStaticRenderer from "../../src/components/CraftStaticRenderer.vue";
 import CraftNodeStatic from "../../src/components/CraftNodeStatic.vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import { CraftNode } from "../../src/lib/craftNode";
-import { CraftNodeResolverMap } from "../../src/lib/CraftNodeResolver";
+import CraftNodeResolver, {
+  CraftNodeResolverMap,
+} from "../../src/lib/CraftNodeResolver";
 
 const ScopedListComponent = defineComponent({
   name: "ScopedListComponent",
@@ -103,5 +105,40 @@ describe("slot props context mapping", () => {
     });
 
     expect(wrapper.find(".text-component").text()).toBe("Alice");
+  });
+
+  it("resolves a mapping through a registered onResolvePropertyValue hook", () => {
+    const textNode: CraftNode = {
+      uuid: uuidv4(),
+      componentName: "TextComponent",
+      props: {},
+      slots: {},
+      slotsPropsPropsMap: {
+        default: { label: { sources: ["$.item.name", "$.item.role"] } },
+      },
+    };
+
+    const listNode: CraftNode = {
+      uuid: uuidv4(),
+      componentName: "ScopedListComponent",
+      props: {},
+      slots: { default: [textNode] },
+    };
+
+    const resolver = new CraftNodeResolver(resolverMap);
+    resolver.onResolvePropertyValue((mapping, contextData, defaultResolve) => {
+      if (typeof mapping === "string") return defaultResolve(mapping);
+      const { sources } = mapping as { sources: string[] };
+      return sources.map((path) => defaultResolve(path)).join(" — ");
+    });
+
+    const wrapper = mount(CraftStaticRenderer, {
+      props: { nodes: [listNode], resolver },
+      global: {
+        components: { CraftStaticRenderer, CraftNodeStatic, CraftCanvas },
+      },
+    });
+
+    expect(wrapper.find(".text-component").text()).toBe("Alice — Admin");
   });
 });

@@ -1,6 +1,7 @@
 import { JSONPath } from "jsonpath-plus";
 import { computed, ComputedRef, MaybeRefOrGetter, toValue } from "vue";
 import { CraftNode } from "../../lib/craftNode";
+import type CraftNodeResolver from "../../lib/CraftNodeResolver";
 import { setValueByPath } from "../../lib/setValueByPath";
 
 /**
@@ -9,9 +10,17 @@ import { setValueByPath } from "../../lib/setValueByPath";
  */
 export type CraftNodePropsContext = Record<string, Record<string, any>>;
 
+/** Default, resolver-less behavior: bare JSONPath lookup, no formatting. */
+const defaultResolveJSONPath = (mapping: unknown, contextData: any): unknown => {
+  if (typeof mapping !== "string") return undefined;
+  const matches = JSONPath({ path: mapping, json: contextData, resultType: "value" });
+  return matches.length ? matches[0] : undefined;
+};
+
 const resolveContextProps = (
   slotsPropsPropsMap: CraftNode["slotsPropsPropsMap"],
   context: CraftNodePropsContext,
+  resolver?: CraftNodeResolver<any>,
 ) => {
   const props: Record<string, any> = {};
   if (!slotsPropsPropsMap) return props;
@@ -20,14 +29,12 @@ const resolveContextProps = (
     const contextData = context[contextKey];
     if (contextData === undefined) return;
 
-    Object.entries(fieldMap).forEach(([toPath, fromPath]) => {
-      const matches = JSONPath({
-        path: fromPath,
-        json: contextData,
-        resultType: "value",
-      });
-      if (!matches.length) return;
-      setValueByPath(props, toPath, matches[0]);
+    Object.entries(fieldMap).forEach(([toPath, mapping]) => {
+      const value = resolver
+        ? resolver.resolvePropertyValue(mapping, contextData)
+        : defaultResolveJSONPath(mapping, contextData);
+      if (value === undefined) return;
+      setValueByPath(props, toPath, value);
     });
   });
 
@@ -37,9 +44,14 @@ const resolveContextProps = (
 export const useResolveCraftNodeProps = (
   node: MaybeRefOrGetter<CraftNode>,
   context: MaybeRefOrGetter<CraftNodePropsContext> = {},
+  resolver?: MaybeRefOrGetter<CraftNodeResolver<any> | undefined>,
 ): { props: ComputedRef<Record<string, any>> } => {
   const props = computed(() =>
-    resolveContextProps(toValue(node)?.slotsPropsPropsMap, toValue(context) || {}),
+    resolveContextProps(
+      toValue(node)?.slotsPropsPropsMap,
+      toValue(context) || {},
+      toValue(resolver),
+    ),
   );
 
   return {

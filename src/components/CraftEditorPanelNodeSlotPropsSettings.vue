@@ -20,7 +20,8 @@
       <legend class="formkit-legend">Props Mapping</legend>
       <p class="formkit-help">
         Map fields from an ancestor slot's context into this component's own
-        props using JSONPath (e.g. <code>$.item.name</code>).
+        props using JSONPath (e.g. <code>$.item.name</code>), or paste a JSON
+        mapping object if the app supports richer transforms.
       </p>
 
       <p v-if="!mappingGroups.length" class="formkit-help">
@@ -66,9 +67,9 @@
             "
           />
           <FormKit
-            type="text"
-            label="JSONPath"
-            placeholder="$.item.name"
+            type="textarea"
+            label="JSONPath (or JSON mapping object)"
+            placeholder="$.item.name  (or paste a JSON transform object)"
             :value="field.fromPath"
             @input="
               (value) =>
@@ -130,9 +131,23 @@ const props = defineProps<{
 const emit = defineEmits<{
   (
     e: "update:slotsPropsPropsMap",
-    value: Record<string, Record<string, string>>,
+    value: Record<string, Record<string, unknown>>,
   ): void;
 }>();
+
+/** `fromPath` doubles as a JSON escape hatch: `{...}` parses as a mapping object, anything else is a literal JSONPath string. */
+const parseFromPath = (value: string): unknown => {
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("{")) return trimmed;
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return trimmed;
+  }
+};
+
+const stringifyMapping = (mapping: unknown): string =>
+  typeof mapping === "string" ? mapping : JSON.stringify(mapping);
 
 const craftNode = toRef(props, "craftNode");
 const { buckets } = useAncestorContextBuckets(craftNode);
@@ -170,10 +185,10 @@ const syncFromNode = () => {
     ([bucket, fields]) => ({
       id: uuidv4(),
       bucket,
-      fields: Object.entries(fields).map(([targetProp, fromPath]) => ({
+      fields: Object.entries(fields).map(([targetProp, mapping]) => ({
         id: uuidv4(),
         targetProp,
-        fromPath,
+        fromPath: stringifyMapping(mapping),
       })),
     }),
   );
@@ -182,13 +197,13 @@ const syncFromNode = () => {
 watch(() => craftNode.value?.uuid, syncFromNode, { immediate: true });
 
 const emitMappingGroups = () => {
-  const result: Record<string, Record<string, string>> = {};
+  const result: Record<string, Record<string, unknown>> = {};
   mappingGroups.value.forEach((group) => {
     if (!group.bucket.trim()) return;
-    const fields: Record<string, string> = {};
+    const fields: Record<string, unknown> = {};
     group.fields.forEach((field) => {
       if (field.targetProp.trim() && field.fromPath.trim()) {
-        fields[field.targetProp.trim()] = field.fromPath.trim();
+        fields[field.targetProp.trim()] = parseFromPath(field.fromPath);
       }
     });
     if (Object.keys(fields).length) {

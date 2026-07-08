@@ -127,7 +127,7 @@ export const useEditor = defineStore("editor", {
 
     updateNodeSlotsPropsPropsMap(
       nodeUuid: string,
-      slotsPropsPropsMap: Record<string, Record<string, string>>,
+      slotsPropsPropsMap: Record<string, Record<string, unknown>>,
     ) {
       const node = this.nodeMap.get(nodeUuid);
       if (node) {

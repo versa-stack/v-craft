@@ -24,7 +24,13 @@ export type CraftNodeRules = {
 
 export type CraftNode = {
   slots: Record<string, CraftNode[]>;
-  slotsPropsPropsMap?: Record<string, Record<string, string>>;
+  /**
+   * bucket -> { targetPropPath: mapping }. `mapping` is opaque to v-craft: a
+   * bare string is resolved as a JSONPath by default, anything else is only
+   * meaningful if the app's `CraftNodeResolver` registers
+   * `onResolvePropertyValue` to interpret it (see CraftNodeResolver.ts).
+   */
+  slotsPropsPropsMap?: Record<string, Record<string, unknown>>;
   componentName: string;
   parentUuid?: string | null;
   props: any;

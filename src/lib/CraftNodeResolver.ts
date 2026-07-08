@@ -1,4 +1,5 @@
 import { type FormKitSchemaDefinition } from "@formkit/core";
+import { JSONPath } from "jsonpath-plus";
 import { markRaw, type Component } from "vue";
 import { CraftNode, craftNodeIsCanvas, CraftNodeRules } from "./craftNode";
 
@@ -25,11 +26,25 @@ export type ResolveComponentHook = (
   defaultResolver: (name: string) => Component | undefined,
 ) => Component | undefined;
 
+/**
+ * Lets a consuming app interpret a `slotsPropsPropsMap` mapping value however
+ * it likes (e.g. a formatter/transform pipeline) instead of the plain
+ * JSONPath default. `defaultResolve` runs a JSONPath against `contextData` —
+ * call it directly for the bare-string case, or as a source-value primitive
+ * within a richer mapping shape.
+ */
+export type ResolvePropertyValueHook = (
+  mapping: unknown,
+  contextData: any,
+  defaultResolve: (path: string) => unknown,
+) => unknown;
+
 export class CraftNodeResolver<
   T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
 > {
   resolverMap: CraftNodeResolverMap<T> = {};
   private resolveComponentHook?: ResolveComponentHook;
+  private resolvePropertyValueHook?: ResolvePropertyValueHook;
 
   constructor(resolverMap: Record<string, CraftNodeComponentMap<T>> = {}) {
     this.setResolverMap(resolverMap);
@@ -45,6 +60,23 @@ export class CraftNodeResolver<
 
   onResolveComponent(hook: ResolveComponentHook): void {
     this.resolveComponentHook = hook;
+  }
+
+  onResolvePropertyValue(hook: ResolvePropertyValueHook): void {
+    this.resolvePropertyValueHook = hook;
+  }
+
+  resolvePropertyValue(mapping: unknown, contextData: any): unknown {
+    const defaultResolve = (path: string): unknown => {
+      const matches = JSONPath({ path, json: contextData, resultType: "value" });
+      return matches.length ? matches[0] : undefined;
+    };
+
+    if (this.resolvePropertyValueHook) {
+      return this.resolvePropertyValueHook(mapping, contextData, defaultResolve);
+    }
+
+    return typeof mapping === "string" ? defaultResolve(mapping) : undefined;
   }
 
   resolve(name: string): CraftNodeComponentMap<T> {
