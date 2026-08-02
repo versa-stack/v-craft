@@ -1,12 +1,12 @@
 <template>
   <component
-    ref="nodeRef"
+    :is="componentToRender"
     v-if="
       (craftNode.visible || craftNode.visible === undefined) &&
-      resolver &&
-      resolvedNode
+        resolver &&
+        resolvedNode
     "
-    :is="componentToRender"
+    ref="nodeRef"
     v-bind="finalProps"
     v-on="finalEventHandlers"
   >
@@ -19,12 +19,12 @@
         <CraftNodeStatic
           v-for="childNode in slotNodes[slotName]"
           :key="childNode.uuid"
-          :craftNode="childNode"
-          :nodeMap="nodeMap"
-          :nodeDataMap="nodeDataMap"
-          :eventsContext="eventsContext"
-          :nodeRuntimeProps="nodeRuntimeProps"
-          :pageState="pageState"
+          :craft-node="childNode"
+          :node-map="nodeMap"
+          :node-data-map="nodeDataMap"
+          :events-context="eventsContext"
+          :node-runtime-props="nodeRuntimeProps"
+          :page-state="pageState"
           :context="buildChildContext(slotName, slotProps)"
         />
       </template>
@@ -32,12 +32,12 @@
         <CraftNodeStatic
           v-for="item in computedChildren(slotNodes[slotName], slotName)"
           :key="item.key"
-          :craftNode="item.craftNode"
-          :nodeMap="nodeMap"
-          :nodeDataMap="nodeDataMap"
-          :eventsContext="eventsContext"
-          :nodeRuntimeProps="nodeRuntimeProps"
-          :pageState="pageState"
+          :craft-node="item.craftNode"
+          :node-map="nodeMap"
+          :node-data-map="nodeDataMap"
+          :events-context="eventsContext"
+          :node-runtime-props="nodeRuntimeProps"
+          :page-state="pageState"
           :context="buildChildContext(slotName, slotProps, item.dataItem)"
         />
       </template>
@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, provide, readonly, ref, toRefs } from "vue";
+import { computed, provide, readonly, toRefs } from "vue";
 import {
   CraftNode,
   CraftNodeDatasource,
@@ -205,7 +205,7 @@ const computeDataNodes = (
 
     return children.reduce((acc, childNode) => {
       return acc.concat(
-        //@ts-ignore
+        //@ts-expect-error - data.list is only present on the list-typed union member
         data.list.map((item, index) => ({
           key: `${childNode.uuid}-data-${index}`,
           craftNode: {

@@ -7,7 +7,9 @@
     @click.prevent.stop="emit('layer-click', craftNode)"
   >
     <div class="v-craft-component-layer-face">
-      <div class="v-craft-component-name">{{ componentName }}</div>
+      <div class="v-craft-component-name">
+        {{ componentName }}
+      </div>
       <button
         type="button"
         class="v-craft-component-icon"
@@ -17,8 +19,8 @@
       </button>
     </div>
     <ul
-      class="v-craft-node-layers nested-layers"
       v-if="craftNode.slots && Object.keys(craftNode.slots).length > 0"
+      class="v-craft-node-layers nested-layers"
     >
       <template
         v-for="(slotChildren, slotName) in craftNode.slots"
@@ -27,9 +29,9 @@
         <CraftEditorPanelNodeLayer
           v-for="(n, index) in slotChildren"
           :key="`${slotName}-${index}`"
-          :craftNode="n"
-          @layer-click="(node) => emit('layer-click', node)"
+          :craft-node="n"
           :visible="isVisible"
+          @layer-click="(node) => emit('layer-click', node)"
         />
       </template>
     </ul>

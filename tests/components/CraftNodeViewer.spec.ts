@@ -30,7 +30,7 @@ const createSimpleText = (
 };
 
 const createCanvas = <
-  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+  _T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
 >(
   children: CraftNode[],
 ) => {

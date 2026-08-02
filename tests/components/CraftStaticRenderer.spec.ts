@@ -12,7 +12,6 @@ import CraftNodeResolver, {
   CraftNodeResolverMap,
 } from "../../src/lib/CraftNodeResolver";
 import { defaultResolvers } from "../../src/resolvers/default";
-import { writeFileSync } from "fs";
 
 const TestComponent = defineComponent({
   name: "TestComponent",
@@ -213,7 +212,6 @@ describe("CraftStaticRenderer", () => {
 
     const wrapper = createWrapper(nodes);
 
-    writeFileSync("hello.txt", wrapper.html());
     expect(wrapper.findAllComponents({ name: "CraftNodeStatic" })).toHaveLength(
       2,
     );

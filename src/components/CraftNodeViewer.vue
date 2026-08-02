@@ -1,8 +1,8 @@
 <template>
   <component
-    ref="nodeRef"
-    v-if="visible && resolver && resolvedNode"
     :is="componentToRender"
+    v-if="visible && resolver && resolvedNode"
+    ref="nodeRef"
     v-bind="{ ...nodeProps, ...runtimeProps }"
     v-on="finalEventHandlers"
   >
@@ -16,7 +16,7 @@
           <CraftNodeViewer
             v-for="childNode in slotNodes[slotName]"
             :key="childNode.uuid"
-            :craftNode="childNode"
+            :craft-node="childNode"
             :context="buildChildContext(slotName, slotProps)"
           />
         </template>
@@ -24,7 +24,7 @@
           <CraftNodeViewer
             v-for="item in computedChildren(slotNodes[slotName], slotName)"
             :key="item.key"
-            :craftNode="item.craftNode"
+            :craft-node="item.craftNode"
             :context="buildChildContext(slotName, slotProps, item.dataItem)"
           />
         </template>
@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, provide, ref, toRef, readonly } from "vue";
+import { computed, onMounted, provide, ref, toRef } from "vue";
 import {
   CraftNode,
   CraftNodeDatasource,
@@ -204,7 +204,7 @@ const computeDataNodes = (
 
     return children.reduce((acc, childNode) => {
       return acc.concat(
-        //@ts-ignore
+        //@ts-expect-error - data.list is only present on the list-typed union member
         data.list.map((item, index) => ({
           key: `${childNode.uuid}-data-${index}`,
           craftNode: {

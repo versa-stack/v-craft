@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { h, defineComponent, render as vueRender, createApp } from "vue";
+import { h, defineComponent } from "vue";
 import { renderCraftNodesToVNodes, renderCraftNodeToVNode } from "../../src/lib/renderCraftNodes";
 import { CraftNode } from "../../src/lib/craftNode";
 import { CraftNodeResolverMap } from "../../src/lib/CraftNodeResolver";

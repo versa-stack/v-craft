@@ -17,14 +17,19 @@
       v-if="craftNode"
       class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
     >
-      <legend class="formkit-legend">Props Mapping</legend>
+      <legend class="formkit-legend">
+        Props Mapping
+      </legend>
       <p class="formkit-help">
         Map fields from an ancestor slot's context into this component's own
         props using JSONPath (e.g. <code>$.item.name</code>), or paste a JSON
         mapping object if the app supports richer transforms.
       </p>
 
-      <p v-if="!mappingGroups.length" class="formkit-help">
+      <p
+        v-if="!mappingGroups.length"
+        class="formkit-help"
+      >
         No mappings configured.
       </p>
 
@@ -42,7 +47,10 @@
           @input="(value) => updateBucket(groupIndex, String(value ?? ''))"
         />
 
-        <template v-for="(field, fieldIndex) in group.fields" :key="field.id">
+        <template
+          v-for="(field, fieldIndex) in group.fields"
+          :key="field.id"
+        >
           <FormKit
             v-if="availableProps && availableProps.length"
             type="select"

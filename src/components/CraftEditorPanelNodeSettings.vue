@@ -1,22 +1,24 @@
 <template>
   <CraftEditorPanelForm
-    :craftNode="craftNode"
+    :craft-node="craftNode"
     :schema="schema"
     :model="craftNode?.props"
     @update="(v) => emit('update:props', v)"
   >
     <template #panel-content="{ craftNode, model, handleFormInput, schema }">
       <fieldset
-        class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
         v-if="schema"
+        class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
       >
-        <legend class="formkit-legend">Properties</legend>
+        <legend class="formkit-legend">
+          Properties
+        </legend>
         <FormKit
           :key="craftNode?.uuid"
           type="form"
           :value="model"
-          @input="handleFormInput"
           :actions="false"
+          @input="handleFormInput"
         >
           <FormKitSchema :schema="schema" />
         </FormKit>

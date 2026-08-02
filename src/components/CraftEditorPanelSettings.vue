@@ -1,25 +1,27 @@
 <template>
   <slot
     name="panel-content"
-    :selectedNode="selectedNode"
-    :nodeName="nodeName"
-    :handlePropsUpdate="handlePropsUpdate"
+    :selected-node="selectedNode"
+    :node-name="nodeName"
+    :handle-props-update="handlePropsUpdate"
     :schema="schema"
-    :eventsSchema="eventsSchema"
-    :handleEventsUpdate="handleEventsUpdate"
-    :availableProps="availableProps"
-    :handleSlotsPropsPropsMapUpdate="handleSlotsPropsPropsMapUpdate"
-    :nodeData="nodeData"
-    :handleNodeDataUpdate="handleNodeDataUpdate"
+    :events-schema="eventsSchema"
+    :handle-events-update="handleEventsUpdate"
+    :available-props="availableProps"
+    :handle-slots-props-props-map-update="handleSlotsPropsPropsMapUpdate"
+    :node-data="nodeData"
+    :handle-node-data-update="handleNodeDataUpdate"
     :deleteable="deleteable"
-    :removeNode="removeNode"
+    :remove-node="removeNode"
   >
     <div
       ref="panel"
       class="v-craft-panel v-craft-settings-panel"
       @click.prevent.stop="() => false"
     >
-      <h3 class="v-craft-title">component inspector</h3>
+      <h3 class="v-craft-title">
+        component inspector
+      </h3>
       <span class="text-sm">{{ selectedNode?.uuid }}</span>
       <div v-if="!selectedNode">
         <p>select a component to inspect</p>
@@ -29,38 +31,53 @@
         :class="{ 'v-craft-visible': selectedNode }"
       >
         <h4>{{ nodeName }}</h4>
-        <div v-if="schema" class="v-craft-settings">
+        <div
+          v-if="schema"
+          class="v-craft-settings"
+        >
           <CraftEditorPanelNodeSettings
-            :craftNode="selectedNode"
+            :craft-node="selectedNode"
             :schema="schema"
             @update:props="handlePropsUpdate"
           />
         </div>
-        <div v-if="eventsSchema && selectedNode" class="v-craft-settings">
+        <div
+          v-if="eventsSchema && selectedNode"
+          class="v-craft-settings"
+        >
           <CraftEditorPanelNodeEventsSettings
-            :craftNode="selectedNode"
+            :craft-node="selectedNode"
             :schema="eventsSchema"
             @update:events="handleEventsUpdate"
           />
         </div>
-        <div v-if="selectedNode" class="v-craft-settings">
+        <div
+          v-if="selectedNode"
+          class="v-craft-settings"
+        >
           <CraftEditorPanelNodeSlotPropsSettings
-            :craftNode="selectedNode"
-            :availableProps="availableProps"
-            @update:slotsPropsPropsMap="handleSlotsPropsPropsMapUpdate"
+            :craft-node="selectedNode"
+            :available-props="availableProps"
+            @update:slots-props-props-map="handleSlotsPropsPropsMapUpdate"
           />
         </div>
-        <div v-if="selectedNode" class="v-craft-settings">
+        <div
+          v-if="selectedNode"
+          class="v-craft-settings"
+        >
           <CraftEditorPanelNodeDataSourceSettings
-            :craftNode="selectedNode"
-            :nodeData="nodeData"
-            @update:nodeData="handleNodeDataUpdate"
+            :craft-node="selectedNode"
+            :node-data="nodeData"
+            @update:node-data="handleNodeDataUpdate"
           />
         </div>
-        <div class="v-craft-actions" data-type="button">
+        <div
+          class="v-craft-actions"
+          data-type="button"
+        >
           <button
-            class="formkit-input v-craft-delete"
             v-if="deleteable"
+            class="formkit-input v-craft-delete"
             @click.prevent="removeNode"
           >
             Delete

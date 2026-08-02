@@ -31,7 +31,7 @@ const createSimpleText = (
 };
 
 const createCanvas = <
-  T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
+  _T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
 >(
   children: CraftNode[],
 ) => {
@@ -174,7 +174,7 @@ describe("CraftNodeEditor", () => {
       editor.nodeMap.get(simpleText.uuid) || null,
     );
 
-    if (!craftNode) {
+    if (!craftNode.value) {
       throw Error("Craft node was not found.");
     }
 

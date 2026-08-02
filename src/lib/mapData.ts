@@ -41,7 +41,7 @@ export const mapData = <
       : JSONPath({ path: mapConfig.fromPath, json: data });
 
   if (mapConfig.type === "single") {
-    //@ts-ignore
+    //@ts-expect-error - patches is narrowed per union member, not through the generic P
     mapConfig.patches.forEach((patch: P) => {
       const value = applyPatch(rootData, patch);
       setValueByPath(output.item!, patch.toPath, value);
@@ -50,7 +50,7 @@ export const mapData = <
     output.list = rootData.map((item: any) => {
       const mappedItem: Record<string, any> = {};
       mapConfig.patches.forEach((patch) => {
-        //@ts-ignore
+        //@ts-expect-error - patch type is not narrowed inside the list branch
         const value = applyPatch(item, patch);
         setValueByPath(mappedItem, patch.toPath, value);
       });

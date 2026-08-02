@@ -192,7 +192,7 @@ describe("useEditor", () => {
 
     store.setNodes([rootNode]);
 
-    const verifyNodeTreeConsistency = (operation: string) => {
+    const verifyNodeTreeConsistency = (_operation: string) => {
       const flattenTree = (nodes: CraftNode<any>[]): string[] => {
         return nodes.flatMap((node) => [
           node.uuid,

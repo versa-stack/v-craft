@@ -1,4 +1,4 @@
-import { ref, Ref, onUnmounted } from 'vue'
+import { ref } from 'vue'
 
 export function useNodeElement() {
   const nodeEl = ref<HTMLElement | null>(null)

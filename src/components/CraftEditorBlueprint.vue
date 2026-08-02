@@ -4,7 +4,7 @@
     @dragstart.stop="handleDragStart"
     @dragend="handleDragEnd"
   >
-    <slot></slot>
+    <slot />
   </div>
 </template>
 <script lang="ts" setup generic="T extends FormKitSchemaDefinition">
@@ -22,7 +22,7 @@ const props = defineProps<{
   craftNode: CraftNode;
 }>();
 
-const handleDragStart = (e: MouseEvent) => {
+const handleDragStart = (_e: MouseEvent) => {
   console.log('CraftEditorBlueprint - dragging node:', props.craftNode);
   console.log('CraftEditorBlueprint - node.componentName:', props.craftNode.componentName);
   console.log('CraftEditorBlueprint - node.props:', props.craftNode.props);

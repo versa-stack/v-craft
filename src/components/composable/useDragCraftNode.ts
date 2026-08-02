@@ -20,7 +20,7 @@ export default <T extends FormKitSchemaDefinition = FormKitSchemaDefinition>(
   const editor = useEditor();
   const indicator = useIndicator();
 
-  const handleDragStart = (e) => {
+  const handleDragStart = (_e) => {
     if (!editor.enabled) {
       return;
     }

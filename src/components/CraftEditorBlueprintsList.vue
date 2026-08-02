@@ -1,13 +1,17 @@
 <template>
   <div v-if="resolver">
     <div v-for="group in blueprints.groups">
-      <slot name="blueprint-group" :group="group" :resolver="resolver">
+      <slot
+        name="blueprint-group"
+        :group="group"
+        :resolver="resolver"
+      >
         <h4>{{ group.label }}</h4>
         <div class="flex flex-wrap gap-2 p-1">
           <CraftEditorBlueprint
             v-for="(craftNode, key) in blueprintsWithDefaults(group, resolver)"
-            :craftNode="craftNode"
             :key="key"
+            :craft-node="craftNode"
           >
             <div class="v-craft-blueprint">
               <div class="v-craft-blueprint-label">
