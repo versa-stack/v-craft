@@ -1,6 +1,8 @@
 <template>
   <div class="v-craft-panel v-craft-blueprints-panel">
-    <h3 class="v-craft-title">blueprints</h3>
+    <h3 class="v-craft-title">
+      blueprints
+    </h3>
     <div class="v-craft-panel-content">
       <CraftEditorBlueprintsList :blueprints="blueprints" />
     </div>

@@ -10,12 +10,13 @@ const process = (nodes: CraftNode[], parentUuid: string = "") => {
     if (parentUuid) {
       node.parentUuid = parentUuid;
     }
-    node.slots &&
+    if (node.slots) {
       (Object.entries(node.slots) as [string, CraftNode[]][])
-        .filter(([_, children]) => (children?.length ?? 0) > 0)
+        .filter(([, children]) => (children?.length ?? 0) > 0)
         .forEach(([slotName, children]) => {
           node.slots[slotName] = process(children, node.uuid);
         });
+    }
 
     return node;
   });

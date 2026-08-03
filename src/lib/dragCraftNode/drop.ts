@@ -75,7 +75,7 @@ const handleCanvasDrop = <
   draggedNode: CraftNode,
   context: DragCraftNodeContext<T>,
 ) => {
-  const { editor, resolver, craftNode } = context;
+  const { editor } = context;
   const target = e.target as HTMLElement;
   const targetNode = editor.nodeMap.get(target.id);
   if (targetNode && craftNodeIsCanvas(targetNode)) {

@@ -19,7 +19,7 @@
       @blur="finishEditing"
       @keyup.enter.exact="finishEditing"
       @keyup.esc="cancelEditing"
-    ></textarea>
+    />
   </component>
 </template>
 

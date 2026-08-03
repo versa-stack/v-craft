@@ -7,13 +7,16 @@
       <slot
         name="panel-layout"
         :blueprints="blueprints"
-        :deselectNodes="deselectNodes"
+        :deselect-nodes="deselectNodes"
       />
     </template>
-    <template v-else #default>
+    <template
+      v-else
+      #default
+    >
       <CraftFrame
         :iframe="iframe"
-        :resolverMap="config.resolverMap"
+        :resolver-map="config.resolverMap"
         @iframe-load="(iframe) => emit('iframeLoad', iframe)"
       >
         <slot />

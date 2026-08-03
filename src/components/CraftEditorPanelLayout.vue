@@ -3,16 +3,22 @@
     <slot
       name="panel-layout"
       :blueprints="blueprints"
-      :deselectNodes="deselectNodes"
+      :deselect-nodes="deselectNodes"
     />
   </div>
-  <div v-else class="v-craft-panel-manager">
+  <div
+    v-else
+    class="v-craft-panel-manager"
+  >
     <div class="flex w-full justify-between gap-10">
       <div class="v-craft-grid-panel v-craft-panel-left shrink">
         <CraftEditorPanelBlueprints :blueprints="blueprints" />
       </div>
-      <div class="v-craft-panel-center flex grow" @click.stop="deselectNodes">
-        <slot></slot>
+      <div
+        class="v-craft-panel-center flex grow"
+        @click.stop="deselectNodes"
+      >
+        <slot />
       </div>
       <div class="v-craft-grid-panel v-craft-panel-right shrink max-w-[20vw]">
         <CraftEditorPanelLayers />

@@ -1,7 +1,6 @@
 import { onBeforeMount, onBeforeUnmount, Ref, watch } from "vue";
 import { CraftNode } from "../../lib/craftNode";
 import { computed } from "vue";
-import { EditorStoreInstanceType } from "../../store/editor";
 
 /** Extra lookups/channels merged into `ctx` for compiled event code. */
 export interface CraftNodeEventsRuntime {

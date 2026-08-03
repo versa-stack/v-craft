@@ -7,7 +7,7 @@ export const useCraftNodeWrapper = (craftNode: Ref<CraftNode>) => {
   const editor = (() => {
     try {
       return useEditor();
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   })();

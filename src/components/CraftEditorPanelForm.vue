@@ -10,12 +10,12 @@
 
 <script lang="ts" setup generic="T extends FormKitSchemaDefinition, V, N">
 
-import { computed, watch, toRef, onUnmounted } from "vue";
+import { computed, toRef, onUnmounted } from "vue";
 import { debounce } from "lodash-es";
 import type { CraftNode } from "../lib/craftNode";
 import { FormKitSchemaDefinition } from '@formkit/core';
 
-export interface Props<T extends FormKitSchemaDefinition, V, N> {
+export interface Props<T extends FormKitSchemaDefinition, V, _N> {
   craftNode?: CraftNode;
   model?: V;
   schema?: T;

@@ -7,7 +7,10 @@
       :style="iframeStyle"
       :onload="onLoad"
     />
-    <Teleport v-if="hasLoad" :to="iframeRef?.contentWindow?.document.body">
+    <Teleport
+      v-if="hasLoad"
+      :to="iframeRef?.contentWindow?.document.body"
+    >
       <slot />
     </Teleport>
   </div>

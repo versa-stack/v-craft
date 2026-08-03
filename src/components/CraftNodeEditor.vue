@@ -1,14 +1,13 @@
 <template>
   <component
-    ref="nodeRef"
-    v-if="visible && craftNode && resolvedNode"
     v-bind="{
       ...nodeProps,
       ...runtimeProps,
       [`data-craft-uuid`]: craftNode.uuid,
     }"
-    v-on="finalEventHandlers"
     :is="componentToRender"
+    v-if="visible && craftNode && resolvedNode"
+    ref="nodeRef"
     :class="{
       'v-craft-node-selected': isSelected,
       'v-craft-node': editor?.enabled,
@@ -22,6 +21,7 @@
         !craftNodeIsAncestorOf(editor.draggedNode, craftNode),
     }"
     :draggable="editor?.enabled && isDraggable"
+    v-on="finalEventHandlers"
     @click.prevent.stop="craftNodeClick"
     @dragend.prevent.stop="handleDragEnd"
     @dragover.prevent.stop="handleDragOver"
@@ -36,7 +36,7 @@
       <div
         v-if="
           craftNodeIsCanvas(craftNode) &&
-          (!craftNode.slots || craftNode.slots[slotName]?.length == 0)
+            (!craftNode.slots || craftNode.slots[slotName]?.length == 0)
         "
         class="v-craft-drop-text"
         :data-slot-name="slotName"
@@ -50,7 +50,7 @@
         <template
           v-if="
             craftNodeData?.type &&
-            (!craftNodeData.slotName || craftNodeData.slotName === slotName)
+              (!craftNodeData.slotName || craftNodeData.slotName === slotName)
           "
         >
           <CraftNodeViewer
@@ -59,14 +59,14 @@
               slotName,
             )"
             :key="item.key"
-            :craftNode="item.craftNode"
+            :craft-node="item.craftNode"
             :context="buildChildContext(slotName, slotProps, item.dataItem)"
           />
         </template>
         <CraftNodeEditor
           v-for="childNode in craftNode.slots?.[slotName] || []"
           :key="childNode.uuid"
-          :craftNode="childNode"
+          :craft-node="childNode"
           :context="buildChildContext(slotName, slotProps)"
         />
       </template>

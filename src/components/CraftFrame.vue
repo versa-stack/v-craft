@@ -2,40 +2,40 @@
   <div class="v-craft-frame">
     <CraftIframe
       v-if="iframe"
-      @iframeLoad="onIframeLoad"
-      :inheritStyles="iframe?.inheritStyles"
-      :iframeStyle="iframe?.iframeStyle"
-      :iframeClass="iframe?.iframeClass"
+      :inherit-styles="iframe?.inheritStyles"
+      :iframe-style="iframe?.iframeStyle"
+      :iframe-class="iframe?.iframeClass"
       :class="iframe?.wrapperClass"
       :style="iframe?.wrapperStyle"
       :styles="iframe?.styles"
-      :styleSheets="iframe?.styleSheets"
+      :style-sheets="iframe?.styleSheets"
+      @iframe-load="onIframeLoad"
     >
       <CraftNodeViewer
-        v-if="(viewOnly || !enabled) && hasNodes"
         v-for="craftNode in nodeTree"
+        v-if="(viewOnly || !enabled) && hasNodes"
         :key="`${craftNode.uuid}-view`"
-        :craftNode="craftNode"
+        :craft-node="craftNode"
       />
       <CraftNodeEditor
-        v-if="!viewOnly && enabled && hasNodes"
         v-for="craftNode in nodeTree"
+        v-if="!viewOnly && enabled && hasNodes"
         :key="`${craftNode.uuid}-edit`"
-        :craftNode="craftNode"
+        :craft-node="craftNode"
       />
       <Indicator v-if="!viewOnly && enabled" />
     </CraftIframe>
     <CraftNodeViewer
-      v-if="!iframe && (viewOnly || !enabled) && hasNodes"
       v-for="craftNode in nodeTree"
+      v-if="!iframe && (viewOnly || !enabled) && hasNodes"
       :key="`${craftNode.uuid}-view`"
-      :craftNode="craftNode"
+      :craft-node="craftNode"
     />
     <CraftNodeEditor
-      v-if="!iframe && !viewOnly && enabled && hasNodes"
       v-for="craftNode in nodeTree"
+      v-if="!iframe && !viewOnly && enabled && hasNodes"
       :key="`${craftNode.uuid}-edit`"
-      :craftNode="craftNode"
+      :craft-node="craftNode"
     />
     <Indicator v-if="!iframe && !viewOnly && enabled" />
   </div>

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { createPinia, setActivePinia } from "pinia";
@@ -6,18 +6,15 @@ import { CraftNode } from "../../../src/lib/craftNode";
 import CraftNodeResolver from "../../../src/lib/CraftNodeResolver";
 import useDragCraftNode from "../../../src/components/composable/useDragCraftNode";
 import { useEditor } from "../../../src/store/editor";
-import { useIndicator } from "../../../src/store/indicator";
 import { defaultResolvers } from "../../../src/resolvers/default";
 
 describe("useDragCraftNode", () => {
   let editor: ReturnType<typeof useEditor>;
-  let indicator: ReturnType<typeof useIndicator>;
   let resolver: CraftNodeResolver<any>;
 
   beforeEach(() => {
     setActivePinia(createPinia());
     editor = useEditor();
-    indicator = useIndicator();
     resolver = new CraftNodeResolver({
       CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText as any,
     });

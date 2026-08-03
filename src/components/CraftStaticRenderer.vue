@@ -2,12 +2,12 @@
   <CraftNodeStatic
     v-for="craftNode in nodes"
     :key="craftNode.uuid"
-    :craftNode="craftNode"
-    :nodeMap="nodeMap"
-    :nodeDataMap="nodeDataMap"
-    :eventsContext="eventsContext"
-    :nodeRuntimeProps="nodeRuntimeProps"
-    :pageState="pageState"
+    :craft-node="craftNode"
+    :node-map="nodeMap"
+    :node-data-map="nodeDataMap"
+    :events-context="eventsContext"
+    :node-runtime-props="nodeRuntimeProps"
+    :page-state="pageState"
   />
 </template>
 
@@ -16,7 +16,7 @@
   setup
   generic="T extends FormKitSchemaDefinition = FormKitSchemaDefinition"
 >
-import { computed, provide, reactive, readonly } from "vue";
+import { computed, provide, reactive } from "vue";
 import { CraftNode, CraftNodeDatasource } from "../lib/craftNode";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
@@ -38,7 +38,7 @@ const props = defineProps<{
 
 const recurseNodes = (node: CraftNode, nm: Map<string, CraftNode>) => {
   nm.set(node.uuid, node);
-  Object.entries(node.slots).forEach(([slot, children]) => {
+  Object.entries(node.slots).forEach(([_slot, children]) => {
     if (!children?.forEach) {
       return;
     }

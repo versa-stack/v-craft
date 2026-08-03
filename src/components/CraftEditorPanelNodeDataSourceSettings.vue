@@ -3,7 +3,9 @@
     v-if="craftNode"
     class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
   >
-    <legend class="formkit-legend">Data Source</legend>
+    <legend class="formkit-legend">
+      Data Source
+    </legend>
     <p class="formkit-help">
       Paste JSON here to experiment with mapping data fields into this
       subtree's props. Descendants read it via <code>slotsPropsPropsMap</code>
@@ -36,7 +38,10 @@
       @input="(value) => updateJson(String(value ?? ''))"
     />
 
-    <p v-if="jsonError" class="formkit-help v-craft-data-source-error">
+    <p
+      v-if="jsonError"
+      class="formkit-help v-craft-data-source-error"
+    >
       {{ jsonError }}
     </p>
   </fieldset>
@@ -94,7 +99,7 @@ const emitFromDraft = () => {
     } else {
       emit("update:nodeData", { type: "single", item: parsed });
     }
-  } catch (e) {
+  } catch (_e) {
     jsonError.value = "Invalid JSON - not applied until fixed.";
   }
 };

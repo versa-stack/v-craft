@@ -1,18 +1,16 @@
-import { flushPromises, mount } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it } from "vitest";
-import { defineComponent, nextTick, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftEditor from "../../src/components/CraftEditor.vue";
 import CraftFrame from "../../src/components/CraftFrame.vue";
-import CraftNodeEditor from "../../src/components/CraftNodeEditor.vue";
-import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
+import _CraftNodeEditor from "../../src/components/CraftNodeEditor.vue";
+import _CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
 import { CraftNode } from "../../src/lib/craftNode";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
 } from "../../src/lib/CraftNodeResolver";
-import { defaultResolvers } from "../../src/resolvers/default";
-import { useEditor } from "../../src/store/editor";
 import { v4 as uuidv4 } from "uuid";
 
 const CustomComponent = defineComponent({
