@@ -677,6 +677,41 @@ describe("CraftStaticRenderer", () => {
       expect(wrapper.findAll(".test-component")[0].text()).toBe("typed value");
     });
 
+    it("exposes the bound data item to a child's event handler as ctx.data", async () => {
+      const outputUuid = uuidv4();
+      const wrapperUuid = uuidv4();
+      const nodes: CraftNode[] = [
+        { uuid: outputUuid, componentName: "TestComponent", props: { text: "before" }, slots: {} },
+        {
+          uuid: wrapperUuid,
+          componentName: "CraftCanvas",
+          props: { componentName: "div" },
+          slots: {
+            default: [
+              {
+                uuid: uuidv4(),
+                componentName: "TestComponent",
+                props: { text: "trigger" },
+                slots: {},
+                events: { click: `ctx.setNodeProps("${outputUuid}", { text: ctx.data?.id ?? "none" })` },
+              },
+            ],
+          },
+        },
+      ];
+      const wrapper = mount(CraftStaticRenderer, {
+        props: {
+          nodes,
+          resolverMap: runtimeResolverMap,
+          nodeDataMap: { [wrapperUuid]: { type: "single", item: { id: "v42" } } },
+        },
+        global: { components: { TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas } },
+      });
+      await wrapper.findAll(".test-component")[1].trigger("click");
+      await nextTick();
+      expect(wrapper.findAll(".test-component")[0].text()).toBe("v42");
+    });
+
     it("getNode resolves a node by uuid (regression: Map lookup via bracket access always returned undefined)", async () => {
       const targetUuid = uuidv4();
       const triggerUuid = uuidv4();

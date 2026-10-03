@@ -154,6 +154,7 @@ const { eventHandlers } = useCraftNodeEvents(
     nodeValues: props.nodeRuntimeProps,
     setNodeProps: setNodeRuntimeProps,
     state: props.pageState,
+    getData: () => props.context?.data,
   },
 );
 
