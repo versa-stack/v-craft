@@ -13,7 +13,7 @@ export interface CraftNodeEventsRuntime {
   /** Page-scoped bag shared across event handlers, e.g. a pending flag. */
   state?: Record<string, any>;
   /** The data item this node was rendered with by a bound ancestor, exposed as `ctx.data`. */
-  getData?: () => any;
+  getData?: () => unknown;
 }
 
 export const useCraftNodeEvents = (
