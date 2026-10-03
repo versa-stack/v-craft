@@ -291,7 +291,7 @@ const computeDataNodes = (
       key: `${childNode.uuid}-single`,
       craftNode: {
         ...childNode,
-        props: { ...childNode.props, ...(data.item || {}) },
+        props: { ...childNode.props },
       },
       dataItem: data.item || {},
     }));
@@ -305,7 +305,7 @@ const computeDataNodes = (
           key: `${childNode.uuid}-data-${index}`,
           craftNode: {
             ...childNode,
-            props: { ...childNode.props, ...(item || {}) },
+            props: { ...childNode.props },
           },
           dataItem: item || {},
         })),
