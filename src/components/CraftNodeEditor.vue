@@ -176,6 +176,7 @@ const { eventHandlers } = useCraftNodeEvents(
     nodeValues: editor?.nodeRuntimeProps,
     setNodeProps: (uuid, patch) => editor?.setNodeRuntimeProps(uuid, patch),
     state: editor?.pageState,
+    getData: () => props.context?.data,
   },
 );
 

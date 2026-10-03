@@ -12,6 +12,8 @@ export interface CraftNodeEventsRuntime {
   setNodeProps?: (uuid: string, patch: Record<string, any>) => void;
   /** Page-scoped bag shared across event handlers, e.g. a pending flag. */
   state?: Record<string, any>;
+  /** The data item this node was rendered with by a bound ancestor, exposed as `ctx.data`. */
+  getData?: () => any;
 }
 
 export const useCraftNodeEvents = (
@@ -43,7 +45,7 @@ export const useCraftNodeEvents = (
             eventCode
           );
           eventHandler(
-            { ...ctx, ...runtime },
+            { ...ctx, ...runtime, data: runtime.getData?.() },
             craftNode.value.uuid,
             ...args
           );
