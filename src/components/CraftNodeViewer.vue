@@ -192,7 +192,6 @@ const computeDataNodes = (
         ...childNode,
         props: {
           ...childNode.props,
-          ...(data.item || {}),
         },
       },
       dataItem: data.item || {},
@@ -211,7 +210,6 @@ const computeDataNodes = (
             ...childNode,
             props: {
               ...childNode.props,
-              ...(item || {}),
             },
           },
         })),

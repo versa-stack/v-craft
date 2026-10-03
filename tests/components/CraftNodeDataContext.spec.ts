@@ -60,6 +60,36 @@ describe("node data context mapping", () => {
     expect(wrapper.text()).toBe("Alice");
   });
 
+  it("does not spread unmapped item fields onto a child's props", () => {
+    const textNode: CraftNode = {
+      uuid: uuidv4(),
+      componentName: "CraftComponentSimpleText",
+      props: { componentName: "span", content: "static" },
+      slots: {},
+    };
+    const wrapperNode: CraftNode = {
+      uuid: uuidv4(),
+      componentName: "CraftCanvas",
+      props: { componentName: "div" },
+      slots: { default: [textNode] },
+    };
+
+    const wrapper = mount(CraftStaticRenderer, {
+      props: {
+        nodes: [wrapperNode],
+        resolverMap,
+        nodeDataMap: {
+          [wrapperNode.uuid]: { type: "single", item: { content: "leaked" } },
+        },
+      },
+      global: {
+        components: { CraftStaticRenderer, CraftNodeStatic, CraftCanvas, CraftComponentSimpleText },
+      },
+    });
+
+    expect(wrapper.text()).toBe("static");
+  });
+
   it("maps each list item into its own clone via JSONPath, not a shared value", () => {
     const textNode = makeTextNode("$.title");
     const wrapperNode: CraftNode = {
