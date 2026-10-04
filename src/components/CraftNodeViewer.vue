@@ -3,7 +3,7 @@
     :is="componentToRender"
     v-if="visible && resolver && resolvedNode"
     ref="nodeRef"
-    v-bind="{ ...nodeProps, ...runtimeProps }"
+    v-bind="{ ...nodeProps, ...runtimeProps, ...busyAttrs }"
     v-on="finalEventHandlers"
   >
     <template
@@ -131,7 +131,7 @@ const computedChildren = (children: CraftNode[], slotName: string) => {
 
 const nodeRef = ref<HTMLElement | null>(null);
 
-const { eventHandlers } = useCraftNodeEvents(
+const { eventHandlers, busyAttrs } = useCraftNodeEvents(
   craftNode,
   props.eventsContext || editor?.eventsContext || {},
   {

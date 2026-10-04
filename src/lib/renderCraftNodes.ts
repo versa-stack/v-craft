@@ -1,6 +1,7 @@
 import { FormKitSchemaDefinition } from "@formkit/core";
 import { h, VNode } from "vue";
 import { CraftNode, CraftNodeDatasource, isVisible } from "./craftNode";
+import type { CraftNodeEventsDispatch } from "../components/composable/useCraftNodeEvents";
 import CraftNodeResolver, { CraftNodeResolverMap } from "./CraftNodeResolver";
 
 export interface RenderOptions<
@@ -16,34 +17,14 @@ function buildEventHandlers(
   node: CraftNode,
   eventsContext: Record<string, any>,
 ): Record<string, (...args: any[]) => void> {
-  const handlers: Record<string, (...args: any[]) => void> = {};
-
-  if (!node.events || !Object.keys(node.events).length) {
-    return handlers;
-  }
-
-  Object.entries(node.events).forEach(([eventName, eventCode]) => {
-    if (!eventCode?.trim()) return;
-
-    handlers[eventName] = (...args: any[]) => {
-      try {
-        const eventHandler = new Function(
-          "ctx",
-          "craftNode",
-          "args",
-          eventCode,
-        );
-        eventHandler(eventsContext, node, ...args);
-      } catch (e) {
-        console.error(
-          `Event code execution failed with code:\n${eventCode}\n\nError:`,
-          e,
-        );
-      }
-    };
-  });
-
-  return handlers;
+  const dispatch = eventsContext.dispatch as CraftNodeEventsDispatch | undefined;
+  if (!dispatch) return {};
+  return Object.fromEntries(
+    (node.interactions || [])
+      .map((i) => i?.on)
+      .filter((on): on is string => typeof on === "string" && !!on)
+      .map((on) => [on, (...args: any[]) => dispatch(node, on, args, undefined, {})]),
+  );
 }
 
 function computeDataChildren(

@@ -3,6 +3,7 @@
     v-bind="{
       ...nodeProps,
       ...runtimeProps,
+      ...busyAttrs,
       [`data-craft-uuid`]: craftNode.uuid,
     }"
     :is="componentToRender"
@@ -161,7 +162,7 @@ const { isSelected, isDraggable, selectNode } = useConnectCraftNodeToStore(
 const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
   useDragCraftNode(craftNode, nodeRef, resolver.value);
 
-const { eventHandlers } = useCraftNodeEvents(
+const { eventHandlers, busyAttrs } = useCraftNodeEvents(
   craftNode,
   editor?.eventsContext || {},
   {

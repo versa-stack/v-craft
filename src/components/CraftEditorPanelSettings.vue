@@ -6,7 +6,6 @@
     :handle-props-update="handlePropsUpdate"
     :schema="schema"
     :events-schema="eventsSchema"
-    :handle-events-update="handleEventsUpdate"
     :available-props="availableProps"
     :handle-slots-props-props-map-update="handleSlotsPropsPropsMapUpdate"
     :node-data="nodeData"
@@ -39,16 +38,6 @@
             :craft-node="selectedNode"
             :schema="schema"
             @update:props="handlePropsUpdate"
-          />
-        </div>
-        <div
-          v-if="eventsSchema && selectedNode"
-          class="v-craft-settings"
-        >
-          <CraftEditorPanelNodeEventsSettings
-            :craft-node="selectedNode"
-            :schema="eventsSchema"
-            @update:events="handleEventsUpdate"
           />
         </div>
         <div
@@ -138,12 +127,6 @@ const nodeName = computed(() =>
 const handlePropsUpdate = (newProps: Record<string, any>) => {
   if (selectedNode.value && newProps) {
     editor.updateNodeProps(selectedNode.value.uuid, newProps);
-  }
-};
-
-const handleEventsUpdate = (newEvents: Record<string, any>) => {
-  if (selectedNode.value && newEvents) {
-    editor.updateNodeEvents(selectedNode.value.uuid, newEvents);
   }
 };
 
