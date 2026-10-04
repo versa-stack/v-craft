@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, provide, readonly, toRefs } from "vue";
+import { computed, provide, readonly, ref, toRefs } from "vue";
 import {
   CraftNode,
   CraftNodeDatasource,
@@ -145,6 +145,8 @@ const setNodeRuntimeProps = (uuid: string, patch: Record<string, any>) => {
   props.nodeRuntimeProps[uuid] = { ...(props.nodeRuntimeProps[uuid] || {}), ...patch };
 };
 
+const selfProps = ref<Record<string, any>>({});
+
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
   props.eventsContext || {},
@@ -153,6 +155,9 @@ const { eventHandlers } = useCraftNodeEvents(
     getNode: (uuid) => nodeMap.value.get(uuid) ?? null,
     nodeValues: props.nodeRuntimeProps,
     setNodeProps: setNodeRuntimeProps,
+    setSelfProps: (patch) => {
+      selfProps.value = { ...selfProps.value, ...patch };
+    },
     state: props.pageState,
     getData: () => props.context?.data,
   },
@@ -161,6 +166,7 @@ const { eventHandlers } = useCraftNodeEvents(
 const finalProps = computed(() => ({
   ...nodeProps.value,
   ...(props.nodeRuntimeProps?.[craftNode.value.uuid] || {}),
+  ...selfProps.value,
 }));
 
 const finalEventHandlers = computed(() => {
