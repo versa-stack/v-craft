@@ -762,6 +762,30 @@ describe("CraftStaticRenderer", () => {
       expect((inputs[1].element as HTMLInputElement).value).toBe("");
     });
 
+    it("keeps what a person types into a field an interaction filled", async () => {
+      const inputUuid = uuidv4();
+      const triggerUuid = uuidv4();
+      const nodes: CraftNode[] = [
+        { uuid: inputUuid, componentName: "input", props: {}, slots: {} },
+        { uuid: triggerUuid, componentName: "TestComponent", props: { text: "edit" }, slots: {}, interactions: click },
+      ];
+      let seen: unknown;
+      const wrapper = createRuntimeWrapper(nodes, hostDispatch({
+        [triggerUuid]: (rt) => {
+          seen = rt.nodeValues?.[inputUuid]?.value;
+          rt.setNodeProps?.(inputUuid, { value: "Springfield" });
+        },
+      }));
+      await wrapper.find(".test-component").trigger("click");
+      await nextTick();
+      expect((wrapper.find("input").element as HTMLInputElement).value).toBe("Springfield");
+      await wrapper.find("input").setValue("Shelbyville");
+      await nextTick();
+      expect((wrapper.find("input").element as HTMLInputElement).value).toBe("Shelbyville");
+      await wrapper.find(".test-component").trigger("click");
+      expect(seen).toBe("Shelbyville");
+    });
+
     it("getNode resolves a node by uuid and state is shared across nodes", async () => {
       const targetUuid = uuidv4();
       const firstUuid = uuidv4();
