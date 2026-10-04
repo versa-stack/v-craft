@@ -145,7 +145,7 @@ const setNodeRuntimeProps = (uuid: string, patch: Record<string, any>) => {
   props.nodeRuntimeProps[uuid] = { ...(props.nodeRuntimeProps[uuid] || {}), ...patch };
 };
 
-const selfProps = ref<Record<string, any>>({});
+const selfProps = ref<Record<string, unknown>>({});
 
 const { eventHandlers } = useCraftNodeEvents(
   craftNode,
