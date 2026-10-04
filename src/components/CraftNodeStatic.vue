@@ -150,11 +150,15 @@ const setNodeRuntimeProps = (uuid: string, patch: Record<string, any>) => {
 // A value captured from what a user typed is readable as ctx.nodeValues but
 // never bound back as a prop: list siblings share the uuid, and a component
 // whose value prop is modelValue (an input number) renders a stray `value` blank.
+// A field whose value the host set keeps it bound and follows the typing, or
+// dropping the bound value would blank the field.
 const captureValue = (value: unknown) => {
   if (!props.nodeRuntimeProps) return;
   const uuid = craftNode.value.uuid;
+  const captured = capturedFor(props.nodeRuntimeProps);
+  const hostSet = "value" in (props.nodeRuntimeProps[uuid] || {}) && !captured.has(uuid);
   props.nodeRuntimeProps[uuid] = { ...(props.nodeRuntimeProps[uuid] || {}), value };
-  capturedFor(props.nodeRuntimeProps).add(uuid);
+  if (!hostSet) captured.add(uuid);
 };
 
 const selfProps = ref<Record<string, unknown>>({});
