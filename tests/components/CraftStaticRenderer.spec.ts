@@ -745,6 +745,31 @@ describe("CraftStaticRenderer", () => {
       expect(wrapper.findAll(".test-component").map((c) => c.text())).toEqual(["idle", "busy b"]);
     });
 
+    it("never binds a captured value back onto list siblings sharing the uuid", async () => {
+      const wrapperUuid = uuidv4();
+      const nodes: CraftNode[] = [
+        {
+          uuid: wrapperUuid,
+          componentName: "CraftCanvas",
+          props: { componentName: "div" },
+          slots: { default: [{ uuid: uuidv4(), componentName: "input", props: {}, slots: {} }] },
+        },
+      ];
+      const wrapper = mount(CraftStaticRenderer, {
+        props: {
+          nodes,
+          resolverMap: runtimeResolverMap,
+          nodeDataMap: { [wrapperUuid]: { type: "list", list: [{ id: "a" }, { id: "b" }] } },
+        },
+        global: { components: { TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas } },
+      });
+      const inputs = wrapper.findAll("input");
+      await inputs[0].setValue("typed");
+      await nextTick();
+      expect(inputs[1].attributes("value")).toBeUndefined();
+      expect((inputs[1].element as HTMLInputElement).value).toBe("");
+    });
+
     it("getNode resolves a node by uuid (regression: Map lookup via bracket access always returned undefined)", async () => {
       const targetUuid = uuidv4();
       const triggerUuid = uuidv4();
