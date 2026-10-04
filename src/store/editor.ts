@@ -115,16 +115,6 @@ export const useEditor = defineStore("editor", {
       }
     },
 
-    updateNodeEvents(nodeUuid: string, newEvents: Record<string, string>) {
-      const node = this.nodeMap.get(nodeUuid);
-      if (node) {
-        if (!node.events) {
-          node.events = {};
-        }
-        Object.assign(node.events as any, newEvents);
-      }
-    },
-
     updateNodeSlotsPropsPropsMap(
       nodeUuid: string,
       slotsPropsPropsMap: Record<string, Record<string, unknown>>,

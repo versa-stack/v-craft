@@ -246,10 +246,11 @@ Event handlers work the same as in `CraftFrame`. Define events on nodes and prov
 </template>
 
 <script setup>
+// v-craft never evaluates content. Each `interactions[].on` event is handed to
+// `dispatch(node, eventName, args, data, runtime)`; return a Promise to mark the
+// node `aria-busy` and ignore repeat fires until it settles.
 const eventsContext = {
-  showAlert: (message) => alert(message),
-  navigate: (path) => router.push(path),
-  trackEvent: (name) => analytics.track(name),
+  dispatch: (node, eventName, args, data, runtime) => runInteractions(node, eventName, data, runtime),
 }
 
 const nodes = [
@@ -257,9 +258,7 @@ const nodes = [
     uuid: '1',
     componentName: 'MyButton',
     props: { label: 'Click me' },
-    events: {
-      click: 'ctx.showAlert("Button clicked!")'
-    },
+    interactions: [{ on: 'click', steps: [{ action: 'showMessage', message: 'Button clicked!' }] }],
     slots: {}
   }
 ]

@@ -1,4 +1,5 @@
 import { FormKitSchemaDefinition } from "@formkit/core";
+import type { CraftNodeEventsDispatch } from "../../src/components/composable/useCraftNodeEvents";
 import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
@@ -390,10 +391,14 @@ describe("CraftNodeViewer", () => {
       const outputNode = createSimpleText("before", "span");
       const triggerNode = {
         ...createSimpleText("trigger", "button"),
-        events: {
-          click: `if (ctx.getNode("${outputNode.uuid}") && Object.keys(ctx.getNodes() || {}).length > 0) ctx.setNodeProps("${outputNode.uuid}", { content: ctx.nodeValues["${inputNode.uuid}"]?.value ?? "" })`,
-        },
+        interactions: [{ on: "click" }],
       };
+      editor.setEventsContext({
+        dispatch: ((_n, _e, _a, _d, rt) => {
+          if (rt.getNode?.(outputNode.uuid) && Object.keys(rt.getNodes?.() || {}).length > 0)
+            rt.setNodeProps?.(outputNode.uuid, { content: rt.nodeValues?.[inputNode.uuid]?.value ?? "" });
+        }) as CraftNodeEventsDispatch,
+      });
 
       editor.setNodes([inputNode, outputNode, triggerNode]);
 
@@ -428,9 +433,13 @@ describe("CraftNodeViewer", () => {
       const counterNode = createSimpleText("0", "span");
       const makeIncrementNode = () => ({
         ...createSimpleText("click", "button"),
-        events: {
-          click: `ctx.state.count = (ctx.state.count || 0) + 1; ctx.setNodeProps("${counterNode.uuid}", { content: String(ctx.state.count) })`,
-        },
+        interactions: [{ on: "click" }],
+      });
+      editor.setEventsContext({
+        dispatch: ((_n, _e, _a, _d, rt) => {
+          rt.state!.count = (rt.state!.count || 0) + 1;
+          rt.setNodeProps?.(counterNode.uuid, { content: String(rt.state!.count) });
+        }) as CraftNodeEventsDispatch,
       });
       const firstNode = makeIncrementNode();
       const secondNode = makeIncrementNode();

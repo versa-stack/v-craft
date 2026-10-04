@@ -37,7 +37,8 @@ export type CraftNode = {
   rules?: CraftNodeRules;
   uuid: string;
   visible?: boolean;
-  events?: Record<string, string>;
+  /** Declarative interactions; v-craft binds each `on` event and hands it to the host dispatch. */
+  interactions?: { on: string; [key: string]: unknown }[];
   label?: string;
 };
 

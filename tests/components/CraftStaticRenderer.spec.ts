@@ -1,13 +1,14 @@
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { h, defineComponent, nextTick, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeStatic from "../../src/components/CraftNodeStatic.vue";
 import CraftStaticRenderer from "../../src/components/CraftStaticRenderer.vue";
-import { CraftNode } from "../../src/lib/craftNode";
+import { CraftNode, CraftNodeDatasource } from "../../src/lib/craftNode";
+import type { CraftNodeEventsDispatch, CraftNodeEventsRuntime } from "../../src/components/composable/useCraftNodeEvents";
 import CraftNodeResolver, {
   CraftNodeResolverMap,
 } from "../../src/lib/CraftNodeResolver";
@@ -625,121 +626,119 @@ describe("CraftStaticRenderer", () => {
     expect(wrapper.find(".test-component").exists()).toBe(true);
   });
 
-  describe("runtime event ctx (nodeValues, setNodeProps, state, getNode)", () => {
+  describe("event dispatch to the host (no content code)", () => {
     const runtimeResolverMap: CraftNodeResolverMap<any> = {
       ...resolverMap,
       input: { componentName: "input" },
     };
+    const components = { TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas };
 
-    const createRuntimeWrapper = (nodes: CraftNode[]) =>
+    type Handler = (rt: CraftNodeEventsRuntime, data: unknown) => unknown;
+    const hostDispatch = (handlers: Record<string, Handler>): CraftNodeEventsDispatch =>
+      (node, _event, _args, data, rt) => handlers[node.uuid]?.(rt, data);
+
+    const createRuntimeWrapper = (
+      nodes: CraftNode[],
+      dispatch: CraftNodeEventsDispatch,
+      nodeDataMap?: Record<string, CraftNodeDatasource>,
+    ) =>
       mount(CraftStaticRenderer, {
-        props: { nodes, resolverMap: runtimeResolverMap },
-        global: {
-          components: {
-            TestComponent,
-            CraftStaticRenderer,
-            CraftNodeStatic,
-            CraftComponentSimpleText,
-            CraftCanvas,
-          },
-        },
+        props: { nodes, resolverMap: runtimeResolverMap, eventsContext: { dispatch }, nodeDataMap },
+        global: { components },
       });
 
-    it("captures a native input's typed value and exposes it to another node's click handler via ctx.nodeValues", async () => {
-      const inputUuid = uuidv4();
-      const outputUuid = uuidv4();
-      const triggerUuid = uuidv4();
+    const click = [{ on: "click" }];
 
+    it("never evaluates a legacy events string", async () => {
       const nodes: CraftNode[] = [
-        { uuid: inputUuid, componentName: "input", props: {}, slots: {} },
-        {
-          uuid: outputUuid,
-          componentName: "TestComponent",
-          props: { text: "before" },
-          slots: {},
-        },
-        {
-          uuid: triggerUuid,
-          componentName: "TestComponent",
-          props: { text: "trigger" },
-          slots: {},
-          events: {
-            click: `ctx.setNodeProps("${outputUuid}", { text: ctx.nodeValues["${inputUuid}"]?.value ?? "" })`,
-          },
-        },
+        { uuid: uuidv4(), componentName: "TestComponent", props: { text: "x" }, slots: {}, events: { click: "globalThis.pwned=1" } } as CraftNode,
       ];
-
-      const wrapper = createRuntimeWrapper(nodes);
-      await wrapper.find("input").setValue("typed value");
-      await wrapper.findAll(".test-component")[1].trigger("click");
-      await nextTick();
-
-      expect(wrapper.findAll(".test-component")[0].text()).toBe("typed value");
+      const wrapper = createRuntimeWrapper(nodes, vi.fn());
+      await wrapper.find(".test-component").trigger("click");
+      expect((globalThis as Record<string, unknown>).pwned).toBeUndefined();
     });
 
-    it("exposes the bound data item to a child's event handler as ctx.data", async () => {
-      const outputUuid = uuidv4();
+    it("calls dispatch once with (node, eventName, args, boundData)", async () => {
       const wrapperUuid = uuidv4();
+      const childUuid = uuidv4();
+      const dispatch = vi.fn();
       const nodes: CraftNode[] = [
-        { uuid: outputUuid, componentName: "TestComponent", props: { text: "before" }, slots: {} },
         {
           uuid: wrapperUuid,
           componentName: "CraftCanvas",
           props: { componentName: "div" },
-          slots: {
-            default: [
-              {
-                uuid: uuidv4(),
-                componentName: "TestComponent",
-                props: { text: "trigger" },
-                slots: {},
-                events: { click: `ctx.setNodeProps("${outputUuid}", { text: ctx.data?.id ?? "none" })` },
-              },
-            ],
-          },
+          slots: { default: [{ uuid: childUuid, componentName: "TestComponent", props: { text: "t" }, slots: {}, interactions: click }] },
         },
       ];
-      const wrapper = mount(CraftStaticRenderer, {
-        props: {
-          nodes,
-          resolverMap: runtimeResolverMap,
-          nodeDataMap: { [wrapperUuid]: { type: "single", item: { id: "v42" } } },
-        },
-        global: { components: { TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas } },
-      });
+      const wrapper = createRuntimeWrapper(nodes, dispatch, { [wrapperUuid]: { type: "single", item: { id: "v42" } } });
+      await wrapper.find(".test-component").trigger("click");
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      const [node, eventName, args, data] = dispatch.mock.calls[0];
+      expect(node.uuid).toContain(childUuid);
+      expect(eventName).toBe("click");
+      expect(args[0]).toBeInstanceOf(Event);
+      expect(data).toEqual({ id: "v42" });
+    });
+
+    it("ignores repeat fires and sets aria-busy while a dispatch is pending", async () => {
+      let resolve!: () => void;
+      const dispatch = vi.fn(() => new Promise<void>((r) => (resolve = r)));
+      const nodes: CraftNode[] = [
+        { uuid: uuidv4(), componentName: "TestComponent", props: { text: "t" }, slots: {}, interactions: click },
+      ];
+      const wrapper = createRuntimeWrapper(nodes, dispatch);
+      const el = wrapper.find(".test-component");
+      await el.trigger("click");
+      expect(el.attributes("aria-busy")).toBe("true");
+      await el.trigger("click");
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      resolve();
+      await flushPromises();
+      expect(el.attributes("aria-busy")).toBeUndefined();
+      await el.trigger("click");
+      expect(dispatch).toHaveBeenCalledTimes(2);
+    });
+
+    it("binds nothing for a node without interactions", async () => {
+      const dispatch = vi.fn();
+      const nodes: CraftNode[] = [{ uuid: uuidv4(), componentName: "TestComponent", props: { text: "t" }, slots: {} }];
+      const wrapper = createRuntimeWrapper(nodes, dispatch);
+      await wrapper.find(".test-component").trigger("click");
+      expect(dispatch).not.toHaveBeenCalled();
+    });
+
+    it("hands the host a captured input value via nodeValues", async () => {
+      const inputUuid = uuidv4();
+      const outputUuid = uuidv4();
+      const triggerUuid = uuidv4();
+      const nodes: CraftNode[] = [
+        { uuid: inputUuid, componentName: "input", props: {}, slots: {} },
+        { uuid: outputUuid, componentName: "TestComponent", props: { text: "before" }, slots: {} },
+        { uuid: triggerUuid, componentName: "TestComponent", props: { text: "trigger" }, slots: {}, interactions: click },
+      ];
+      const wrapper = createRuntimeWrapper(nodes, hostDispatch({
+        [triggerUuid]: (rt) => rt.setNodeProps?.(outputUuid, { text: rt.nodeValues?.[inputUuid]?.value ?? "" }),
+      }));
+      await wrapper.find("input").setValue("typed value");
       await wrapper.findAll(".test-component")[1].trigger("click");
       await nextTick();
-      expect(wrapper.findAll(".test-component")[0].text()).toBe("v42");
+      expect(wrapper.findAll(".test-component")[0].text()).toBe("typed value");
     });
 
     it("setSelfProps patches only the clicked instance of a list-rendered node", async () => {
       const wrapperUuid = uuidv4();
+      const childUuid = uuidv4();
       const nodes: CraftNode[] = [
         {
           uuid: wrapperUuid,
           componentName: "CraftCanvas",
           props: { componentName: "div" },
-          slots: {
-            default: [
-              {
-                uuid: uuidv4(),
-                componentName: "TestComponent",
-                props: { text: "idle" },
-                slots: {},
-                events: { click: `ctx.setSelfProps({ text: "busy " + ctx.data.id })` },
-              },
-            ],
-          },
+          slots: { default: [{ uuid: childUuid, componentName: "TestComponent", props: { text: "idle" }, slots: {}, interactions: click }] },
         },
       ];
-      const wrapper = mount(CraftStaticRenderer, {
-        props: {
-          nodes,
-          resolverMap: runtimeResolverMap,
-          nodeDataMap: { [wrapperUuid]: { type: "list", list: [{ id: "a" }, { id: "b" }] } },
-        },
-        global: { components: { TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas } },
-      });
+      const dispatch: CraftNodeEventsDispatch = (_n, _e, _a, data, rt) =>
+        rt.setSelfProps?.({ text: "busy " + (data as { id: string }).id });
+      const wrapper = createRuntimeWrapper(nodes, dispatch, { [wrapperUuid]: { type: "list", list: [{ id: "a" }, { id: "b" }] } });
       await wrapper.findAll(".test-component")[1].trigger("click");
       await nextTick();
       expect(wrapper.findAll(".test-component").map((c) => c.text())).toEqual(["idle", "busy b"]);
@@ -755,14 +754,7 @@ describe("CraftStaticRenderer", () => {
           slots: { default: [{ uuid: uuidv4(), componentName: "input", props: {}, slots: {} }] },
         },
       ];
-      const wrapper = mount(CraftStaticRenderer, {
-        props: {
-          nodes,
-          resolverMap: runtimeResolverMap,
-          nodeDataMap: { [wrapperUuid]: { type: "list", list: [{ id: "a" }, { id: "b" }] } },
-        },
-        global: { components: { TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas } },
-      });
+      const wrapper = createRuntimeWrapper(nodes, vi.fn(), { [wrapperUuid]: { type: "list", list: [{ id: "a" }, { id: "b" }] } });
       const inputs = wrapper.findAll("input");
       await inputs[0].setValue("typed");
       await nextTick();
@@ -770,104 +762,25 @@ describe("CraftStaticRenderer", () => {
       expect((inputs[1].element as HTMLInputElement).value).toBe("");
     });
 
-    it("getNode resolves a node by uuid (regression: Map lookup via bracket access always returned undefined)", async () => {
+    it("getNode resolves a node by uuid and state is shared across nodes", async () => {
       const targetUuid = uuidv4();
-      const triggerUuid = uuidv4();
-
-      const nodes: CraftNode[] = [
-        {
-          uuid: targetUuid,
-          componentName: "TestComponent",
-          props: { text: "before" },
-          slots: {},
-        },
-        {
-          uuid: triggerUuid,
-          componentName: "TestComponent",
-          props: { text: "trigger" },
-          slots: {},
-          events: {
-            click: `ctx.setNodeProps("${targetUuid}", { text: ctx.getNode("${targetUuid}") ? "found" : "missing" })`,
-          },
-        },
-      ];
-
-      const wrapper = createRuntimeWrapper(nodes);
-      await wrapper.findAll(".test-component")[1].trigger("click");
-      await nextTick();
-
-      expect(wrapper.findAll(".test-component")[0].text()).toBe("found");
-    });
-
-    it("shares ctx.state across event handlers on different nodes", async () => {
-      const counterUuid = uuidv4();
       const firstUuid = uuidv4();
       const secondUuid = uuidv4();
-
+      const bump: Handler = (rt) => {
+        rt.state!.count = (rt.state!.count || 0) + 1;
+        rt.setNodeProps?.(targetUuid, { text: `${rt.getNode?.(targetUuid) ? "found" : "missing"} ${rt.state!.count}` });
+      };
       const nodes: CraftNode[] = [
-        {
-          uuid: counterUuid,
-          componentName: "TestComponent",
-          props: { text: "0" },
-          slots: {},
-        },
-        {
-          uuid: firstUuid,
-          componentName: "TestComponent",
-          props: { text: "first" },
-          slots: {},
-          events: {
-            click: `ctx.state.count = (ctx.state.count || 0) + 1; ctx.setNodeProps("${counterUuid}", { text: String(ctx.state.count) })`,
-          },
-        },
-        {
-          uuid: secondUuid,
-          componentName: "TestComponent",
-          props: { text: "second" },
-          slots: {},
-          events: {
-            click: `ctx.state.count = (ctx.state.count || 0) + 1; ctx.setNodeProps("${counterUuid}", { text: String(ctx.state.count) })`,
-          },
-        },
+        { uuid: targetUuid, componentName: "TestComponent", props: { text: "authored" }, slots: {} },
+        { uuid: firstUuid, componentName: "TestComponent", props: { text: "first" }, slots: {}, interactions: click },
+        { uuid: secondUuid, componentName: "TestComponent", props: { text: "second" }, slots: {}, interactions: click },
       ];
-
-      const wrapper = createRuntimeWrapper(nodes);
+      const wrapper = createRuntimeWrapper(nodes, hostDispatch({ [firstUuid]: bump, [secondUuid]: bump }));
+      expect(wrapper.findAll(".test-component")[0].text()).toBe("authored");
       await wrapper.findAll(".test-component")[1].trigger("click");
       await wrapper.findAll(".test-component")[2].trigger("click");
       await nextTick();
-
-      expect(wrapper.findAll(".test-component")[0].text()).toBe("2");
-    });
-
-    it("gives nodeRuntimeProps precedence over the node's own authored props", async () => {
-      const targetUuid = uuidv4();
-      const triggerUuid = uuidv4();
-
-      const nodes: CraftNode[] = [
-        {
-          uuid: targetUuid,
-          componentName: "TestComponent",
-          props: { text: "authored" },
-          slots: {},
-        },
-        {
-          uuid: triggerUuid,
-          componentName: "TestComponent",
-          props: { text: "trigger" },
-          slots: {},
-          events: {
-            click: `ctx.setNodeProps("${targetUuid}", { text: "overridden" })`,
-          },
-        },
-      ];
-
-      const wrapper = createRuntimeWrapper(nodes);
-      expect(wrapper.findAll(".test-component")[0].text()).toBe("authored");
-
-      await wrapper.findAll(".test-component")[1].trigger("click");
-      await nextTick();
-
-      expect(wrapper.findAll(".test-component")[0].text()).toBe("overridden");
+      expect(wrapper.findAll(".test-component")[0].text()).toBe("found 2");
     });
   });
 });

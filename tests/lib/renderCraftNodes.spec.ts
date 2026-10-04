@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { h, defineComponent } from "vue";
 import { renderCraftNodesToVNodes, renderCraftNodeToVNode } from "../../src/lib/renderCraftNodes";
 import { CraftNode } from "../../src/lib/craftNode";
@@ -241,17 +241,17 @@ describe("renderCraftNodes", () => {
         componentName: "TestComponent",
         props: {},
         slots: {},
-        events: {
-          click: "ctx.value = 'clicked'",
-        },
+        interactions: [{ on: "click" }],
       };
 
-      const eventsContext = { value: "" };
+      const dispatch = vi.fn();
+      const eventsContext = { dispatch };
       const resolver = new CraftNodeResolver(resolverMap);
       const vnode = renderCraftNodeToVNode(node, resolver, { TestComponent }, undefined, eventsContext);
 
       expect(vnode).not.toBeNull();
-      expect(vnode!.props?.click).toBeDefined();
+      (vnode!.props as any).click("arg");
+      expect(dispatch).toHaveBeenCalledWith(node, "click", ["arg"], undefined, {});
     });
 
     it("handles multiple named slots", () => {

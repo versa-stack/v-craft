@@ -1,8 +1,7 @@
-import { onBeforeMount, onBeforeUnmount, Ref, watch } from "vue";
+import { computed, Ref, ref } from "vue";
 import { CraftNode } from "../../lib/craftNode";
-import { computed } from "vue";
 
-/** Extra lookups/channels merged into `ctx` for compiled event code. */
+/** Helpers v-craft hands the host's dispatch so it can act on the rendered page. */
 export interface CraftNodeEventsRuntime {
   getNodes?: () => Record<string, CraftNode> | null;
   getNode?: (uuid: string) => CraftNode | null;
@@ -10,78 +9,64 @@ export interface CraftNodeEventsRuntime {
   nodeValues?: Record<string, Record<string, any>>;
   /** Patch another node's rendered props at runtime, by uuid. */
   setNodeProps?: (uuid: string, patch: Record<string, any>) => void;
-  /** Patch this rendered instance's own props, e.g. a busy flag on one of many list items. */
+  /** Patch this rendered instance's own props, e.g. on one of many list items. */
   setSelfProps?: (patch: Record<string, unknown>) => void;
-  /** Page-scoped bag shared across event handlers, e.g. a pending flag. */
+  /** Page-scoped bag shared across dispatches. */
   state?: Record<string, any>;
-  /** The data item this node was rendered with by a bound ancestor, exposed as `ctx.data`. */
+  /** The data item this node was rendered with by a bound ancestor. */
   getData?: () => unknown;
 }
+
+/**
+ * Host handler for a node event, provided as `eventsContext.dispatch`.
+ * Return a Promise to mark the node busy: while pending the node carries
+ * `aria-busy="true"` and repeat fires of any of its events are ignored.
+ */
+export type CraftNodeEventsDispatch = (
+  node: CraftNode,
+  eventName: string,
+  args: unknown[],
+  data: unknown,
+  runtime: CraftNodeEventsRuntime,
+) => unknown;
 
 export const useCraftNodeEvents = (
   craftNode: Ref<CraftNode>,
   ctx: Record<string, any>,
   runtime: CraftNodeEventsRuntime = {},
 ) => {
-  const eventHandlersMap = new Map();
+  const busy = ref(false);
 
-  const buildEvents = () => {
-    if (
-      !craftNode.value?.events ||
-      !Object.values(craftNode.value.events).length
-    ) {
-      return;
-    }
+  const eventHandlers = computed(() => {
+    const dispatch = ctx.dispatch as CraftNodeEventsDispatch | undefined;
+    const names = new Set(
+      (craftNode.value?.interactions || [])
+        .map((i) => i?.on)
+        .filter((on): on is string => typeof on === "string" && !!on),
+    );
+    if (!dispatch || !names.size) return {};
 
-    Object.entries(craftNode.value.events).forEach(([eventName, eventCode]) => {
-      if (!eventCode.trim()) {
+    const fire = (eventName: string) => (...args: unknown[]) => {
+      if (busy.value) return;
+      let result: unknown;
+      try {
+        result = dispatch(craftNode.value, eventName, args, runtime.getData?.(), runtime);
+      } catch (e) {
+        console.error(`Event dispatch failed for "${eventName}":`, e);
         return;
       }
+      if (result instanceof Promise) {
+        busy.value = true;
+        result
+          .catch((e) => console.error(`Event dispatch failed for "${eventName}":`, e))
+          .finally(() => (busy.value = false));
+      }
+    };
 
-      const handler = (...args: any[]) => {
-        try {
-          const eventHandler = new Function(
-            "ctx",
-            "craftNode",
-            "args",
-            eventCode
-          );
-          eventHandler(
-            { ...ctx, ...runtime, data: runtime.getData?.() },
-            craftNode.value.uuid,
-            ...args
-          );
-        } catch (e) {
-          console.error(
-            `Event code execution failed with code: 
-${eventCode}
-
-Error:`,
-            e
-          );
-        }
-      };
-
-      eventHandlersMap.set(eventName, handler);
-    });
-  };
-
-  watch(
-    () => craftNode,
-    () => {
-      buildEvents();
-    }
-  );
-
-  onBeforeMount(() => {
-    buildEvents();
+    return Object.fromEntries([...names].map((n) => [n, fire(n)]));
   });
 
-  onBeforeUnmount(() => {
-    eventHandlersMap.clear();
-  });
+  const busyAttrs = computed(() => (busy.value ? { "aria-busy": "true" } : {}));
 
-  return {
-    eventHandlers: computed(() => Object.fromEntries(eventHandlersMap)),
-  };
+  return { eventHandlers, busy, busyAttrs };
 };

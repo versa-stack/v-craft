@@ -159,7 +159,7 @@ const captureValue = (value: unknown) => {
 
 const selfProps = ref<Record<string, unknown>>({});
 
-const { eventHandlers } = useCraftNodeEvents(
+const { eventHandlers, busyAttrs } = useCraftNodeEvents(
   craftNode,
   props.eventsContext || {},
   {
@@ -179,7 +179,7 @@ const finalProps = computed(() => {
   const uuid = craftNode.value.uuid;
   const runtime = { ...(props.nodeRuntimeProps?.[uuid] || {}) };
   if (props.nodeRuntimeProps && capturedFor(props.nodeRuntimeProps).has(uuid)) delete runtime.value;
-  return { ...nodeProps.value, ...runtime, ...selfProps.value };
+  return { ...nodeProps.value, ...runtime, ...selfProps.value, ...busyAttrs.value };
 });
 
 const finalEventHandlers = computed(() => {
