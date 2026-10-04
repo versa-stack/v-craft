@@ -11,7 +11,7 @@ export interface CraftNodeEventsRuntime {
   /** Patch another node's rendered props at runtime, by uuid. */
   setNodeProps?: (uuid: string, patch: Record<string, any>) => void;
   /** Patch this rendered instance's own props, e.g. a busy flag on one of many list items. */
-  setSelfProps?: (patch: Record<string, any>) => void;
+  setSelfProps?: (patch: Record<string, unknown>) => void;
   /** Page-scoped bag shared across event handlers, e.g. a pending flag. */
   state?: Record<string, any>;
   /** The data item this node was rendered with by a bound ancestor, exposed as `ctx.data`. */
