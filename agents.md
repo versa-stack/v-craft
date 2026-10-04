@@ -69,6 +69,10 @@ Documentation is built with VitePress and deployed to GitHub Pages. The docs inc
 
 ## Testing
 
+- **CI runs only on release.** PRs run nothing; tests run on a push to a release
+  branch, just before publishing. Before merging, run `npm run lint`,
+  `npm run typecheck` and `npm test` locally and say in the PR that they passed.
+
 - Uses Vitest for unit testing
 - Tests are located in `tests/` directory
 - Coverage reports generated with @vitest/coverage-v8
