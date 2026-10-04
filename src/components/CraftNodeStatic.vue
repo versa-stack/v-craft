@@ -56,6 +56,7 @@ import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
 import { CraftNodePropsContext } from "./composable/useResolveCraftNodeProps";
 import CraftNodeStatic from "./CraftNodeStatic.vue";
+import { capturedFor } from "../lib/capturedValues";
 
 defineOptions({
   name: "CraftNodeStatic",
@@ -142,7 +143,18 @@ const computedChildren = (children: CraftNode[], slotName: string) => {
 
 const setNodeRuntimeProps = (uuid: string, patch: Record<string, any>) => {
   if (!props.nodeRuntimeProps) return;
+  if ("value" in patch) capturedFor(props.nodeRuntimeProps).delete(uuid);
   props.nodeRuntimeProps[uuid] = { ...(props.nodeRuntimeProps[uuid] || {}), ...patch };
+};
+
+// A value captured from what a user typed is readable as ctx.nodeValues but
+// never bound back as a prop: list siblings share the uuid, and a component
+// whose value prop is modelValue (an input number) renders a stray `value` blank.
+const captureValue = (value: unknown) => {
+  if (!props.nodeRuntimeProps) return;
+  const uuid = craftNode.value.uuid;
+  props.nodeRuntimeProps[uuid] = { ...(props.nodeRuntimeProps[uuid] || {}), value };
+  capturedFor(props.nodeRuntimeProps).add(uuid);
 };
 
 const selfProps = ref<Record<string, unknown>>({});
@@ -163,11 +175,12 @@ const { eventHandlers } = useCraftNodeEvents(
   },
 );
 
-const finalProps = computed(() => ({
-  ...nodeProps.value,
-  ...(props.nodeRuntimeProps?.[craftNode.value.uuid] || {}),
-  ...selfProps.value,
-}));
+const finalProps = computed(() => {
+  const uuid = craftNode.value.uuid;
+  const runtime = { ...(props.nodeRuntimeProps?.[uuid] || {}) };
+  if (props.nodeRuntimeProps && capturedFor(props.nodeRuntimeProps).has(uuid)) delete runtime.value;
+  return { ...nodeProps.value, ...runtime, ...selfProps.value };
+});
 
 const finalEventHandlers = computed(() => {
   const compose = (name: string, capture: (...args: any[]) => void) => (...args: any[]) => {
@@ -177,9 +190,9 @@ const finalEventHandlers = computed(() => {
 
   return {
     ...eventHandlers.value,
-    input: compose("input", (e: Event) => setNodeRuntimeProps(craftNode.value.uuid, { value: (e?.target as HTMLInputElement)?.value })),
-    change: compose("change", (e: Event) => setNodeRuntimeProps(craftNode.value.uuid, { value: (e?.target as HTMLInputElement)?.value })),
-    "update:modelValue": compose("update:modelValue", (value: any) => setNodeRuntimeProps(craftNode.value.uuid, { value })),
+    input: compose("input", (e: Event) => captureValue((e?.target as HTMLInputElement)?.value)),
+    change: compose("change", (e: Event) => captureValue((e?.target as HTMLInputElement)?.value)),
+    "update:modelValue": compose("update:modelValue", (value: unknown) => captureValue(value)),
   };
 });
 
