@@ -712,6 +712,39 @@ describe("CraftStaticRenderer", () => {
       expect(wrapper.findAll(".test-component")[0].text()).toBe("v42");
     });
 
+    it("setSelfProps patches only the clicked instance of a list-rendered node", async () => {
+      const wrapperUuid = uuidv4();
+      const nodes: CraftNode[] = [
+        {
+          uuid: wrapperUuid,
+          componentName: "CraftCanvas",
+          props: { componentName: "div" },
+          slots: {
+            default: [
+              {
+                uuid: uuidv4(),
+                componentName: "TestComponent",
+                props: { text: "idle" },
+                slots: {},
+                events: { click: `ctx.setSelfProps({ text: "busy " + ctx.data.id })` },
+              },
+            ],
+          },
+        },
+      ];
+      const wrapper = mount(CraftStaticRenderer, {
+        props: {
+          nodes,
+          resolverMap: runtimeResolverMap,
+          nodeDataMap: { [wrapperUuid]: { type: "list", list: [{ id: "a" }, { id: "b" }] } },
+        },
+        global: { components: { TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas } },
+      });
+      await wrapper.findAll(".test-component")[1].trigger("click");
+      await nextTick();
+      expect(wrapper.findAll(".test-component").map((c) => c.text())).toEqual(["idle", "busy b"]);
+    });
+
     it("getNode resolves a node by uuid (regression: Map lookup via bracket access always returned undefined)", async () => {
       const targetUuid = uuidv4();
       const triggerUuid = uuidv4();
