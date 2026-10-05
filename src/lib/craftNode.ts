@@ -1,3 +1,4 @@
+import { JSONPath } from "jsonpath-plus";
 import { FormKitSchemaDefinition } from "@formkit/core";
 import { v4 as uuidv4 } from "uuid";
 import { useEditor } from "../store/editor";
@@ -42,6 +43,12 @@ export type CraftNode = {
   label?: string;
   /** A linked instance: renders the resolved subtree of `node` on `page`, read-only, and serializes as the link alone. */
   link?: CraftNodeLink;
+  /**
+   * JSONPath into the enclosing data item (`context.data`): the node's children
+   * repeat once per entry, as for a list datasource. A list inside a list item,
+   * e.g. a facet's values. A datasource in `nodeDataMap` takes precedence.
+   */
+  dataItems?: string;
 };
 
 export type CraftNodeLink = { page: string; node: string };
@@ -63,6 +70,16 @@ export type CraftNodeDatasource = {
   list?: Record<string, any>[];
   type: "single" | "list";
   slotName?: string;
+};
+
+/** The list datasource a node's {@link CraftNode.dataItems} selects from `item`. */
+export const itemsDatasource = (
+  craftNode: CraftNode,
+  item: unknown,
+): CraftNodeDatasource | undefined => {
+  if (!craftNode.dataItems || item == null) return undefined;
+  const found = JSONPath({ path: craftNode.dataItems, json: item as object, wrap: false });
+  return { type: "list", list: Array.isArray(found) ? found : found == null ? [] : [found] };
 };
 
 export const isVisible = (craftNode: CraftNode) =>
