@@ -793,6 +793,9 @@ describe("CraftStaticRenderer", () => {
       const seen = (wrapper.findComponent(CraftNodeStatic).props("nodeRuntimeProps") as Record<string, any>)[inputUuid]?.value;
       expect(seen).toBe("Ada");
       expect(wrapper.find("input").attributes("value")).toBeUndefined();
+      await wrapper.setProps({ nodes: [{ ...nodes[0], props: { defaultValue: "Bob" } }] });
+      await nextTick();
+      expect((wrapper.findComponent(CraftNodeStatic).props("nodeRuntimeProps") as Record<string, any>)[inputUuid]?.value).toBe("Bob");
     });
 
     it("keeps what a person types into a field an interaction filled", async () => {

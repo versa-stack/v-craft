@@ -172,14 +172,18 @@ const captureValue = (value: unknown) => {
 
 // A field the content or its data prefilled holds that value until someone
 // types, so an interaction reading ctx.nodeValues sees it too.
+// A later prefill replaces an earlier one, never what someone typed.
+let lastSeed: unknown;
 watchEffect(() => {
   if (!props.nodeRuntimeProps) return;
   const { modelValue, defaultValue, value } = nodeProps.value as Record<string, unknown>;
   const seed = modelValue ?? defaultValue ?? value;
   const uuid = craftNode.value.uuid;
   const raw = toRaw(props.nodeRuntimeProps);
-  if (seed === undefined || "value" in (raw[uuid] || {})) return;
-  raw[uuid] = { ...(raw[uuid] || {}), value: seed };
+  const entry = raw[uuid] || {};
+  if (seed === undefined || ("value" in entry && entry.value !== lastSeed)) return;
+  raw[uuid] = { ...entry, value: seed };
+  lastSeed = seed;
   capturedFor(props.nodeRuntimeProps).add(uuid);
 });
 
