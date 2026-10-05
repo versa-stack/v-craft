@@ -51,6 +51,7 @@ import {
   CraftNode,
   CraftNodeDatasource,
   craftNodeIsCanvas,
+  itemsDatasource,
 } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
@@ -106,7 +107,11 @@ const buildChildContext = (
 };
 
 const data = computed(() => {
-  return props.nodeDataMap?.[craftNode.value.uuid] || null;
+  return (
+    props.nodeDataMap?.[craftNode.value.uuid] ||
+    itemsDatasource(craftNode.value, props.context?.data) ||
+    null
+  );
 });
 
 const slotNodes = computed(() => {

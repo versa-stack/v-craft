@@ -120,6 +120,43 @@ describe("node data context mapping", () => {
     expect(texts).toEqual(["Alice", "Bob"]);
   });
 
+  it("repeats a node over a list inside each item of its enclosing list", () => {
+    const valueNode = makeTextNode("$.name");
+    const inner: CraftNode = {
+      uuid: uuidv4(),
+      componentName: "CraftCanvas",
+      props: { componentName: "div" },
+      slots: { default: [valueNode] },
+      dataItems: "$.values",
+    };
+    const outer: CraftNode = {
+      uuid: uuidv4(),
+      componentName: "CraftCanvas",
+      props: { componentName: "div" },
+      slots: { default: [inner] },
+    };
+
+    const wrapper = mount(CraftStaticRenderer, {
+      props: {
+        nodes: [outer],
+        resolverMap,
+        nodeDataMap: {
+          [outer.uuid]: {
+            type: "list",
+            list: [{ values: [{ name: "A" }, { name: "B" }] }, { values: [{ name: "C" }] }],
+          },
+        },
+      },
+      global: {
+        components: { CraftStaticRenderer, CraftNodeStatic, CraftCanvas, CraftComponentSimpleText },
+      },
+    });
+
+    const texts = wrapper.findAllComponents({ name: "CraftComponentSimpleText" })
+      .map((c) => c.text());
+    expect(texts).toEqual(["A", "B", "C"]);
+  });
+
   it("resolves node data through the live editor (CraftNodeViewer preview path)", () => {
     const editor = useEditor();
     const textNode = makeTextNode("$.title");

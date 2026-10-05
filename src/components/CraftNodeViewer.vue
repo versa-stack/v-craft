@@ -39,6 +39,7 @@ import {
   CraftNode,
   CraftNodeDatasource,
   craftNodeIsCanvas,
+  itemsDatasource,
 } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import CraftLinkedNode from "./CraftLinkedNode.vue";
@@ -94,7 +95,8 @@ const buildChildContext = (
 const data = computed(() => {
   return (
     props.nodeDataMap?.[craftNode.value.uuid] ||
-    editor?.nodeDataMap?.[craftNode.value.uuid]
+    editor?.nodeDataMap?.[craftNode.value.uuid] ||
+    itemsDatasource(craftNode.value, props.context?.data)
   );
 });
 
