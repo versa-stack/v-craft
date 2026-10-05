@@ -785,6 +785,19 @@ describe("CraftStaticRenderer", () => {
       expect(seen).toBe("Khairxy");
     });
 
+    it("reads a prefilled field's value before anyone types", async () => {
+      const inputUuid = uuidv4();
+      const nodes: CraftNode[] = [{ uuid: inputUuid, componentName: "FieldInput", props: { defaultValue: "Ada" }, slots: {} }];
+      const wrapper = createRuntimeWrapper(nodes, hostDispatch({}));
+      await nextTick();
+      const seen = (wrapper.findComponent(CraftNodeStatic).props("nodeRuntimeProps") as Record<string, any>)[inputUuid]?.value;
+      expect(seen).toBe("Ada");
+      expect(wrapper.find("input").attributes("value")).toBeUndefined();
+      await wrapper.setProps({ nodes: [{ ...nodes[0], props: { defaultValue: "Bob" } }] });
+      await nextTick();
+      expect((wrapper.findComponent(CraftNodeStatic).props("nodeRuntimeProps") as Record<string, any>)[inputUuid]?.value).toBe("Bob");
+    });
+
     it("keeps what a person types into a field an interaction filled", async () => {
       const inputUuid = uuidv4();
       const triggerUuid = uuidv4();

@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, provide, readonly, ref, toRaw, toRefs } from "vue";
+import { computed, provide, readonly, ref, toRaw, toRefs, watchEffect } from "vue";
 import {
   CraftNode,
   CraftNodeDatasource,
@@ -169,6 +169,23 @@ const captureValue = (value: unknown) => {
   target[uuid] = { ...(target[uuid] || {}), value };
   if (!hostSet) captured.add(uuid);
 };
+
+// A field the content or its data prefilled holds that value until someone
+// types, so an interaction reading ctx.nodeValues sees it too.
+// A later prefill replaces an earlier one, never what someone typed.
+let lastSeed: unknown;
+watchEffect(() => {
+  if (!props.nodeRuntimeProps) return;
+  const { modelValue, defaultValue, value } = nodeProps.value as Record<string, unknown>;
+  const seed = modelValue ?? defaultValue ?? value;
+  const uuid = craftNode.value.uuid;
+  const raw = toRaw(props.nodeRuntimeProps);
+  const entry = raw[uuid] || {};
+  if (seed === undefined || ("value" in entry && entry.value !== lastSeed)) return;
+  raw[uuid] = { ...entry, value: seed };
+  lastSeed = seed;
+  capturedFor(props.nodeRuntimeProps).add(uuid);
+});
 
 const selfProps = ref<Record<string, unknown>>({});
 
