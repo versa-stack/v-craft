@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, provide, readonly, ref, toRefs } from "vue";
+import { computed, provide, readonly, ref, toRaw, toRefs } from "vue";
 import {
   CraftNode,
   CraftNodeDatasource,
@@ -162,7 +162,11 @@ const captureValue = (value: unknown) => {
   const uuid = craftNode.value.uuid;
   const captured = capturedFor(props.nodeRuntimeProps);
   const hostSet = "value" in (props.nodeRuntimeProps[uuid] || {}) && !captured.has(uuid);
-  props.nodeRuntimeProps[uuid] = { ...(props.nodeRuntimeProps[uuid] || {}), value };
+  // Only a host-set value re-renders: a re-render resets a v-model field
+  // (UInput) to its defaultValue, dropping the keystroke.
+  // ponytail: captured values are not reactive; make them so if a page ever displays one live.
+  const target = hostSet ? props.nodeRuntimeProps : toRaw(props.nodeRuntimeProps);
+  target[uuid] = { ...(target[uuid] || {}), value };
   if (!hostSet) captured.add(uuid);
 };
 

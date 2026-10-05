@@ -2,7 +2,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { h, defineComponent, nextTick, ref } from "vue";
+import { computed, h, defineComponent, nextTick, ref, vModelText, withDirectives } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeStatic from "../../src/components/CraftNodeStatic.vue";
@@ -630,8 +630,18 @@ describe("CraftStaticRenderer", () => {
     const runtimeResolverMap: CraftNodeResolverMap<any> = {
       ...resolverMap,
       input: { componentName: "input" },
+      FieldInput: { componentName: "FieldInput" },
     };
-    const components = { TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas };
+    // Like Nuxt UI's UInput: v-model on modelValue, falling back to defaultValue.
+    const FieldInput = defineComponent({
+      props: { modelValue: { type: String, default: undefined }, defaultValue: { type: String, default: undefined } },
+      emits: ["update:modelValue"],
+      setup(props, { emit, slots }) {
+        const model = computed({ get: () => props.modelValue ?? props.defaultValue, set: (v) => emit("update:modelValue", v) });
+        return () => h("label", [withDirectives(h("input", { "onUpdate:modelValue": (v: string) => (model.value = v) }), [[vModelText, model.value]]), slots.default?.()]);
+      },
+    });
+    const components = { FieldInput, TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas };
 
     type Handler = (rt: CraftNodeEventsRuntime, data: unknown) => unknown;
     const hostDispatch = (handlers: Record<string, Handler>): CraftNodeEventsDispatch =>
@@ -760,6 +770,19 @@ describe("CraftStaticRenderer", () => {
       await nextTick();
       expect(inputs[1].attributes("value")).toBeUndefined();
       expect((inputs[1].element as HTMLInputElement).value).toBe("");
+    });
+
+    it("keeps what a person types into a field that reads defaultValue", async () => {
+      const inputUuid = uuidv4();
+      const nodes: CraftNode[] = [{ uuid: inputUuid, componentName: "FieldInput", props: { defaultValue: "Khair" }, slots: {} }];
+      const wrapper = createRuntimeWrapper(nodes, hostDispatch({}));
+      const input = wrapper.find("input");
+      expect((input.element as HTMLInputElement).value).toBe("Khair");
+      await input.setValue("Khairxy");
+      await nextTick();
+      expect((input.element as HTMLInputElement).value).toBe("Khairxy");
+      const seen = (wrapper.findComponent(CraftNodeStatic).props("nodeRuntimeProps") as Record<string, any>)[inputUuid]?.value;
+      expect(seen).toBe("Khairxy");
     });
 
     it("keeps what a person types into a field an interaction filled", async () => {
