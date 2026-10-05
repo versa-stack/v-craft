@@ -40,6 +40,22 @@ export type CraftNode = {
   /** Declarative interactions; v-craft binds each `on` event and hands it to the host dispatch. */
   interactions?: { on: string; [key: string]: unknown }[];
   label?: string;
+  /** A linked instance: renders the resolved subtree of `node` on `page`, read-only, and serializes as the link alone. */
+  link?: CraftNodeLink;
+};
+
+export type CraftNodeLink = { page: string; node: string };
+
+export type CraftLinkResolver = (link: CraftNodeLink) => Promise<CraftNode | null>;
+
+export const craftNodeInLink = (craftNode: CraftNode) => {
+  const editor = useEditor();
+  let node: CraftNode | undefined = craftNode;
+  while (node) {
+    if (node.link) return true;
+    node = node.parentUuid ? editor.nodeMap.get(node.parentUuid) : undefined;
+  }
+  return false;
 };
 
 export type CraftNodeDatasource = {
@@ -110,7 +126,7 @@ export const craftNodeCanBeChildOf = <
   targetNode: CraftNode,
   resolver: CraftNodeResolver<T>,
 ) => {
-  if (!craftNodeIsCanvas(targetNode)) {
+  if (!craftNodeIsCanvas(targetNode) || craftNodeInLink(targetNode)) {
     return false;
   }
 

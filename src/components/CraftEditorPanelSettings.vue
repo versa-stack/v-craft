@@ -41,7 +41,7 @@
           />
         </div>
         <div
-          v-if="selectedNode"
+          v-if="selectedNode && !selectedNode.link"
           class="v-craft-settings"
         >
           <CraftEditorPanelNodeSlotPropsSettings
@@ -51,7 +51,7 @@
           />
         </div>
         <div
-          v-if="selectedNode"
+          v-if="selectedNode && !selectedNode.link"
           class="v-craft-settings"
         >
           <CraftEditorPanelNodeDataSourceSettings
@@ -91,7 +91,7 @@ const { selectedNode, nodeDataMap } = storeToRefs(editor);
 const resolver = inject<ComputedRef<CoreResolver<T>>>("resolver");
 
 const schema = computed(() => {
-  if (!selectedNode.value || !resolver?.value) {
+  if (!selectedNode.value || !resolver?.value || selectedNode.value.link) {
     return [];
   }
   return resolver.value.getSchema(selectedNode.value);

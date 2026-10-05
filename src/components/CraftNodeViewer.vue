@@ -1,9 +1,9 @@
 <template>
   <component
-    :is="componentToRender"
-    v-if="visible && resolver && resolvedNode"
+    :is="craftNode.link ? CraftLinkedNode : componentToRender"
+    v-if="visible && resolver && (resolvedNode || craftNode.link)"
     ref="nodeRef"
-    v-bind="{ ...nodeProps, ...runtimeProps, ...busyAttrs }"
+    v-bind="craftNode.link ? { craftNode } : { ...nodeProps, ...runtimeProps, ...busyAttrs }"
     v-on="finalEventHandlers"
   >
     <template
@@ -41,6 +41,7 @@ import {
   craftNodeIsCanvas,
 } from "../lib/craftNode";
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
+import CraftLinkedNode from "./CraftLinkedNode.vue";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
 import { CraftNodePropsContext } from "./composable/useResolveCraftNodeProps";
 import { useCraftNodeWrapper } from "./composable/useCraftNodeWrapper";

@@ -48,6 +48,7 @@ const emit = defineEmits<{
 }>();
 
 const editor = useEditor();
+editor.setLinkResolver(props.config.resolveLink ?? null);
 const indicator = useIndicator();
 
 const { getDraggedNode } = storeToRefs(editor);
