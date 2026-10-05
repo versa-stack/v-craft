@@ -1,13 +1,13 @@
 <template>
   <component
     v-bind="{
-      ...nodeProps,
+      ...(craftNode.link ? { craftNode } : nodeProps),
       ...runtimeProps,
       ...busyAttrs,
       [`data-craft-uuid`]: craftNode.uuid,
     }"
-    :is="componentToRender"
-    v-if="visible && craftNode && resolvedNode"
+    :is="craftNode.link ? CraftLinkedNode : componentToRender"
+    v-if="visible && craftNode && (resolvedNode || craftNode.link)"
     ref="nodeRef"
     :class="{
       'v-craft-node-selected': isSelected,
@@ -97,6 +97,7 @@ import useConnectCraftNodeToStore from "./composable/useConnectCraftNodeToStore"
 import { useCraftNodeEvents } from "./composable/useCraftNodeEvents";
 import { useCraftNodeWrapper } from "./composable/useCraftNodeWrapper";
 import useDragCraftNode from "./composable/useDragCraftNode";
+import CraftLinkedNode from "./CraftLinkedNode.vue";
 import { useResolveCraftNode } from "./composable/useResolveCraftNode";
 import { CraftNodePropsContext } from "./composable/useResolveCraftNodeProps";
 import { generateColorFromUUID } from "./utils";

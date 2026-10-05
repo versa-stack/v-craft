@@ -1,6 +1,6 @@
 import { HTMLAttributes, StyleValue } from "vue";
 import { CraftNodeResolver, CraftNodeResolverMap } from "./CraftNodeResolver";
-import { CraftNode } from "./craftNode";
+import { CraftLinkResolver, CraftNode } from "./craftNode";
 import { FormKitSchemaDefinition } from '@formkit/core';
 
 export type CraftBlueprintData = {
@@ -37,6 +37,7 @@ export type CraftEditorConfig<T extends FormKitSchemaDefinition = FormKitSchemaD
   blueprintsLibrary: BlueprintsLibrary;
   resolverMap?: CraftNodeResolverMap<T>;
   resolver?: CraftNodeResolver<T>;
+  resolveLink?: CraftLinkResolver;
 };
 
 export type CraftDataPatch<V = any, D = any> = {

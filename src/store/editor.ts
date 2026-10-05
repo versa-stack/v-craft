@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { markRaw } from "vue";
 import {
+  CraftLinkResolver,
   CraftNode,
   craftNodeCanBeChildOf,
   craftNodeCanBeSiblingOf,
@@ -30,6 +31,9 @@ export interface EditorState {
   nodeRuntimeProps: Record<string, Record<string, any>>;
   /** Page-scoped bag shared across event handlers, e.g. a pending flag. */
   pageState: Record<string, any>;
+  linkResolver: CraftLinkResolver | null;
+  /** Resolved subtree per linked instance uuid; null is a broken link. Never part of nodeMap or nodeTree. */
+  linkedTrees: Record<string, CraftNode | null>;
 }
 
 export const useEditor = defineStore("editor", {
@@ -46,6 +50,8 @@ export const useEditor = defineStore("editor", {
     draggingDisabled: false,
     nodeRuntimeProps: {},
     pageState: {},
+    linkResolver: null,
+    linkedTrees: {},
   }),
 
   actions: {
@@ -75,6 +81,16 @@ export const useEditor = defineStore("editor", {
 
     setResolver(resolver: CraftNodeResolver<FormKitSchemaDefinition>) {
       this.resolver = resolver;
+    },
+
+    setLinkResolver(resolveLink: CraftLinkResolver | null) {
+      this.linkResolver = resolveLink ? markRaw(resolveLink) : null;
+    },
+
+    async resolveLinkedNode(craftNode: CraftNode) {
+      if (!craftNode.link || !this.linkResolver) return;
+      const resolved = await this.linkResolver(craftNode.link).catch(() => null);
+      this.linkedTrees[craftNode.uuid] = resolved ? markRaw(resolved) : null;
     },
 
     setNodeRef(craftNode: CraftNode, ref: HTMLElement) {
@@ -130,6 +146,13 @@ export const useEditor = defineStore("editor", {
       this.rootNodes = [];
 
       const addNode = (node: CraftNode) => {
+        if (node.link) {
+          const { uuid, parentUuid, link, label } = node;
+          this.nodeMap.set(uuid, { uuid, parentUuid, link, label, slots: {} } as CraftNode);
+          if (!parentUuid) this.rootNodes.push(uuid);
+          return;
+        }
+
         if (this.resolver && node.componentName === "CraftCanvas") {
           initializeSlotsFromResolver(node, this.resolver);
         }
@@ -156,7 +179,9 @@ export const useEditor = defineStore("editor", {
               if (!this.nodeMap.get(node.uuid)!.slots[slotName]) {
                 this.nodeMap.get(node.uuid)!.slots[slotName] = [];
               }
-              this.nodeMap.get(node.uuid)!.slots[slotName].push(child);
+              this.nodeMap.get(node.uuid)!.slots[slotName].push(
+                child.link ? this.nodeMap.get(child.uuid)! : child,
+              );
             });
           });
         }
@@ -421,6 +446,11 @@ export const useEditor = defineStore("editor", {
         const node = state.nodeMap.get(nodeUuid);
         if (!node) {
           throw new Error(`Node with UUID ${nodeUuid} not found`);
+        }
+
+        if (node.link) {
+          const { uuid, parentUuid, link, label } = node;
+          return { uuid, parentUuid, link, label } as CraftNode;
         }
 
         const slots: Record<string, CraftNode[]> = {};
