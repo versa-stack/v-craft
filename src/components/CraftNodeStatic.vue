@@ -128,7 +128,9 @@ const availableSlots = computed(() => {
   const resolved = resolver?.value?.resolveNode?.(craftNode.value);
   const resolverSlots = resolved?.slots;
   if (resolverSlots && resolverSlots.length > 0) {
-    slots.push(...resolverSlots);
+    // An empty named slot is not passed: a layout that sizes itself by the
+    // slots it gets (UPage's columns) would reserve room for nothing.
+    slots.push(...resolverSlots.filter((s) => s === "default" || (slotNodes.value[s]?.length ?? 0) > 0));
   } else {
     slots.push("default");
   }
