@@ -37,6 +37,18 @@ const ResolverComponent = defineComponent({
   template: `<div class="resolver-component">resolver component</div>`,
 });
 
+const SidedLayout = defineComponent({
+  name: "SidedLayout",
+  setup(_, { slots }) {
+    return () =>
+      h("div", { class: "sided" }, [
+        slots.left ? h("aside", { class: "left" }, slots.left()) : null,
+        slots.default ? h("main", slots.default()) : h("p", { class: "no-default" }),
+        slots.right ? h("aside", { class: "right" }, slots.right()) : null,
+      ]);
+  },
+});
+
 describe("CraftStaticRenderer", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
@@ -46,6 +58,10 @@ describe("CraftStaticRenderer", () => {
     TestComponent: {
       componentName: "TestComponent",
       defaultProps: { text: "default" },
+    },
+    SidedLayout: {
+      componentName: "SidedLayout",
+      slots: ["left", "default", "right"],
     },
     TestContainer: {
       componentName: "TestContainer",
@@ -64,6 +80,7 @@ describe("CraftStaticRenderer", () => {
         components: {
           TestComponent,
           TestContainer,
+          SidedLayout,
           CraftStaticRenderer,
           CraftNodeStatic,
           CraftComponentSimpleText,
@@ -72,6 +89,36 @@ describe("CraftStaticRenderer", () => {
       },
     });
   };
+
+  // A layout such as Nuxt UI's UPage sizes its columns by which slots it is
+  // given; an empty named slot passed anyway reserves a column for nothing.
+  it("does not pass a named slot that has no children", () => {
+    const text = (t: string) => ({ uuid: uuidv4(), componentName: "TestComponent", props: { text: t }, slots: {} });
+    const wrapper = createWrapper([
+      {
+        uuid: uuidv4(),
+        componentName: "SidedLayout",
+        props: {},
+        slots: { left: [text("facets")], default: [text("grid")], right: [] },
+      },
+    ]);
+    expect(wrapper.find("aside.left").exists()).toBe(true);
+    expect(wrapper.find("aside.right").exists()).toBe(false);
+    expect(wrapper.find("main").text()).toContain("grid");
+  });
+
+  it("still passes an empty default slot", () => {
+    const wrapper = createWrapper([
+      {
+        uuid: uuidv4(),
+        componentName: "SidedLayout",
+        props: {},
+        slots: { left: [{ uuid: uuidv4(), componentName: "TestComponent", props: { text: "facets" }, slots: {} }], default: [], right: [] },
+      },
+    ]);
+    expect(wrapper.find("main").exists()).toBe(true);
+    expect(wrapper.find(".no-default").exists()).toBe(false);
+  });
 
   it("renders a single node", () => {
     const nodes: CraftNode[] = [
