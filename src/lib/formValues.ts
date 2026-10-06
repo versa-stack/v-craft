@@ -12,7 +12,7 @@ const within = (nodes: Record<string, CraftNode>, node: CraftNode, scopeUuid: st
  */
 export const formValues = (
   nodes: Record<string, CraftNode> | null | undefined,
-  nodeValues: Record<string, Record<string, any>> | undefined,
+  nodeValues: Record<string, Record<string, unknown>> | undefined,
   scopeUuid: string,
 ): Record<string, unknown> => {
   const out: Record<string, unknown> = {};
