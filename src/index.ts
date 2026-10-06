@@ -4,6 +4,7 @@ export * from "./blueprints/default";
 export * from "./components";
 export * from "./components/composable";
 export * from "./lib/craftNode";
+export * from "./lib/formValues";
 export * from "./lib/CraftNodeResolver";
 export * from "./lib/mapData";
 export * from "./lib/model";

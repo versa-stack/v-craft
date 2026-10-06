@@ -1,5 +1,6 @@
 import { computed, Ref, ref } from "vue";
 import { CraftNode } from "../../lib/craftNode";
+import { formValues } from "../../lib/formValues";
 
 /** Helpers v-craft hands the host's dispatch so it can act on the rendered page. */
 export interface CraftNodeEventsRuntime {
@@ -15,6 +16,8 @@ export interface CraftNodeEventsRuntime {
   state?: Record<string, any>;
   /** The data item this node was rendered with by a bound ancestor. */
   getData?: () => unknown;
+  /** Named field values inside the node `scopeUuid`, prefill included. */
+  formValues?: (scopeUuid: string) => Record<string, unknown>;
 }
 
 /**
@@ -36,6 +39,7 @@ export const useCraftNodeEvents = (
   runtime: CraftNodeEventsRuntime = {},
 ) => {
   const busy = ref(false);
+  runtime = { formValues: (scopeUuid) => formValues(runtime.getNodes?.(), runtime.nodeValues, scopeUuid), ...runtime };
 
   const eventHandlers = computed(() => {
     const dispatch = ctx.dispatch as CraftNodeEventsDispatch | undefined;
