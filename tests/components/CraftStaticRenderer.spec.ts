@@ -631,6 +631,7 @@ describe("CraftStaticRenderer", () => {
       ...resolverMap,
       input: { componentName: "input" },
       FieldInput: { componentName: "FieldInput" },
+      SelectLike: { componentName: "SelectLike" },
     };
     // Like Nuxt UI's UInput: v-model on modelValue, falling back to defaultValue.
     const FieldInput = defineComponent({
@@ -641,7 +642,14 @@ describe("CraftStaticRenderer", () => {
         return () => h("label", [withDirectives(h("input", { "onUpdate:modelValue": (v: string) => (model.value = v) }), [[vModelText, model.value]]), slots.default?.()]);
       },
     });
-    const components = { FieldInput, TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas };
+    // Like Nuxt UI's USelect: update:modelValue, then a synthetic change Event with no target.
+    const SelectLike = defineComponent({
+      emits: ["update:modelValue", "change"],
+      setup(_, { emit }) {
+        return () => h("button", { class: "select-like", onClick: () => { emit("update:modelValue", "CH"); emit("change", new Event("change")); } });
+      },
+    });
+    const components = { SelectLike, FieldInput, TestComponent, CraftStaticRenderer, CraftNodeStatic, CraftComponentSimpleText, CraftCanvas };
 
     type Handler = (rt: CraftNodeEventsRuntime, data: unknown) => unknown;
     const hostDispatch = (handlers: Record<string, Handler>): CraftNodeEventsDispatch =>
@@ -783,6 +791,13 @@ describe("CraftStaticRenderer", () => {
       expect((input.element as HTMLInputElement).value).toBe("Khairxy");
       const seen = (wrapper.findComponent(CraftNodeStatic).props("nodeRuntimeProps") as Record<string, any>)[inputUuid]?.value;
       expect(seen).toBe("Khairxy");
+    });
+
+    it("keeps a chosen value when a targetless change event follows it", async () => {
+      const uuid = uuidv4();
+      const wrapper = createRuntimeWrapper([{ uuid, componentName: "SelectLike", props: {}, slots: {} }], hostDispatch({}));
+      await wrapper.find(".select-like").trigger("click");
+      expect((wrapper.findComponent(CraftNodeStatic).props("nodeRuntimeProps") as Record<string, any>)[uuid]?.value).toBe("CH");
     });
 
     it("reads a prefilled field's value before anyone types", async () => {

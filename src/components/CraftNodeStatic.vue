@@ -212,6 +212,13 @@ const finalProps = computed(() => {
   return { ...nodeProps.value, ...runtime, ...selfProps.value, ...busyAttrs.value };
 });
 
+// A synthetic event (Nuxt UI's USelect emits change with no target) carries
+// no value; capturing it would erase the one update:modelValue just set.
+const captureDomValue = (e: Event) => {
+  const target = e?.target as HTMLInputElement | null;
+  if (target && "value" in target) captureValue(target.value);
+};
+
 const finalEventHandlers = computed(() => {
   const compose = (name: string, capture: (...args: any[]) => void) => (...args: any[]) => {
     capture(...args);
@@ -220,8 +227,8 @@ const finalEventHandlers = computed(() => {
 
   return {
     ...eventHandlers.value,
-    input: compose("input", (e: Event) => captureValue((e?.target as HTMLInputElement)?.value)),
-    change: compose("change", (e: Event) => captureValue((e?.target as HTMLInputElement)?.value)),
+    input: compose("input", (e: Event) => captureDomValue(e)),
+    change: compose("change", (e: Event) => captureDomValue(e)),
     "update:modelValue": compose("update:modelValue", (value: unknown) => captureValue(value)),
   };
 });
