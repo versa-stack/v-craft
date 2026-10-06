@@ -4,7 +4,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
-import { defineComponent, nextTick, ref } from "vue";
+import { defineComponent, h, nextTick, ref } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
@@ -54,9 +54,50 @@ const AsyncLeaf = defineComponent({
 
 const asyncLeafFactory = () => Promise.resolve(AsyncLeaf);
 
+const SidedLayout = defineComponent({
+  name: "SidedLayout",
+  setup(_, { slots }) {
+    return () =>
+      h("div", { class: "sided" }, [
+        slots.left ? h("aside", { class: "left" }, slots.left()) : null,
+        slots.default ? h("main", slots.default()) : h("p", { class: "no-default" }),
+        slots.right ? h("aside", { class: "right" }, slots.right()) : null,
+      ]);
+  },
+});
+
+const mountSided = (slots: Record<string, CraftNode[]>) =>
+  mount(CraftNodeViewer, {
+    props: { craftNode: { componentName: "SidedLayout", props: {}, slots, uuid: uuidv4() } as CraftNode },
+    global: {
+      components: { CraftNodeViewer, CraftComponentSimpleText, SidedLayout },
+      provide: {
+        resolver: ref(
+          new CraftNodeResolver({
+            CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
+            SidedLayout: { componentName: "SidedLayout", slots: ["left", "default", "right"] },
+          } as CraftNodeResolverMap<any>),
+        ),
+      },
+    },
+  });
+
 describe("CraftNodeViewer", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
+  });
+
+  it("does not pass a named slot that has no children", () => {
+    const wrapper = mountSided({ left: [createSimpleText("facets")], default: [createSimpleText("grid")], right: [] });
+    expect(wrapper.find("aside.left").exists()).toBe(true);
+    expect(wrapper.find("aside.right").exists()).toBe(false);
+    expect(wrapper.find("main").text()).toContain("grid");
+  });
+
+  it("still passes an empty default slot", () => {
+    const wrapper = mountSided({ left: [createSimpleText("facets")], default: [], right: [] });
+    expect(wrapper.find("main").exists()).toBe(true);
+    expect(wrapper.find(".no-default").exists()).toBe(false);
   });
 
   it("renders the correct component based on the craftNode", async () => {
