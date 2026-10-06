@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
+import type { CraftNode } from "../../src/lib/craftNode";
 import { formValues } from "../../src/lib/formValues";
 
 const n = (uuid: string, parentUuid: string | null, props: Record<string, unknown> = {}) =>
-  ({ uuid, parentUuid, componentName: "X", props, slots: {} }) as any;
+  ({ uuid, parentUuid, componentName: "X", props, slots: {} }) as unknown as CraftNode;
 
 const nodes = {
   form: n("form", null),

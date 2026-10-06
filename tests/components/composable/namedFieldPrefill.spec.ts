@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
+import type { CraftNode } from "../../../src/lib/craftNode";
 import { useResolveCraftNodeProps } from "../../../src/components/composable/useResolveCraftNodeProps";
 
-const field = (props: Record<string, unknown>, slotsPropsPropsMap?: any) =>
-  ({ uuid: "f", componentName: "UInput", props, slots: {}, slotsPropsPropsMap }) as any;
+const field = (props: Record<string, unknown>, slotsPropsPropsMap?: CraftNode["slotsPropsPropsMap"]) =>
+  ({ uuid: "f", componentName: "UInput", props, slots: {}, slotsPropsPropsMap }) as unknown as CraftNode;
 
 describe("named field prefill", () => {
   it("a named field defaults to the bound record at its name", () => {
