@@ -41,18 +41,30 @@ const resolveContextProps = (
   return props;
 };
 
+const VALUE_PROPS = ["modelValue", "defaultValue", "value"];
+
+/** A field with a `name` defaults to the bound record (`context.data`) at that path. */
+const namedFieldPrefill = (node: CraftNode | undefined, context: CraftNodePropsContext, resolved: Record<string, any>) => {
+  const name = node?.props?.name;
+  const data = context.data;
+  if (typeof name !== "string" || !name || !data || typeof data !== "object") return;
+  if (VALUE_PROPS.some((k) => node!.props[k] !== undefined || resolved[k] !== undefined)) return;
+  const value = name.split(".").reduce<any>((v, k) => (v == null ? undefined : v[k]), data);
+  if (value !== undefined) resolved.defaultValue = value;
+};
+
 export const useResolveCraftNodeProps = (
   node: MaybeRefOrGetter<CraftNode>,
   context: MaybeRefOrGetter<CraftNodePropsContext> = {},
   resolver?: MaybeRefOrGetter<CraftNodeResolver<any> | undefined>,
 ): { props: ComputedRef<Record<string, any>> } => {
-  const props = computed(() =>
-    resolveContextProps(
-      toValue(node)?.slotsPropsPropsMap,
-      toValue(context) || {},
-      toValue(resolver),
-    ),
-  );
+  const props = computed(() => {
+    const n = toValue(node);
+    const ctx = toValue(context) || {};
+    const resolved = resolveContextProps(n?.slotsPropsPropsMap, ctx, toValue(resolver));
+    namedFieldPrefill(n, ctx, resolved);
+    return resolved;
+  });
 
   return {
     props,
