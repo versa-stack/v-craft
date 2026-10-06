@@ -2,7 +2,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { computed, h, defineComponent, nextTick, ref, vModelText, withDirectives } from "vue";
+import { computed, h, defineComponent, nextTick, ref, vModelText, withDirectives, type Component, type SetupContext } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeStatic from "../../src/components/CraftNodeStatic.vue";
@@ -37,9 +37,9 @@ const ResolverComponent = defineComponent({
   template: `<div class="resolver-component">resolver component</div>`,
 });
 
-const SidedLayout = defineComponent({
+const SidedLayout: Component = {
   name: "SidedLayout",
-  setup(_, { slots }) {
+  setup(_: unknown, { slots }: SetupContext) {
     return () =>
       h("div", { class: "sided" }, [
         slots.left ? h("aside", { class: "left" }, slots.left()) : null,
@@ -47,7 +47,7 @@ const SidedLayout = defineComponent({
         slots.right ? h("aside", { class: "right" }, slots.right()) : null,
       ]);
   },
-});
+};
 
 describe("CraftStaticRenderer", () => {
   beforeEach(() => {

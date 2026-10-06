@@ -4,7 +4,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { beforeEach, describe, expect, it } from "vitest";
-import { defineComponent, h, nextTick, ref } from "vue";
+import { defineComponent, h, nextTick, ref, type Component, type SetupContext } from "vue";
 import CraftCanvas from "../../src/components/CraftCanvas.vue";
 import CraftComponentSimpleText from "../../src/components/CraftComponentSimpleText.vue";
 import CraftNodeViewer from "../../src/components/CraftNodeViewer.vue";
@@ -54,9 +54,9 @@ const AsyncLeaf = defineComponent({
 
 const asyncLeafFactory = () => Promise.resolve(AsyncLeaf);
 
-const SidedLayout = defineComponent({
+const SidedLayout: Component = {
   name: "SidedLayout",
-  setup(_, { slots }) {
+  setup(_: unknown, { slots }: SetupContext) {
     return () =>
       h("div", { class: "sided" }, [
         slots.left ? h("aside", { class: "left" }, slots.left()) : null,
@@ -64,7 +64,7 @@ const SidedLayout = defineComponent({
         slots.right ? h("aside", { class: "right" }, slots.right()) : null,
       ]);
   },
-});
+};
 
 const mountSided = (slots: Record<string, CraftNode[]>) =>
   mount(CraftNodeViewer, {
@@ -76,7 +76,7 @@ const mountSided = (slots: Record<string, CraftNode[]>) =>
           new CraftNodeResolver({
             CraftComponentSimpleText: defaultResolvers.CraftComponentSimpleText,
             SidedLayout: { componentName: "SidedLayout", slots: ["left", "default", "right"] },
-          } as CraftNodeResolverMap<any>),
+          } as CraftNodeResolverMap<unknown>),
         ),
       },
     },
