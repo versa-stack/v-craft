@@ -1,7 +1,13 @@
 <template>
   <ul class="craft-list-example">
-    <li v-for="(item, index) in items" :key="index">
-      <slot :item="item" :index="index" />
+    <li
+      v-for="(item, index) in items"
+      :key="index"
+    >
+      <slot
+        :item="item"
+        :index="index"
+      />
     </li>
   </ul>
 </template>
