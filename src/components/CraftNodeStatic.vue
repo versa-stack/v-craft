@@ -67,9 +67,9 @@ const props = defineProps<{
   craftNode: CraftNode;
   nodeMap: Map<string, CraftNode>;
   nodeDataMap?: Record<string, CraftNodeDatasource>;
-  eventsContext?: Record<string, any>;
-  nodeRuntimeProps?: Record<string, Record<string, any>>;
-  pageState?: Record<string, any>;
+  eventsContext?: Record<string, unknown>;
+  nodeRuntimeProps?: Record<string, Record<string, unknown>>;
+  pageState?: Record<string, unknown>;
   context?: CraftNodePropsContext;
 }>();
 
@@ -82,8 +82,8 @@ provide("craftNode", readonly(craftNode.value));
 
 const buildChildContext = (
   slotName: string,
-  slotProps: Record<string, any> = {},
-  dataItem?: Record<string, any>,
+  slotProps: Record<string, unknown> = {},
+  dataItem?: Record<string, unknown>,
 ): CraftNodePropsContext => {
   const allowedKeys = resolver?.value?.getSlotsProps?.(craftNode.value)?.[slotName];
   const bucket = allowedKeys
@@ -148,10 +148,12 @@ const computedChildren = (children: CraftNode[], slotName: string) => {
   return computeDataNodes(data.value, children);
 };
 
-const setNodeRuntimeProps = (uuid: string, patch: Record<string, any>) => {
-  if (!props.nodeRuntimeProps) return;
-  if ("value" in patch) capturedFor(props.nodeRuntimeProps).delete(uuid);
-  props.nodeRuntimeProps[uuid] = { ...(props.nodeRuntimeProps[uuid] || {}), ...patch };
+const setNodeRuntimeProps = (uuid: string, patch: Record<string, unknown>) => {
+  // The runtime map is shared by the whole tree and written in place by design.
+  const runtime = props.nodeRuntimeProps;
+  if (!runtime) return;
+  if ("value" in patch) capturedFor(runtime).delete(uuid);
+  runtime[uuid] = { ...(runtime[uuid] || {}), ...patch };
 };
 
 // A value captured from what a user typed is readable as ctx.nodeValues but
@@ -228,9 +230,9 @@ const captureDomValue = (e: Event) => {
 };
 
 const finalEventHandlers = computed(() => {
-  const compose = (name: string, capture: (...args: any[]) => void) => (...args: any[]) => {
+  const compose = <A extends unknown[]>(name: string, capture: (...args: A) => void) => (...args: A) => {
     capture(...args);
-    (eventHandlers.value[name] as ((...a: any[]) => void) | undefined)?.(...args);
+    (eventHandlers.value[name] as ((...a: unknown[]) => void) | undefined)?.(...args);
   };
 
   return {
@@ -247,7 +249,7 @@ const finalEventHandlers = computed(() => {
 type ComputedDataNode = {
   key: string;
   craftNode: CraftNode;
-  dataItem: Record<string, any>;
+  dataItem: Record<string, unknown>;
 };
 
 const computeDataNodes = (

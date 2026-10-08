@@ -8,7 +8,7 @@ import { setValueByPath } from "../../lib/setValueByPath";
  * A bag of named context buckets available to a node, e.g. the scoped slot
  * props exposed by an ancestor's slot, keyed by that slot's name.
  */
-export type CraftNodePropsContext = Record<string, Record<string, any>>;
+export type CraftNodePropsContext = Record<string, Record<string, unknown>>;
 
 /** Default, resolver-less behavior: bare JSONPath lookup, no formatting. */
 const defaultResolveJSONPath = (mapping: unknown, contextData: any): unknown => {
@@ -22,7 +22,7 @@ const resolveContextProps = (
   context: CraftNodePropsContext,
   resolver?: CraftNodeResolver<any>,
 ) => {
-  const props: Record<string, any> = {};
+  const props: Record<string, unknown> = {};
   if (!slotsPropsPropsMap) return props;
 
   Object.entries(slotsPropsPropsMap).forEach(([contextKey, fieldMap]) => {
@@ -57,7 +57,7 @@ export const useResolveCraftNodeProps = (
   node: MaybeRefOrGetter<CraftNode>,
   context: MaybeRefOrGetter<CraftNodePropsContext> = {},
   resolver?: MaybeRefOrGetter<CraftNodeResolver<any> | undefined>,
-): { props: ComputedRef<Record<string, any>> } => {
+): { props: ComputedRef<Record<string, unknown>> } => {
   const props = computed(() => {
     const n = toValue(node);
     const ctx = toValue(context) || {};

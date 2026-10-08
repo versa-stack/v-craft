@@ -57,7 +57,7 @@ const onLoad = () => {
     emit("iframeLoad", iframeRef.value);
     iframeRef.value?.setAttribute("data-iframe-ready", "true");
     setupBody();
-    if (props.inheritStyles) inheritStyles();
+    if (props.inheritStyles) copyParentStyles();
 
     props.styles.forEach((el) => {
       if (!iframeRef.value) return;
@@ -81,17 +81,17 @@ const onLoad = () => {
   });
 };
 
-const inheritStyles = () => {
+const copyParentStyles = () => {
   const parentDoc = iframeRef.value?.contentWindow?.parent.document;
   if (!parentDoc) return;
 
   const styles = Array.from(parentDoc.querySelectorAll("style") ?? []);
-  styles.forEach((el: any) => {
+  styles.forEach((el: Element) => {
     iframeRef.value?.contentDocument?.head.appendChild(el.cloneNode(true));
   });
 
   const links = Array.from(parentDoc.querySelectorAll("link[rel='stylesheet']") ?? []);
-  links.forEach((el: any) => {
+  links.forEach((el: Element) => {
     iframeRef.value?.contentDocument?.head.appendChild(el.cloneNode(true));
   });
 };

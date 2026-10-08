@@ -11,7 +11,7 @@ export type CraftNodeComponentMap<
   component?: Component | (() => Promise<Component>);
   propsSchema?: T;
   eventsSchema?: T;
-  defaultProps?: Record<string, any>;
+  defaultProps?: Record<string, unknown>;
   rules?: CraftNodeRules;
   slots?: string[];
   slotsProps?: Record<string, string[]>;
@@ -113,7 +113,7 @@ export class CraftNodeResolver<
     return defaultResolver(componentName);
   }
 
-  getDefaultProps(craftNode: CraftNode): Record<string, any> {
+  getDefaultProps(craftNode: CraftNode): Record<string, unknown> {
     return this.resolveNode(craftNode)?.defaultProps || {};
   }
 

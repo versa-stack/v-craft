@@ -15,7 +15,7 @@
     "watch:build": "nodemon -e ts -e vue -x \"npm run build\"",
     "docs:preview": "vitepress preview docs",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
-    "lint": "eslint . --max-warnings 268",
+    "lint": "eslint . --max-warnings 121",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -3,10 +3,16 @@
     v-if="craftNode"
     class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
   >
-    <legend class="formkit-legend">Lorem API</legend>
+    <legend class="formkit-legend">
+      Lorem API
+    </legend>
     <p class="formkit-help">
       Fetch placeholder paragraphs from
-      <a href="https://lorem-api.com/" target="_blank" rel="noopener">lorem-api.com</a>
+      <a
+        href="https://lorem-api.com/"
+        target="_blank"
+        rel="noopener"
+      >lorem-api.com</a>
       and feed them into this node as a list datasource. Children read fields
       out of it via <code>slotsPropsPropsMap</code>'s reserved
       <code>data</code> bucket, exactly like any other node datasource.
@@ -30,7 +36,12 @@
       {{ loading ? "Fetching…" : "Fetch from Lorem API" }}
     </button>
 
-    <p v-if="error" class="formkit-help v-craft-lorem-error">{{ error }}</p>
+    <p
+      v-if="error"
+      class="formkit-help v-craft-lorem-error"
+    >
+      {{ error }}
+    </p>
   </fieldset>
 </template>
 

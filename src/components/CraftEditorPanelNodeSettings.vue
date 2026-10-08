@@ -5,22 +5,22 @@
     :model="craftNode?.props"
     @update="(v) => emit('update:props', v)"
   >
-    <template #panel-content="{ craftNode, model, handleFormInput, schema }">
+    <template #panel-content="{ craftNode: slotNode, model, handleFormInput, schema: slotSchema }">
       <fieldset
-        v-if="schema"
+        v-if="slotSchema"
         class="v-craft-panel-settings formkit-fieldset v-craft-scrollable-content"
       >
         <legend class="formkit-legend">
           Properties
         </legend>
         <FormKit
-          :key="craftNode?.uuid"
+          :key="slotNode?.uuid"
           type="form"
           :value="model"
           :actions="false"
           @input="handleFormInput"
         >
-          <FormKitSchema :schema="schema" />
+          <FormKitSchema :schema="slotSchema" />
         </FormKit>
       </fieldset>
     </template>
@@ -43,13 +43,14 @@ const props = withDefaults(
     schema?: T;
   }>(),
   {
-    schema: () => ({}) as any,
+    craftNode: undefined,
+    schema: () => ({}) as T,
   },
 );
 
 const { craftNode, schema } = toRefs(props);
 
 const emit = defineEmits<{
-  (e: "update:props", value: Record<string, any>): void;
+  (e: "update:props", value: Record<string, unknown>): void;
 }>();
 </script>

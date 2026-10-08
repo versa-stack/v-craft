@@ -7,13 +7,13 @@ export interface CraftNodeEventsRuntime {
   getNodes?: () => Record<string, CraftNode> | null;
   getNode?: (uuid: string) => CraftNode | null;
   /** Live runtime values captured from value-bearing nodes (e.g. what a user typed), keyed by uuid. */
-  nodeValues?: Record<string, Record<string, any>>;
+  nodeValues?: Record<string, Record<string, unknown>>;
   /** Patch another node's rendered props at runtime, by uuid. */
-  setNodeProps?: (uuid: string, patch: Record<string, any>) => void;
+  setNodeProps?: (uuid: string, patch: Record<string, unknown>) => void;
   /** Patch this rendered instance's own props, e.g. on one of many list items. */
   setSelfProps?: (patch: Record<string, unknown>) => void;
   /** Page-scoped bag shared across dispatches. */
-  state?: Record<string, any>;
+  state?: Record<string, unknown>;
   /** The data item this node was rendered with by a bound ancestor. */
   getData?: () => unknown;
   /** Named field values inside the node `scopeUuid`, prefill included. */
@@ -35,7 +35,7 @@ export type CraftNodeEventsDispatch = (
 
 export const useCraftNodeEvents = (
   craftNode: Ref<CraftNode>,
-  ctx: Record<string, any>,
+  ctx: Record<string, unknown>,
   runtime: CraftNodeEventsRuntime = {},
 ) => {
   const busy = ref(false);

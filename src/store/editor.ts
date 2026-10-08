@@ -24,13 +24,13 @@ export interface EditorState {
   enabled: boolean;
   nodeRefsRecord: Record<string, HTMLElement>;
   resolver: CraftNodeResolver<FormKitSchemaDefinition> | null;
-  eventsContext: Record<string, any>;
+  eventsContext: Record<string, unknown>;
   nodeDataMap: Record<string, CraftNodeDatasource | null>;
   draggingDisabled: boolean;
   /** Live runtime props written by event handlers or captured from value-bearing nodes, by uuid. */
-  nodeRuntimeProps: Record<string, Record<string, any>>;
+  nodeRuntimeProps: Record<string, Record<string, unknown>>;
   /** Page-scoped bag shared across event handlers, e.g. a pending flag. */
-  pageState: Record<string, any>;
+  pageState: Record<string, unknown>;
   linkResolver: CraftLinkResolver | null;
   /** Resolved subtree per linked instance uuid; null is a broken link. Never part of nodeMap or nodeTree. */
   linkedTrees: Record<string, CraftNode | null>;
@@ -124,7 +124,7 @@ export const useEditor = defineStore("editor", {
       this.nodeDataMap[uuid] = data;
     },
 
-    updateNodeProps(nodeUuid: string, newProps: Record<string, any>) {
+    updateNodeProps(nodeUuid: string, newProps: Record<string, unknown>) {
       const node = this.nodeMap.get(nodeUuid);
       if (node) {
         Object.assign(node.props, newProps);
@@ -418,11 +418,11 @@ export const useEditor = defineStore("editor", {
       }
     },
 
-    setEventsContext(context: Record<string, any>) {
+    setEventsContext(context: Record<string, unknown>) {
       this.eventsContext = context;
     },
 
-    setNodeRuntimeProps(uuid: string, patch: Record<string, any>) {
+    setNodeRuntimeProps(uuid: string, patch: Record<string, unknown>) {
       this.nodeRuntimeProps[uuid] = { ...(this.nodeRuntimeProps[uuid] || {}), ...patch };
     },
   },

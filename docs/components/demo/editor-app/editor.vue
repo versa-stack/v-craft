@@ -8,17 +8,19 @@
     }"
     @iframe-load="onIframeLoad"
   >
-    <CraftCanvas componentName="div" />
+    <CraftCanvas component-name="div" />
   </CraftEditor>
   <div class="editor-switch">
     <label for="editorEnabled">Preview Content: </label>
     <input
       id="editorEnabled"
+      v-model="previewContent"
       type="checkbox"
       name="editorEnabled"
-      v-model="previewContent"
-    />
-    <div class="text-sm">(disables editor drag and drop)</div>
+    >
+    <div class="text-sm">
+      (disables editor drag and drop)
+    </div>
   </div>
 </template>
 <script lang="ts" setup>

@@ -48,7 +48,7 @@ export const mapData = <
     });
   } else if (mapConfig.type === "list") {
     output.list = rootData.map((item: any) => {
-      const mappedItem: Record<string, any> = {};
+      const mappedItem: Record<string, unknown> = {};
       mapConfig.patches.forEach((patch) => {
         //@ts-expect-error - patch type is not narrowed inside the list branch
         const value = applyPatch(item, patch);

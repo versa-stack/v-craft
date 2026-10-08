@@ -33,7 +33,7 @@ const props = defineProps<{
   resolverMap?: CraftNodeResolverMap<T>;
   resolver?: CraftNodeResolver<T>;
   nodeDataMap?: Record<string, CraftNodeDatasource>;
-  eventsContext?: Record<string, any>;
+  eventsContext?: Record<string, unknown>;
 }>();
 
 const recurseNodes = (node: CraftNode, nm: Map<string, CraftNode>) => {
@@ -61,7 +61,7 @@ provide("nodeDataMap", props.nodeDataMap || {});
 provide("eventsContext", props.eventsContext || {});
 
 /** Live runtime props written by event handlers or captured from value-bearing nodes, by uuid. */
-const nodeRuntimeProps = reactive<Record<string, Record<string, any>>>({});
+const nodeRuntimeProps = reactive<Record<string, Record<string, unknown>>>({});
 /** Page-scoped bag shared across event handlers, e.g. a pending flag. */
-const pageState = reactive<Record<string, any>>({});
+const pageState = reactive<Record<string, unknown>>({});
 </script>

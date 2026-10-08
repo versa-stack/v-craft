@@ -11,32 +11,36 @@
       :style-sheets="iframe?.styleSheets"
       @iframe-load="onIframeLoad"
     >
+      <template v-if="(viewOnly || !enabled) && hasNodes">
+        <CraftNodeViewer
+          v-for="craftNode in nodeTree"
+          :key="`${craftNode.uuid}-view`"
+          :craft-node="craftNode"
+        />
+      </template>
+      <template v-if="!viewOnly && enabled && hasNodes">
+        <CraftNodeEditor
+          v-for="craftNode in nodeTree"
+          :key="`${craftNode.uuid}-edit`"
+          :craft-node="craftNode"
+        />
+      </template>
+      <Indicator v-if="!viewOnly && enabled" />
+    </CraftIframe>
+    <template v-if="!iframe && (viewOnly || !enabled) && hasNodes">
       <CraftNodeViewer
         v-for="craftNode in nodeTree"
-        v-if="(viewOnly || !enabled) && hasNodes"
         :key="`${craftNode.uuid}-view`"
         :craft-node="craftNode"
       />
+    </template>
+    <template v-if="!iframe && !viewOnly && enabled && hasNodes">
       <CraftNodeEditor
         v-for="craftNode in nodeTree"
-        v-if="!viewOnly && enabled && hasNodes"
         :key="`${craftNode.uuid}-edit`"
         :craft-node="craftNode"
       />
-      <Indicator v-if="!viewOnly && enabled" />
-    </CraftIframe>
-    <CraftNodeViewer
-      v-for="craftNode in nodeTree"
-      v-if="!iframe && (viewOnly || !enabled) && hasNodes"
-      :key="`${craftNode.uuid}-view`"
-      :craft-node="craftNode"
-    />
-    <CraftNodeEditor
-      v-for="craftNode in nodeTree"
-      v-if="!iframe && !viewOnly && enabled && hasNodes"
-      :key="`${craftNode.uuid}-edit`"
-      :craft-node="craftNode"
-    />
+    </template>
     <Indicator v-if="!iframe && !viewOnly && enabled" />
   </div>
 </template>
@@ -66,6 +70,8 @@ const props = withDefaults(
     viewOnly?: boolean;
   }>(),
   {
+    iframe: undefined,
+    resolverMap: undefined,
     viewOnly: false,
   },
 );
