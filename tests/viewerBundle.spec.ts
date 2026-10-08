@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "fs";
 import path from "path";
+import type { RollupOutput } from "rollup";
 import { build } from "vite";
 import { afterAll, expect, it } from "vitest";
 
@@ -19,12 +20,12 @@ it("viewer imports leave out FormKit and the editor panels", async () => {
   const entry = path.join(out, "entry.js");
   writeFileSync(entry, `import { CraftCanvas, CraftComponentSimpleText, CraftNodeResolver, CraftNodeViewer, CraftStaticRenderer, defaultResolvers, useEditor } from "./dist/v-craft.es.js";
 console.log(CraftCanvas, CraftComponentSimpleText, CraftNodeResolver, CraftNodeViewer, CraftStaticRenderer, defaultResolvers, useEditor);`);
-  const result: any = await build({
+  const result = (await build({
     configFile: false, logLevel: "silent",
     build: { write: false, minify: false, lib: { entry, formats: ["es"], fileName: "viewer" },
       rollupOptions: { external: [/^vue/, /^pinia/, /^lodash-es/, /^uuid/, /^jsonpath-plus/, /^@formkit/] } },
-  });
-  const code: string = result[0].output[0].code;
+  })) as RollupOutput[];
+  const code = result[0].output[0].code;
   expect(code).toContain("CraftNodeViewer");
   expect(code).not.toContain("@formkit");
   expect(code).not.toContain("CraftEditorPanel");
