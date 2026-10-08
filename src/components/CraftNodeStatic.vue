@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, provide, readonly, ref, toRaw, toRefs, watchEffect } from "vue";
+import { computed, provide, readonly, ref, toRaw, toRefs, watch, watchEffect } from "vue";
 import {
   CraftNode,
   CraftNodeDatasource,
@@ -191,6 +191,11 @@ watchEffect(() => {
 
 const selfProps = ref<Record<string, unknown>>({});
 
+// A controlled field (bound modelValue) shows what was typed until the host
+// re-renders its props; otherwise it snaps back and its next commit resends the old one.
+const typedModel = ref<{ value: unknown }>();
+watch(nodeProps, () => (typedModel.value = undefined));
+
 const { eventHandlers, busyAttrs } = useCraftNodeEvents(
   craftNode,
   props.eventsContext || {},
@@ -211,7 +216,8 @@ const finalProps = computed(() => {
   const uuid = craftNode.value.uuid;
   const runtime = { ...(props.nodeRuntimeProps?.[uuid] || {}) };
   if (props.nodeRuntimeProps && capturedFor(props.nodeRuntimeProps).has(uuid)) delete runtime.value;
-  return { ...nodeProps.value, ...runtime, ...selfProps.value, ...busyAttrs.value };
+  const typed = "modelValue" in nodeProps.value && typedModel.value ? { modelValue: typedModel.value.value } : {};
+  return { ...nodeProps.value, ...runtime, ...typed, ...selfProps.value, ...busyAttrs.value };
 });
 
 // A synthetic event (Nuxt UI's USelect emits change with no target) carries
@@ -231,7 +237,10 @@ const finalEventHandlers = computed(() => {
     ...eventHandlers.value,
     input: compose("input", (e: Event) => captureDomValue(e)),
     change: compose("change", (e: Event) => captureDomValue(e)),
-    "update:modelValue": compose("update:modelValue", (value: unknown) => captureValue(value)),
+    "update:modelValue": compose("update:modelValue", (value: unknown) => {
+      captureValue(value);
+      typedModel.value = { value };
+    }),
   };
 });
 

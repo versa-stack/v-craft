@@ -772,6 +772,25 @@ describe("CraftStaticRenderer", () => {
       expect(dispatch).not.toHaveBeenCalled();
     });
 
+    it("a bound modelValue follows what was typed until the host sets a new one", async () => {
+      // Like Nuxt UI's UInputNumber: controlled, it shows only the modelValue it is given.
+      const NumberLike = Object.assign(
+        (props: { modelValue?: number }, { emit }: SetupContext<["update:modelValue"]>) =>
+          h("button", { class: "number-like", onClick: () => emit("update:modelValue", 5) }, String(props.modelValue)),
+        { props: ["modelValue"], emits: ["update:modelValue"] },
+      );
+      const uuid = uuidv4();
+      const nodes = ref<CraftNode[]>([{ uuid, componentName: "NumberLike", props: { modelValue: 1 }, slots: {}, interactions: [{ on: "update:modelValue" }] }]);
+      const wrapper = mount(CraftStaticRenderer, {
+        props: { nodes: nodes.value, resolverMap: { ...runtimeResolverMap, NumberLike: { componentName: "NumberLike" } }, eventsContext: { dispatch: vi.fn() } },
+        global: { components: { ...components, NumberLike } },
+      });
+      await wrapper.find(".number-like").trigger("click");
+      expect(wrapper.find(".number-like").text()).toBe("5");
+      await wrapper.setProps({ nodes: [{ ...nodes.value[0], props: { modelValue: 7 } }] });
+      expect(wrapper.find(".number-like").text()).toBe("7");
+    });
+
     it("hands the host a captured input value via nodeValues", async () => {
       const inputUuid = uuidv4();
       const outputUuid = uuidv4();
