@@ -75,6 +75,10 @@
     "vue-eslint-parser": "^10.4.1",
     "vue-tsc": "^2.2.8"
   },
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "files": [
     "dist"
   ],

@@ -34,9 +34,15 @@ export default defineConfig({
         "lodash-es",
         "pinia",
         "uuid",
-        "jsonpath",
+        "jsonpath-plus",
       ],
       output: {
+        // One file per source module, so a consumer that only renders pages
+        // drops the editor panels and the FormKit they import (#84).
+        preserveModules: true,
+        preserveModulesRoot: "src",
+        entryFileNames: (chunk) =>
+          chunk.name === "index" ? `${packageName}.es.js` : "[name].js",
         globals: {
           vue: "Vue",
           "@formkit/vue": "FormKitVue",
