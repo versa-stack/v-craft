@@ -124,7 +124,7 @@ const nodeName = computed(() =>
     : ""
 );
 
-const handlePropsUpdate = (newProps: Record<string, any>) => {
+const handlePropsUpdate = (newProps: Record<string, unknown>) => {
   if (selectedNode.value && newProps) {
     editor.updateNodeProps(selectedNode.value.uuid, newProps);
   }

@@ -16,7 +16,7 @@ defineProps<{
 }>();
 
 defineEmits<{
-  (event: "close", ...args: any[]): void;
+  (event: "close", ...args: unknown[]): void;
 }>();
 
 defineOptions({

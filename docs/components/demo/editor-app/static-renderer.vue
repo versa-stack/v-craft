@@ -1,6 +1,9 @@
 <template>
   <div class="content">
-    <CraftStaticRenderer :nodes="demoContent" :resolverMap="resolverMap" />
+    <CraftStaticRenderer
+      :nodes="demoContent"
+      :resolver-map="resolverMap"
+    />
   </div>
 </template>
 <script lang="ts" setup>

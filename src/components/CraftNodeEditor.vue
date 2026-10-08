@@ -118,8 +118,8 @@ const { resolvedNode, resolver, componentToRender, props: nodeProps } =
 
 const buildChildContext = (
   slotName: string,
-  slotProps: Record<string, any> = {},
-  dataItem?: Record<string, any>,
+  slotProps: Record<string, unknown> = {},
+  dataItem?: Record<string, unknown>,
 ): CraftNodePropsContext => {
   const allowedKeys = resolver?.value?.getSlotsProps?.(craftNode.value)?.[slotName];
   const bucket = allowedKeys
@@ -184,21 +184,21 @@ const { eventHandlers, busyAttrs } = useCraftNodeEvents(
 
 const runtimeProps = computed(() => editor?.nodeRuntimeProps[craftNode.value.uuid] || {});
 
-const captureNodeValue = (value: any) => {
+const captureNodeValue = (value: unknown) => {
   editor?.setNodeRuntimeProps(craftNode.value.uuid, { value });
 };
 
 const finalEventHandlers = computed(() => {
-  const compose = (name: string, capture: (...args: any[]) => void) => (...args: any[]) => {
+  const compose = <A extends unknown[]>(name: string, capture: (...args: A) => void) => (...args: A) => {
     capture(...args);
-    (eventHandlers.value[name] as ((...a: any[]) => void) | undefined)?.(...args);
+    (eventHandlers.value[name] as ((...a: unknown[]) => void) | undefined)?.(...args);
   };
 
   return {
     ...eventHandlers.value,
     input: compose("input", (e: Event) => captureNodeValue((e?.target as HTMLInputElement)?.value)),
     change: compose("change", (e: Event) => captureNodeValue((e?.target as HTMLInputElement)?.value)),
-    "update:modelValue": compose("update:modelValue", (value: any) => captureNodeValue(value)),
+    "update:modelValue": compose("update:modelValue", (value: unknown) => captureNodeValue(value)),
   };
 });
 
@@ -282,7 +282,7 @@ const computeDataChildren = (children: CraftNode[], slotName: string) => {
 type ComputedDataNode = {
   key: string;
   craftNode: CraftNode;
-  dataItem: Record<string, any>;
+  dataItem: Record<string, unknown>;
 };
 
 const computeDataNodes = (

@@ -1,17 +1,21 @@
 import { JSONPath } from "jsonpath-plus";
 
+type PathSpec = string | string[] | { [name: string]: PathSpec };
+// Arrays and objects are both filled by key, so results are indexed loosely.
+type Bucket = Record<string | number, unknown>;
+
 const walk = (
-  data: Record<string, any>,
-  path: string | string[] | Record<string, any>,
-  result: Record<string, any>,
-  key: string = ""
+  data: Record<string, unknown>,
+  path: PathSpec,
+  result: Bucket,
+  key: string | number = ""
 ) => {
   if (type(path) === "array") {
     return seekArray(data, path as string[], result, key);
   }
 
   if (type(path) === "object") {
-    return seekObject(data, path as Record<string, any>, result, key);
+    return seekObject(data, path as { [name: string]: PathSpec }, result, key);
   }
 
   if (type(path) === "string") {
@@ -19,15 +23,15 @@ const walk = (
   }
 };
 
-const type = (test: any) => {
+const type = (test: unknown) => {
   return Array.isArray(test) ? "array" : typeof test;
 };
 
 const seekSingle = (
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   pathStr: string,
-  result: Record<string, any>,
-  key: string = ""
+  result: Bucket,
+  key: string | number = ""
 ) => {
   if (pathStr.indexOf("$") < 0) {
     result[key] = pathStr;
@@ -41,17 +45,19 @@ const seekSingle = (
 };
 
 const seekArray = (
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   pathArr: string[],
-  result: Record<string, any>,
-  key: string = ""
+  result: Bucket,
+  key: string | number = ""
 ) => {
   const subpath = pathArr[1];
   const path = pathArr[0];
   const seek = JSONPath({ path, json: data }) || [];
 
   if (seek.length && subpath) {
-    result = result[key] = [];
+    const list: unknown[] = [];
+    result[key] = list;
+    result = list as unknown as Bucket;
 
     seek[0].forEach(function (item, index) {
       walk(item, subpath, result, index);
@@ -65,10 +71,10 @@ const seekArray = (
 };
 
 const seekObject = (
-  data: Record<string, any>,
-  pathObj: Record<string, any>,
-  result: Record<string, any>,
-  key: string = ""
+  data: Record<string, unknown>,
+  pathObj: { [name: string]: PathSpec },
+  result: Bucket,
+  key: string | number = ""
 ) => {
   if (key !== "") {
     result = result[key] = {};
@@ -82,8 +88,8 @@ const seekObject = (
 };
 
 export default (
-  data: Record<string, any>,
-  path: Record<string, any> | string | string[]
+  data: Record<string, unknown>,
+  path: PathSpec
 ) => {
   return walk(data, path, {});
 };

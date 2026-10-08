@@ -22,6 +22,8 @@ export interface Props<T extends FormKitSchemaDefinition, V, _N> {
 }
 
 const props = withDefaults(defineProps<Props<T, V, N>>(), {
+  craftNode: undefined,
+  model: undefined,
   schema: () => ({} as T),
 });
 

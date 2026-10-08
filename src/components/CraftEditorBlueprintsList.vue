@@ -1,6 +1,9 @@
 <template>
   <div v-if="resolver">
-    <div v-for="group in blueprints.groups">
+    <div
+      v-for="group in blueprints.groups"
+      :key="group.label"
+    >
       <slot
         name="blueprint-group"
         :group="group"

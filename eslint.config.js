@@ -38,15 +38,6 @@ export default tseslint.config(
       // Components are registered under their multi-word Craft* names via the
       // library entrypoint; SFC filenames are already the source of truth.
       'vue/multi-word-component-names': 'off',
-
-      // The four rules below each flag a genuine pre-existing defect (see the
-      // sites listed in the PR that introduced this config). Fixing them
-      // changes runtime behaviour, so they are warnings for now — triage and
-      // fix them, then promote these back to 'error'.
-      'vue/require-v-for-key': 'warn', // CraftEditorBlueprintsList.vue:3
-      'vue/no-use-v-if-with-v-for': 'warn', // CraftFrame.vue:16,22,30,36
-      'vue/no-dupe-keys': 'warn', // CraftIframe.vue:84
-      'vue/no-mutating-props': 'warn', // CraftNodeStatic.vue:145
     },
   },
 
@@ -82,6 +73,10 @@ export default tseslint.config(
         beforeAll: 'readonly',
         afterAll: 'readonly',
       },
+    },
+    rules: {
+      // Specs define small inline fixture components next to each test.
+      'vue/one-component-per-file': 'off',
     },
   },
 );

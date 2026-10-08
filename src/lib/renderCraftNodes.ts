@@ -8,22 +8,22 @@ export interface RenderOptions<
   T extends FormKitSchemaDefinition = FormKitSchemaDefinition,
 > {
   resolverMap: CraftNodeResolverMap<T>;
-  componentRegistry?: Record<string, any>;
+  componentRegistry?: Record<string, unknown>;
   nodeDataMap?: Record<string, CraftNodeDatasource | null>;
-  eventsContext?: Record<string, any>;
+  eventsContext?: Record<string, unknown>;
 }
 
 function buildEventHandlers(
   node: CraftNode,
-  eventsContext: Record<string, any>,
-): Record<string, (...args: any[]) => void> {
+  eventsContext: Record<string, unknown>,
+): Record<string, (...args: unknown[]) => void> {
   const dispatch = eventsContext.dispatch as CraftNodeEventsDispatch | undefined;
   if (!dispatch) return {};
   return Object.fromEntries(
     (node.interactions || [])
       .map((i) => i?.on)
       .filter((on): on is string => typeof on === "string" && !!on)
-      .map((on) => [on, (...args: any[]) => dispatch(node, on, args, undefined, {})]),
+      .map((on) => [on, (...args: unknown[]) => dispatch(node, on, args, undefined, {})]),
   );
 }
 
@@ -62,9 +62,9 @@ export function renderCraftNodeToVNode<
 >(
   node: CraftNode,
   resolver: CraftNodeResolver<T>,
-  componentRegistry?: Record<string, any>,
+  componentRegistry?: Record<string, unknown>,
   nodeDataMap?: Record<string, CraftNodeDatasource | null>,
-  eventsContext?: Record<string, any>,
+  eventsContext?: Record<string, unknown>,
 ): VNode | null {
   if (!isVisible(node)) {
     return null;

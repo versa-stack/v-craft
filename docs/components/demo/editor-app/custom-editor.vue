@@ -3,15 +3,17 @@
     <template #panel-layout="{ blueprints }">
       <CraftEditorBlueprintsList :blueprints="blueprints">
         <template #blueprint-group="{ group, resolver }">
-          <h4 class="mb-2">{{ group.label }}</h4>
+          <h4 class="mb-2">
+            {{ group.label }}
+          </h4>
           <div class="flex gap-3">
             <CraftEditorBlueprint
               v-for="(craftNode, key) in Utils.blueprintsWithDefaults(
                 group,
                 resolver
               )"
-              :craftNode="craftNode"
               :key="key"
+              :craft-node="craftNode"
             >
               <div class="v-craft-blueprint">
                 <div class="v-craft-blueprint-label">
@@ -22,11 +24,11 @@
           </div>
         </template>
       </CraftEditorBlueprintsList>
-      <hr />
+      <hr>
       <CraftFrame>
         <slot />
       </CraftFrame>
-      <hr />
+      <hr>
       <CraftEditorPanelSettings>
         <template
           #panel-content="{
@@ -42,36 +44,45 @@
           }"
         >
           <div class="flex justify-around">
-            <div v-if="schema" class="w-auto">
+            <div
+              v-if="schema"
+              class="w-auto"
+            >
               <CraftEditorPanelNodeSettings
-                :craftNode="selectedNode"
+                :craft-node="selectedNode"
                 :schema="schema"
                 @update:props="handlePropsUpdate"
               />
             </div>
-            <div v-if="eventsSchema" class="w-auto">
+            <div
+              v-if="eventsSchema"
+              class="w-auto"
+            >
               <CraftEditorPanelNodeEventsSettings
-                :craftNode="selectedNode"
+                :craft-node="selectedNode"
                 :schema="eventsSchema"
                 @update:events="handleEventsUpdate"
               />
             </div>
             <div class="w-auto">
               <CraftEditorPanelNodeSlotPropsSettings
-                :craftNode="selectedNode"
-                @update:slotsPropsPropsMap="handleSlotsPropsPropsMapUpdate"
+                :craft-node="selectedNode"
+                @update:slots-props-props-map="handleSlotsPropsPropsMapUpdate"
               />
             </div>
             <div class="w-auto">
               <LoremDataPanel
-                :craftNode="selectedNode"
-                :handleNodeDataUpdate="handleNodeDataUpdate"
+                :craft-node="selectedNode"
+                :handle-node-data-update="handleNodeDataUpdate"
               />
             </div>
-            <div class="w-auto" data-type="button">
+            <div
+              class="w-auto"
+              data-type="button"
+            >
               <button
-                class="formkit-input v-craft-delete"
                 v-if="deleteable"
+                class="formkit-input v-craft-delete"
                 @click.prevent="removeNode"
               >
                 Delete
@@ -86,11 +97,13 @@
     <label for="editorEnabled">Preview Content: </label>
     <input
       id="editorEnabled"
+      v-model="previewContent"
       type="checkbox"
       name="editorEnabled"
-      v-model="previewContent"
-    />
-    <div class="text-sm">(disables editor drag and drop)</div>
+    >
+    <div class="text-sm">
+      (disables editor drag and drop)
+    </div>
   </div>
 </template>
 <script lang="ts" setup>

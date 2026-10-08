@@ -1,6 +1,9 @@
 <template>
   <div class="content">
-    <CraftFrame :viewOnly="true" :resolverMap="resolverMap" />
+    <CraftFrame
+      :view-only="true"
+      :resolver-map="resolverMap"
+    />
   </div>
 </template>
 <script lang="ts" setup>
