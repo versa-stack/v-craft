@@ -18,6 +18,14 @@ Inspired by [craft.js](https://craft.js.org/) and its Vue ports ([Vue 2](https:/
 
 For documentation and examples, including installation instructions and quick start guide, please visit our [official documentation site](https://versa-stack.github.io/v-craft/develop).
 
+## Build and test
+
+```sh
+npm ci
+npm run build
+npm test
+```
+
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](/CONTRIBUTING.md) for more details.
