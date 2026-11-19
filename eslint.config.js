@@ -6,6 +6,7 @@ import vueTsConfig from '@vue/eslint-config-typescript';
 export default tseslint.config(
   {
     ignores: [
+      '.devbox/**',
       'dist/**',
       'coverage/**',
       'node_modules/**',
