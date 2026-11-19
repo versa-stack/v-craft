@@ -1,4 +1,4 @@
 ignore:
-  - "scripts/**/*"
-  - "tests/**/*"
-  - "src/index.ts"
+- "scripts/**/*"
+- "tests/**/*"
+- "src/index.ts"
